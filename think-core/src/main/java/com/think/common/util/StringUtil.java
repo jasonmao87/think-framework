@@ -2,6 +2,7 @@ package com.think.common.util;
 
 import com.github.stuxuhai.jpinyin.PinyinFormat;
 import com.github.stuxuhai.jpinyin.PinyinHelper;
+import org.springframework.lang.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,6 +33,31 @@ public class StringUtil {
         return !isEmpty(str);
     }
 
+    public static final boolean hasLength(String str){
+        return str != null && !str.isEmpty();
+    }
+
+
+    /**
+     * 检查是否有空格
+     * @param str
+     * @return
+     */
+    public static boolean containsWhitespace(String str) {
+        if (!hasLength(str)) {
+            return false;
+        } else {
+            int strLen = str.length();
+
+            for(int i = 0; i < strLen; ++i) {
+                if (Character.isWhitespace(str.charAt(i))) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 
 
     /**

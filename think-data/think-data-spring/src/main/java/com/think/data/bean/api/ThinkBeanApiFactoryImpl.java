@@ -3,7 +3,10 @@ package com.think.data.bean.api;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean.SimpleRefEntity;
 import com.think.data.provider.ThinkDaoFactoryImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,7 +14,9 @@ import org.springframework.stereotype.Component;
  * @Name :ThinkApiManager
  * @Description : 请输入
  */
-@Component
+@Slf4j
+@Component("thinkBranApiFactory")
+@DependsOn(value = "thinkDaoFactory")
 public class ThinkBeanApiFactoryImpl  implements ThinkBeanApiFactory{
 
     @Autowired
@@ -40,8 +45,11 @@ public class ThinkBeanApiFactoryImpl  implements ThinkBeanApiFactory{
         return new ThinkSplitRefBeanApiImpl(daoFactory.getSplitRefDao(targetClass));
     }
 
+    public ThinkBeanApiFactoryImpl() {
 
-//    public static  <T extends SimplePrimaryEntity> ThinkBeanApi getApi(Class<T> tClass){
+    }
+
+    //    public static  <T extends SimplePrimaryEntity> ThinkBeanApi getApi(Class<T> tClass){
 //
 //
 //    }
