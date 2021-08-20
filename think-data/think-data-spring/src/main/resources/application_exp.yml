@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    username: root
+    url: jdbc:mysql://rm-bp1630u963bu3z3d26o.mysql.rds.aliyuncs.com/cf_db?useingSSL=false
+    password:  daysen2018@mysql
+    hikari:
+      connection-timeout: 30000   #毫秒如果小于250毫秒，会被重置为30秒
+      idle-timeout: 6000000       #如果 idleTimout +1秒 > maxLifeTIme ,且MaxLifetime >0 ，会被重置为0 ，即永远不会退出， 如果=0，则会被重置为10S
+      max-lifetime: 1800000       #如果不等于0，且
+      maximum-pool-size:  60      #最大连接数
+      minimum-idle:     15       #最小链接数

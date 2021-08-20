@@ -1,0 +1,5 @@
+com\think\core\security\ThinkSecurityManagerTest.class
+com\think\data\provider\ThinkSqlFilterTest.class
+com\think\common\util\security\ThinkHashUtilTest.class
+com\think\core\security\ThinkConfigTest.class
+com\think\data\provider\TestTableBean.class

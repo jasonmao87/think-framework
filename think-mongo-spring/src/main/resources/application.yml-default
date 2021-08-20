@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+#      database: logmonitor
+#      host: dds-bp1a9b1bf27289a4-pub.mongodb.rds.aliyuncs.com
+#      username: ds
+#      password: Ds2018
+#      port: 3717
+#      uri: mongodb://ds:Ds2018@dds-bp1a9b1bf27289a4-pub.mongodb.rds.aliyuncs.com:3717/logmonitor
+      uri: mongodb://dev:123456@192.168.0.220:27017/devlogdb
+debug: true
+
+
+
+
+think:
+  machineId: 3

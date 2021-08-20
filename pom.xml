@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.think</groupId>
+    <artifactId>think-framework</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.3-SNAPSHOT</version>
+    <modules>
+        <module>think-core</module>
+        <module>think-mongo-spring</module>
+        <module>think-web</module>
+        <module>think-data</module>
+        <module>think-tcp</module>
+    </modules>
+
+    <properties>
+        <spring-boot.version>2.3.2.RELEASE</spring-boot.version>
+        <junit-version>4.12</junit-version>
+        <druid-version>1.1.12</druid-version>
+        <mysql-driver-version>6.0.6</mysql-driver-version>
+        <okhtt-version>3.12.0</okhtt-version>
+        <fastjson-version>1.2.54</fastjson-version>
+        <mongodb-driver-version>3.8.2</mongodb-driver-version>
+        <apache-common-codec-version>1.11</apache-common-codec-version>
+        <apache-poi-version>4.0.1</apache-poi-version>
+        <lombok-version>1.18.2</lombok-version>
+        <swagger-version>1.5.20</swagger-version>
+        <springfox-swagger-version>2.9.2</springfox-swagger-version>
+        <com.github.xiaoymin.swagger-bootstrap-ui>1.9.6</com.github.xiaoymin.swagger-bootstrap-ui>
+        <hutool-version>5.3.10</hutool-version>
+        <netty-version>4.1.51.Final</netty-version>
+<!--        <protobuf-version>3.15.8</protobuf-version>-->
+        <protostuff-version>1.7.2</protostuff-version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    </properties>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>nexus-snapshots</name>
+            <url>http://8.136.215.26:8088/repository/maven-snapshots/</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+    <repositories>
+        <repository>
+            <id>think-nexus</id>
+            <name>think-nexus</name>
+            <url>http://8.136.215.26:8088/repository/maven-public/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- think framework -dependencies -->
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-core</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-data-base</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-data-spring</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-data</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-tcp-client</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-tcp-server</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-mongo-spring</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-service-bus</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-service-bus-base</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-service-bus-client</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-service-bus-master</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-web-base</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-web-auth-support</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-web-service</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <!-- think framework -dependencies -->
+
+            <!-- Spring Boot -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/junit/junit -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit-version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${apache-common-codec-version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhtt-version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson-version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-driver-version}</version>
+            </dependency>
+
+            <!--
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver</artifactId>
+                <version>${mongodb-driver-version}</version>
+            </dependency>
+            -->
+
+            <!--其他  -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${apache-poi-version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${apache-poi-version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml-schemas -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-schemas</artifactId>
+                <version>${apache-poi-version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-scratchpad -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-scratchpad</artifactId>
+                <version>${apache-poi-version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${springfox-swagger-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${springfox-swagger-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>swagger-bootstrap-ui</artifactId>
+                <version>${com.github.xiaoymin.swagger-bootstrap-ui}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.30</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>2.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty-version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+<!--            <dependency>-->
+<!--                <groupId>com.google.protobuf</groupId>-->
+<!--                <artifactId>protobuf-java</artifactId>-->
+<!--                <version>${protobuf-version}</version>-->
+<!--            </dependency>-->
+
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-core</artifactId>
+                <version>${protostuff-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-runtime</artifactId>
+                <version>${protostuff-version}</version>
+            </dependency>
+
+        </dependencies>
+
+
+    </dependencyManagement>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+
+
+
+
+
+</project>
