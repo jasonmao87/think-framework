@@ -64,6 +64,11 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
         return dao.insert(t);
     }
 
+    @Override
+    public ThinkResult<Integer> createMany(List<T> t) {
+        return dao.batchInsert(t);
+    }
+
     //    @Override
     @Deprecated
     public ThinkResult<Integer> update(T t,long id) {

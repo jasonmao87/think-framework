@@ -171,7 +171,7 @@ public class ThinkResult<T> implements Serializable {
      * @return
      */
     @Remark(value = "快出抛出异常，如果是 未成功的话",description = "在需要事务的方法里，通过此方法可以方便有效简化我们的编码方式")
-    public void fastThrowExceptionIfNotSuccess() throws Exception{
+    public ThinkResult<T> fastThrowExceptionIfNotSuccess() throws Exception{
         if(isNotSuccess()){
             if(this.getThrowable()!=null){
                 throw new Exception(getMessage(),throwable);
@@ -179,10 +179,11 @@ public class ThinkResult<T> implements Serializable {
                 throw new Exception(getMessage());
             }
         }
+        return this;
     }
 
     @Remark(value = "快出抛出异常，如果是 未成功的话",description = "在需要事务的方法里，通过此方法可以方便有效简化我们的编码方式")
-    public void fastThrowExceptionIfNotSuccess(String errorMessage) throws Exception{
+    public ThinkResult<T> fastThrowExceptionIfNotSuccess(String errorMessage) throws Exception{
         if(isNotSuccess()){
             if (log.isDebugEnabled()) {
                 log.debug("thinkResult原生消息 :{}",getMessage());
@@ -194,6 +195,7 @@ public class ThinkResult<T> implements Serializable {
 
             }
         }
+        return this;
     }
 
 

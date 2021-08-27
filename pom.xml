@@ -14,6 +14,7 @@
         <module>think-web</module>
         <module>think-data</module>
         <module>think-tcp</module>
+        <module>think-simple-redis</module>
     </modules>
 
     <properties>
@@ -87,6 +88,12 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data</artifactId>
+                <version>1.0.3-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-simple-redis</artifactId>
                 <version>1.0.3-SNAPSHOT</version>
             </dependency>
 

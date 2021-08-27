@@ -164,8 +164,20 @@ public class ThinkMongoDao {
 
 
     public <T extends SimpleMongoEntity> long count(ThinkMongoQueryFilter<T> filter){
+        String collectionName = getMongoTemplate().getCollectionName(filter.gettClass());
+
+        if(filter.getBeans().isEmpty()){
+            //如果没有 任何查询条件 ，那么 采用 estimatedDocumentCount ，这样不用读表。
+            return getMongoTemplate().getCollection(collectionName).estimatedDocumentCount();
+        }
         Query query = ThinkMongoQueryBuilder.build(filter);
-        return getMongoTemplate().count(query,filter.gettClass());
+        if (query.getQueryObject().isEmpty()) {
+            getMongoTemplate().getCollection(collectionName).estimatedDocumentCount();
+        }
+
+//      query.fields().include("_id");
+        return getMongoTemplate().count(query, filter.gettClass());
+
     }
 
     public <T extends SimpleMongoEntity> List<T> list(ThinkMongoQueryFilter<T> filter){
@@ -179,7 +191,7 @@ public class ThinkMongoDao {
             query.fields().exclude(ignoreKey);
         }
         List<T> list = getMongoTemplate().find(query, filter.gettClass());
-        List<Map<String,Object>> mapList = new ArrayList<>();
+        List<Map<String,Object>> mapList = new ArrayList<>(list.size());
         for (T t : list) {
             Map<String,Object> tmap = ObjectUtil.beanToMap(t);
             for(String k :ignoreKeys) {
@@ -196,7 +208,7 @@ public class ThinkMongoDao {
             query.fields().include(selectKey);
         }
         List<T> list = getMongoTemplate().find(query, filter.gettClass());
-        List<Map<String,Object>> mapList = new ArrayList<>();
+        List<Map<String,Object>> mapList = new ArrayList<>(list.size());
         for (T t : list) {
             Map<String,Object> map = new HashMap();
             Map<String,Object> tmap = ObjectUtil.beanToMap(t);

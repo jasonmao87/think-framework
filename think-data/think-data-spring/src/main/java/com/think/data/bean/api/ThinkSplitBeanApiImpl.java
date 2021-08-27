@@ -51,6 +51,11 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
         return dao.insert(t);
     }
 
+    @Override
+    public ThinkResult<Integer> createMany(List<T> list) {
+        return dao.batchInsert(list);
+    }
+
     //    @Override
     @Deprecated
     public ThinkResult<Integer> update(T t, long id) {

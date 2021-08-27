@@ -28,7 +28,9 @@ public class ThinkMongoQueryBuilder {
                 if(fbMap.containsKey(fb.getKey())) {
                     fbMap.get(fb.getKey()).add(fb);
                 }else{
-                    fbMap.put(fb.getKey(), Arrays.asList(fb));
+                    ArrayList<ThinkMongoFilterBean> filterBeanList = new ArrayList<>();
+                    filterBeanList.add(fb);
+                    fbMap.put(fb.getKey(),filterBeanList);
                 }
             }
             ThinkMongoModel modal = ThinkMongoManager.getModal(queryFilter.gettClass());
@@ -70,49 +72,49 @@ public class ThinkMongoQueryBuilder {
 
     private static final Criteria buildPart(Criteria criteria ,List<ThinkMongoFilterBean> fbList){
         sort(fbList);
-        ThinkMongoFilterBean fb = fbList.get(0);
-        String realKey = fb.getKey().equals("id")?"_id":fb.getKey();
+        ThinkMongoFilterBean filterBean = fbList.get(0);
+        String realKey = filterBean.getKey().equals("id")?"_id":filterBean.getKey();
         if(criteria == null){
             criteria = Criteria.where(realKey);
         }else {
             criteria = criteria.and(realKey);
         }
         for(ThinkMongoFilterBean t : fbList) {
-            switch (fb.getOp()) {
+            switch (t.getOp()) {
                 case EQ: {
-                    criteria.is(fb.getValues()[0]);
+                    criteria.is(t.getValues()[0]);
                     break;
                 }
                 case LE: {
-                    criteria.lt(fb.getValues()[0]);
+                    criteria.lt(t.getValues()[0]);
                     break;
                 }
                 case LEE:{
-                    criteria.lte(fb.getValues()[0]);
+                    criteria.lte(t.getValues()[0]);
                     break;
                 }
                 case LG:{
-                    criteria.gt(fb.getValues()[0]);
+                    criteria.gt(t.getValues()[0]);
                     break;
                 }
                 case LGE:{
-                    criteria.gte(fb.getValues()[0]);
+                    criteria.gte(t.getValues()[0]);
                     break;
                 }
                 case BETWEEN_AND:{
-                    criteria.gte(fb.getValues()[0]).lte(fb.getValues()[1]);
+                    criteria.gte(t.getValues()[0]).lte(t.getValues()[1]);
                     break;
                 }
                 case OR:{
-                    criteria.in(fb.getValues());
+                    criteria.in(t.getValues());
                     break;
                 }
                 case IN:{
-                    criteria.in(fb.getValues());
+                    criteria.in(t.getValues());
                     break;
                 }
                 case LIKE:{
-                    String v = (String) fb.getValues()[0];
+                    String v = (String) t.getValues()[0];
                     v = "^" +v + "$";
                     v = v.replaceAll("%",".*");
                     Pattern pattern =   Pattern.compile(v);

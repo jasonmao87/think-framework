@@ -9,26 +9,41 @@ import com.think.common.util.StringUtil;
  */
 public class ThinkHashUtil {
 
+    public static final int intHashFromZeroToN(String str,int n){
+        int hash = str.hashCode();
+        if(hash < 0){
+            hash =-hash;
+        }
+        return hash% n;
+    }
+
 
     public static final String simpleStrHashcode(String str ){
         if(StringUtil.isNotEmpty(str)){
             int len = str.length();
             int code = str.hashCode();
-            return Integer.toString(len,36) + "_" + Integer.toString(code,36);
+            if(code <0){
+                code = Integer.MAX_VALUE + code;
+            }
+            String pre = Integer.toString(code,36);
+            String end = Integer.toString(len,36);
+            StringBuilder strHash = new StringBuilder("");
+            int size = pre.length();
+            while (size < 6){
+                size ++ ;
+                strHash.append("0");
+            }
+            strHash.append(pre);
+            size = end.length();
+            while (size<6){
+                size++ ;
+                strHash.append("0");
+            }
+            strHash.append(end);
+
+            return strHash.toString();
         }
-
-        return "0_0";
+        return "000000_000000".intern();
     }
-
-
-    public static void main(String[] args) {
-//        System.out.println(Integer.toString(Integer.MIN_VALUE, 36));
-//        System.out.println(Integer.toString(Integer.MAX_VALUE, 36));
-//        System.out.println(Integer.toString(65535, 36));
-//        System.out.println(Integer.valueOf("-zik0zk", 36));
-//        Integer.hashCode(1)
-
-    }
-
 
 }

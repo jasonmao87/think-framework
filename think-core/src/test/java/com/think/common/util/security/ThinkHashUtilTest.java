@@ -9,6 +9,7 @@ class ThinkHashUtilTest {
     @Test
     void simpleStrHashcode() {
         String str ="abc";
+        System.out.println(Integer.toString(Integer.MAX_VALUE,36));
         System.out.println(ThinkHashUtil.simpleStrHashcode("abcxxx"));
     }
 }

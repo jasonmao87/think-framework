@@ -301,23 +301,23 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter) {
         List<Map<String, Object>> list = this.list(sqlFilter, "*");
-        List<T> rlist = new ArrayList<>();
+        List<T> resultList = new ArrayList<>(list.size());
         for(Map<String, Object> map : list){
             T t= (T) ObjectUtil.mapToBean(map,targetClass);
-            rlist.add(t);
+            resultList.add(t);
         }
-        return rlist;
+        return resultList;
     }
 
     @Override
     public <V extends BaseVo<T>> List<V> list(ThinkSqlFilter<T> sqlFilter, Class<V> voClass) {
         List<Map<String, Object>> list = this.list(sqlFilter,_DaoSupport.voKeys(targetClass,voClass));
-        List<V> rlist = new ArrayList<>();
+        List<V> resultList = new ArrayList<>(list.size());
         for(Map<String, Object> map : list){
             V v= (V) ObjectUtil.mapToBean(map,voClass);
-            rlist.add(v);
+            resultList.add(v);
         }
-        return rlist;
+        return resultList;
     }
 
     @Override
@@ -344,19 +344,6 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
         }
         return null;
     }
-
-
-    //    public Long _insertTable_returnId(final String sql , final Object[] values ) throws DataAccessException
-//    {
-//        int i = jdbcTemplate.update(sql,values);
-//        Long lastId = jdbcTemplate.queryForObject("select last_insert_id()" ,Long.class);
-//        if(lastId == null || lastId <1  ){
-//            return null;
-//        }
-//        return lastId;
-//    }
-
-
 
 
 }

@@ -5,6 +5,7 @@ import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
 import com.think.common.util.IdUtil;
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
@@ -84,15 +85,15 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
 //        log.info("检查 split 表清单  {} ， {}" ,ThinkMilliSecond.currentTimeMillis() , lastCheckDb );
         if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
 
-            String showtables = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
-//            log.info("{}",showtables);
-            List<String> list = jdbcTemplate.queryForList(showtables, String.class);
+            String showTablesSql = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
+//            log.info("{}",showTablesSql);
+            List<String> list = jdbcTemplate.queryForList(showTablesSql, String.class);
             for (String t : list) {
                 if (Manager.isTableInitialized(t) == false) {
                     Manager.recordTableInit(t);
                 }
             }
-            if(!showtables.contains("nonePart")) {
+            if(!showTablesSql.contains("nonePart")) {
                 lastCheckDb = ThinkMilliSecond.currentTimeMillis();
             }
             return list;
@@ -148,8 +149,8 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
 
     @Override
     public List<T> autoList(ThinkSqlFilter<T> sqlFilter)   {
-        List<T> result = new ArrayList<>();
         List<Map<String,Object>> list = this._autoMapList(sqlFilter,"*");
+        List<T> result = new ArrayList<>(list.size());
         if(list.size() > 0){
             for(Map<String,Object> map : list){
                 result.add((T) ObjectUtil.mapToBean(map,targetClass));
@@ -163,8 +164,8 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         if(possibleSplits.length == 0){
             return new ArrayList<Map<String,Object>>();
         }
-        List<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
         int limit = sqlFilter.getLimit();
+        List<Map<String,Object>> results = new ArrayList<Map<String,Object>>( limit );
         List<Map<String,Object>> list = this._simpleMapList(sqlFilter,possibleSplits[0],keys);
         results.addAll(list);
 
@@ -191,7 +192,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     @Override
     public List<T> simpleList(ThinkSqlFilter<T> sqlFilter, int splitYear) {
         List<Map<String,Object>> list = this._simpleMapList(sqlFilter,splitYear,"*");
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<T>(list.size());
         if(list.size() > 0){
             for(Map<String,Object> map : list){
                 result.add((T) ObjectUtil.mapToBean(map,targetClass));
@@ -315,7 +316,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
                 t.setId(IdUtil.nextId());
             }
             int splitYear = _DaoSupport.computeSpiltYearById(t.getId());
-            String k = splitYear +"";
+            String k =String.valueOf(splitYear) ;
             if(!waitMap.containsKey(k)){
                 List<T> tList = new ArrayList<>();
                 tList.add(t);
@@ -365,7 +366,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         Map<String ,List<Long>> waitMap =new HashMap<>();
         for(long id : ids){
             int splitYear = _DaoSupport.computeSpiltYearById(id);
-            String k = splitYear +"";
+            String k = String.valueOf(splitYear );
             if(!waitMap.containsKey(k)){
                 List<Long> tList = new ArrayList<>();
                 tList.add(id);
@@ -423,7 +424,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         Map<String ,List<Long>> waitMap =new HashMap<>();
         for(long id : ids){
             int splitYear = _DaoSupport.computeSpiltYearById(id);
-            String k = splitYear +"";
+            String k = String.valueOf(splitYear);
             if(!waitMap.containsKey(k)){
                 List<Long> tList = new ArrayList<>();
                 tList.add(id);

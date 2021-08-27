@@ -16,11 +16,16 @@ import org.springframework.stereotype.Component;
  * @Name :ThinkDaoManager
  * @Description : 请输入
  */
-@Component(value = "thinkDaoFactory")
+@Component
 public class ThinkDaoFactoryImpl implements ThinkDaoFactory {
 
-    @Autowired
     private JdbcTemplate template;
+    @Autowired
+    public ThinkDaoFactoryImpl(JdbcTemplate template) {
+        this.template = template;
+    }
+
+
 
 
 

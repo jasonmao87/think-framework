@@ -29,6 +29,8 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      */
     ThinkResult<T> create(T t);
 
+    ThinkResult<Integer> createMany(List<T> list);
+
 
     @Remark("使用updateMappe更新")
     ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper, long id );

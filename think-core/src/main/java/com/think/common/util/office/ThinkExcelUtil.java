@@ -180,9 +180,9 @@ public class ThinkExcelUtil {
         StringBuilder sb = new StringBuilder(regex + "\n");
         for (int i = 0; i < h2.size(); i++) {
             if (i == 0) {
-                sb.append("<span class=\"backGround\" onclick=\"change(" + i +")\">" + h2.get(i) +"</span>\n");
+                sb.append("<span class=\"backGround\" onclick=\"change(").append(i).append(")\">").append( h2.get(i) ).append("</span>\n");
             }else {
-                sb.append("<span class=\"noBackGround\" onclick=\"change(" + i +")\">" + h2.get(i) +"</span>\n");
+                sb.append("<span class=\"noBackGround\" onclick=\"change(").append( i).append(")\">" ).append(h2.get(i) ).append("</span>\n");
             }
         }
         return content.replace(regex, sb.toString());

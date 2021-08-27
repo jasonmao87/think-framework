@@ -1,5 +1,6 @@
 package com.think.common.util;
 
+import com.think.core.annotations.Remark;
 import org.springframework.lang.Nullable;
 
 import java.util.Collection;
@@ -28,6 +29,7 @@ public class TAssert {
         state(expression, "[Assertion failed] - this state invariant must be true");
     }
 
+    @Remark("判断是否式TRUE，如果不是，则抛异常")
     public static void isTrue(boolean expression, String message) {
         if (!expression) {
             throw new IllegalArgumentException(message);

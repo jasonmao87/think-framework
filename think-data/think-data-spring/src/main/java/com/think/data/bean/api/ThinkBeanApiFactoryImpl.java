@@ -2,6 +2,7 @@ package com.think.data.bean.api;
 
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean.SimpleRefEntity;
+import com.think.data.dao.ThinkDaoFactory;
 import com.think.data.provider.ThinkDaoFactoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,19 @@ import org.springframework.stereotype.Component;
  * @Description : 请输入
  */
 @Slf4j
-@Component("thinkBranApiFactory")
-@DependsOn(value = "thinkDaoFactory")
+@Component
 public class ThinkBeanApiFactoryImpl  implements ThinkBeanApiFactory{
 
+
+    private ThinkDaoFactory daoFactory;
+
+
     @Autowired
-    ThinkDaoFactoryImpl daoFactory;
-//
+    public ThinkBeanApiFactoryImpl(ThinkDaoFactoryImpl daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
+    //
 //    @Remark("执行API updateMap方法前针对map做数据过滤的支持 filter")
     public static ThinkApiUpdateMethodFilter thinkApiUpdateMethodFilter;
 
@@ -46,7 +53,6 @@ public class ThinkBeanApiFactoryImpl  implements ThinkBeanApiFactory{
     }
 
     public ThinkBeanApiFactoryImpl() {
-
     }
 
     //    public static  <T extends SimplePrimaryEntity> ThinkBeanApi getApi(Class<T> tClass){

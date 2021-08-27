@@ -38,6 +38,8 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
 
     ThinkResult<T> create(T t);
 
+    ThinkResult<Integer> createMany(List<T> t);
+
 
     ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper);
 

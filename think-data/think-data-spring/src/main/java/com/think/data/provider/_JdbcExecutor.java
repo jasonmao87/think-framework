@@ -29,9 +29,6 @@ public abstract class _JdbcExecutor {
 
     public <T extends _Entity> void tableInit(String tableName){
 
-
-
-
         if (Manager.isTableInitialized(tableName) == false) {
             try {
 
@@ -123,14 +120,31 @@ public abstract class _JdbcExecutor {
 
         //必将执行初始化数据代码片段 ，每个服务，会执行，且执行一次 ！！！
         // 如果 表格 正常创建 ，那么调用初始化 程序
-        ThinkExecuteQuery init_query = _SimpleDataInitQueryBuilder.initData(getTargetClass());
-        if(init_query !=null) {
-            if (log.isDebugEnabled()) {
-                log.debug("初始化{} {}条初始化数据" ,tableName,init_query.getValues().length);
+        List<ThinkExecuteQuery> queryList = _SimpleDataInitQueryBuilder.initDataQueryList(getTargetClass());
+        for (ThinkExecuteQuery query : queryList) {
+            try {
+                ThinkResult result = this.executeUpdate(query, tableName);
+                if (log.isDebugEnabled()) {
+                    if (result.isSuccess()) {
+                        log.debug("{}初始化数据,执行SQL: {}" ,tableName, query.getSql(tableName) );
+                    }
+                }
+
+            }catch (Exception e){
+                log.error("",e);
+
             }
-            this.executeUpdate(init_query, tableName);
-        }else{
+
         }
+//
+//        ThinkExecuteQuery init_query = _SimpleDataInitQueryBuilder.initData(getTargetClass());
+//        if(init_query !=null) {
+//            if (log.isDebugEnabled()) {
+//                log.debug("初始化{} {}条初始化数据" ,tableName,init_query.getValues().length);
+//            }
+//            this.executeUpdate(init_query, tableName);
+//        }else{
+//        }
     }
 
     public Map<String,Object> executeOne( ThinkExecuteQuery executeQuery, String finalTableName){

@@ -2,7 +2,7 @@ package com.think.common.util;
 
 import com.github.stuxuhai.jpinyin.PinyinFormat;
 import com.github.stuxuhai.jpinyin.PinyinHelper;
-import org.springframework.lang.Nullable;
+//import com.sun.istack.internal.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -355,11 +355,6 @@ public class StringUtil {
     }
 
 
-    public static void main(String[] args) {
-        System.out.println(getShortPinyinReplaceSymbolWithSpecialCode("你好","#"));
-        System.out.println(getFullPinyinReplaceSymbolWithSpecialCode("你好","#"));
-    }
-
 
 //
 //    public static void main(String[] args) {
@@ -482,5 +477,38 @@ public class StringUtil {
     }
 
 
+    /**
+     * 拼接字符串
+     * @param appends
+     * @return
+     */
+    public static final String buildStringAppend( Object... appends){
+        TAssert.isNull(appends,"构建String的入参不能为NULL");
+        if(appends.length == 1 && appends[0] !=null){
+            if(appends[0] instanceof Appendable){
+                throw new RuntimeException("不能使用Append作为参数中的内容");
+            }
+            return appends[0].toString();
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Object t : appends){
+            if (t!=null) {
+                if(t instanceof Appendable){
+                    throw new RuntimeException("不能使用Append作为参数中的内容");
+                }
+                sb.append(t);
+            }
+        }
+        return sb.toString();
+
+    }
+
+
+
+
+    public static void main(String[] args) {
+//        System.out.println(getShortPinyinReplaceSymbolWithSpecialCode("你好","#"));
+//        System.out.println(getFullPinyinReplaceSymbolWithSpecialCode("你好","#"));
+    }
 
 }

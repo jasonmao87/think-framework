@@ -40,15 +40,27 @@ public abstract class SimplePrimaryEntity extends _Entity {
         return (ThinkSqlFilter<T>) ThinkSqlFilter.build(getClass(),limit);
     }
 
+    @Remark("构建一个空的filter")
+    public <T extends SimplePrimaryEntity> ThinkSqlFilter<T> buildEmptyFilter(int limit,Class<T> tClass){
+        return (ThinkSqlFilter<T>) ThinkSqlFilter.build(tClass,limit);
+    }
+
     @Remark("构建一个空的updateMapper")
     public <T extends SimplePrimaryEntity> ThinkUpdateMapper<T> buildEmptyUpdateMapper(){
         return (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(getClass());
     }
 
+    @Remark("构建一个空的updateMapper")
+    public <T extends SimplePrimaryEntity> ThinkUpdateMapper<T> buildEmptyUpdateMapper(Class<T> tClass){
+        return (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(tClass);
+    }
+
+
     /**
      * 构建包含当前id的 updateMapper ，无法在设置 filter
      * @return
      */
+    @Deprecated
     @Remark(value = " 构建包含当前id的 updateMapper ，无法在设置 filter",description = "如果id不存在，返回空的updateMapper")
     public  <T extends SimplePrimaryEntity> ThinkUpdateMapper<T>  buildUpdateMapperWithCurrentId(){
         if(this.getId() !=null && this.getId()>0) {

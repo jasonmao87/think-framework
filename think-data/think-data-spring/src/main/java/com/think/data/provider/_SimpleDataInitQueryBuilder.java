@@ -4,6 +4,8 @@ import com.think.core.bean.SimplePrimaryEntity;
 import com.think.data.ThinkDataInitializationDataHolder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,6 +36,18 @@ public class _SimpleDataInitQueryBuilder {
         return null;
     }
 
+    protected static <T extends SimplePrimaryEntity> List<ThinkExecuteQuery> initDataQueryList(Class<T> targetClass ){
+        List<ThinkExecuteQuery> queryList = new ArrayList<>();
+        if(ThinkDataInitializationDataHolder.containsData(targetClass)) {
+            List<T> list = ThinkDataInitializationDataHolder.getInitData(targetClass);
+            ThinkDataInitializationDataHolder.removeInitData(targetClass);
+            for (T t : list) {
+                ThinkExecuteQuery query = ThinkUpdateQueryBuilder.insertOneSQL(t);
+                queryList.add(query);
+            }
+        }
+        return queryList;
+    }
 
 
 }

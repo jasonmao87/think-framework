@@ -32,7 +32,9 @@ public class ThinkAuthRepository {
     }
 
     public ThinkAuthModel get(String id ){
-        Map<String,Object> map = jdbcTemplate.queryForMap("SELECT * from " + tableName + " where id = ? ", id);
+//        StringBuilder sb = new StringBuilder("SELECT * from ").append(tableName).append(" where id = ? ");
+        String sql = "SELECT * from " + tableName + " where id = ? ";
+        Map<String,Object> map = jdbcTemplate.queryForMap(sql, id);
         if(map == null){
             return null;
         }
