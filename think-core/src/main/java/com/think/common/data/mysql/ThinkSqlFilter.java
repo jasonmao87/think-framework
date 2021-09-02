@@ -90,7 +90,12 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
     public static <T extends _Entity> ThinkSqlFilter<T> parseFromJSON(String filterJson , Class<T> tClass){
-        JSONObject jsonObject = JSONObject.parseObject(filterJson);
+        JSONObject jsonObject = null;
+        try{
+            jsonObject = JSONObject.parseObject(filterJson);
+        }catch (Exception e){
+            throw new IllegalArgumentException("Filter格式错误，无法解析成正确的JSON");
+        }
         ThinkSqlFilter filter = new ThinkSqlFilter(tClass);
         if(jsonObject.containsKey("filterSplitYear")){
             filter.filterSplitYear = jsonObject.getInteger("filterSplitYear");

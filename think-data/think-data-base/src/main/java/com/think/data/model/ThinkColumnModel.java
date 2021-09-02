@@ -1,6 +1,7 @@
 package com.think.data.model;
 
 import com.think.core.annotations.Remark;
+import com.think.data.Manager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -278,5 +279,9 @@ public class ThinkColumnModel implements Serializable {
 
     public void setUsingText(boolean usingText) {
         this.usingText = usingText;
+    }
+
+    public boolean isThinkLinkedId(){
+        return key.equalsIgnoreCase("thinkLinkedId");
     }
 }

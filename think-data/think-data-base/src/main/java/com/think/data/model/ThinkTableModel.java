@@ -2,6 +2,8 @@
 package com.think.data.model;
 
 import com.think.core.annotations.Remark;
+import com.think.core.annotations.bean.ThinkColumn;
+import com.think.data.Manager;
 import com.think.data.exception.ThinkDataModelException;
 
 import java.io.Serializable;
@@ -91,13 +93,28 @@ public class ThinkTableModel implements Serializable {
     }
 
     protected void setColumnModels(ThinkColumnModel[] columnModels) {
+        ThinkColumnModel thinkLinkedIdModel = null;
+        int indexOfThinkLinkedId = -1 ;
         this.fastMatchKeys = null;
         this.columnModels = columnModels;
+        int index = 0 ;
         for (ThinkColumnModel columnModel : this.columnModels) {
+            if(columnModel.isThinkLinkedId()){
+                indexOfThinkLinkedId = index;
+            }
             if(columnModel.isFastMatchAble()){
                 this.addFastMatchKey(columnModel.getKey());
             }
+            index ++ ;
         }
+        if(indexOfThinkLinkedId > 0){
+            thinkLinkedIdModel = this.columnModels[indexOfThinkLinkedId];
+            this.columnModels[indexOfThinkLinkedId] = this.columnModels[index -1 ] ;
+            this.columnModels[index -1] = thinkLinkedIdModel;
+        }
+
+
+
 
     }
 
@@ -163,6 +180,10 @@ public class ThinkTableModel implements Serializable {
     }
 
     public ThinkColumnModel[] getColumnModels() {
+
+        if(!Manager.isThinkLinkedIdSupportAble()){
+        }
+
         return columnModels;
     }
 

@@ -69,7 +69,7 @@ public class DataModelBuilder {
 
     public static final  <T extends _Entity> String tableName(Class<T> tClass) throws ThinkDataModelException {
         ThinkTableModel modal = Manager.getModelBuilder().get(tClass);
-        String buildTableName = "";
+//        String buildTableName = "";
         if(modal!=null ){
             if(modal.isPartitionAble()){
                 if(Manager.getDataSrvRuntimeInfo() ==null){
@@ -79,7 +79,7 @@ public class DataModelBuilder {
                     return modal.getTableName() + "_" + "nonePart";
                     //throw new ThinkDataRuntimeException("未找到必要的RUNTIME INFO， 请检查是否是正常构建");
                 }else{
-                    log.info("FIND {} ",Manager.getDataSrvRuntimeInfo().getPartitionRegion());
+//                    log.info("FIND {} ",Manager.getDataSrvRuntimeInfo().getPartitionRegion());
                     return modal.getTableName() + "_" + Manager.getDataSrvRuntimeInfo().getPartitionRegion();
                 }
 
@@ -138,6 +138,11 @@ public class DataModelBuilder {
     private  final ThinkColumnModel buildColumn(Field field){
         if(field.getAnnotation(ThinkIgnore.class) != null){
             return null;
+        }
+        if(field.getName().equalsIgnoreCase("thinkLinkedId")){
+            if(Manager.isThinkLinkedIdSupportAble() == false){
+                return null;
+            }
         }
 
 
