@@ -6,6 +6,8 @@ import com.github.stuxuhai.jpinyin.PinyinHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtil {
 
@@ -502,6 +504,7 @@ public class StringUtil {
         return sb.toString();
 
     }
+
 
 
 
