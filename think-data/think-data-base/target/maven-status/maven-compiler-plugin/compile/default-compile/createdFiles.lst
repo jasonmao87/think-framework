@@ -9,6 +9,8 @@ com\think\data\verification\ThinkKeyValidator.class
 com\think\data\model\DataModelBuilder.class
 com\think\data\filter\ThinkDataFilter.class
 com\think\data\provider\ThinkDataDDLBuilder.class
+com\think\data\model\ThinkUpdaterBuilder.class
+com\think\data\model\SX.class
 com\think\data\support\web\ThinkDataWebInterceptor.class
 com\think\data\exception\ThinkDataModelException.class
 com\think\data\bean\api\ThinkSplitBeanApi.class

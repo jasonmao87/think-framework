@@ -72,6 +72,13 @@ public class ThinkUpdateMapper<T extends _Entity> {
         return this;
     }
 
+    public ThinkUpdateMapper<T> updateInc(String k,double inc){
+        if(this.checkKey(k,false)) {
+            this.incMapper.put(k, inc);
+        }
+        return this;
+    }
+
     /**
      * 设置需要被修改数据的Id
      * @param id

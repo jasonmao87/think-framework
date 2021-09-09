@@ -11,6 +11,8 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @Slf4j
@@ -199,6 +201,22 @@ public class R<T>  implements Serializable {
 
     }
 
+
+
+    public Map<String,Object> toMap(){
+        Map map = new HashMap();
+        map.put("serverTime",serverTime);
+        map.put("ThinkResultState",state.toString());
+        map.put("uri",uri);
+        map.put("message",message);
+        map.put("throwable",throwable);
+        map.put("result",result);
+        map.put("threadId",threadId);
+        map.put("serviceName",serviceName);
+        map.put("serviceId",serviceId);
+        return map;
+
+    }
 
 
 

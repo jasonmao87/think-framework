@@ -62,7 +62,7 @@ public class ThinkMongoDao {
 
 
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter ){
-        Query query = ThinkMongoQueryBuilder.build(filter);
+        Query query = ThinkMongoQueryBuilder.build(filter,false);
         Update update = new Update();
         filter.getModifyUpdateMapper().forEach((k, v)->{
             update.set(k,v);
@@ -77,7 +77,7 @@ public class ThinkMongoDao {
 
     @Remark("只能处理匹配到的第一条记录")
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter ,boolean returnNew){
-        Query query = ThinkMongoQueryBuilder.build(filter);
+        Query query = ThinkMongoQueryBuilder.build(filter,false);
         Update update = new Update();
         filter.getModifyUpdateMapper().forEach((k, v)->{
             update.set(k,v);
@@ -146,7 +146,7 @@ public class ThinkMongoDao {
     public ThinkResult<Long> pushItem(ThinkMongoQueryFilter mongoQueryFilter,String key , Serializable value){
         Update update = new Update();
         update.push(key,value);
-        Query query = ThinkMongoQueryBuilder.build(mongoQueryFilter);
+        Query query = ThinkMongoQueryBuilder.build(mongoQueryFilter,false);
         UpdateResult updateResult = getMongoTemplate().updateMulti(query, update, mongoQueryFilter.gettClass());
         long c = updateResult.getMatchedCount();
         if (!mongoQueryFilter.containsKey("id")) {
@@ -170,7 +170,7 @@ public class ThinkMongoDao {
             //如果没有 任何查询条件 ，那么 采用 estimatedDocumentCount ，这样不用读表。
             return getMongoTemplate().getCollection(collectionName).estimatedDocumentCount();
         }
-        Query query = ThinkMongoQueryBuilder.build(filter);
+        Query query = ThinkMongoQueryBuilder.build(filter,true);
         if (query.getQueryObject().isEmpty()) {
             getMongoTemplate().getCollection(collectionName).estimatedDocumentCount();
         }
@@ -181,12 +181,12 @@ public class ThinkMongoDao {
     }
 
     public <T extends SimpleMongoEntity> List<T> list(ThinkMongoQueryFilter<T> filter){
-        Query query = ThinkMongoQueryBuilder.build(filter);
+        Query query = ThinkMongoQueryBuilder.build(filter,false);
         return getMongoTemplate().find(query,filter.gettClass());
     }
 
     public <T extends SimpleMongoEntity> List<Map<String,Object>> listExcludeKeys(ThinkMongoQueryFilter<T> filter,String... ignoreKeys){
-        Query query = ThinkMongoQueryBuilder.build(filter);
+        Query query = ThinkMongoQueryBuilder.build(filter,false);
         for (String ignoreKey : ignoreKeys) {
             query.fields().exclude(ignoreKey);
         }
@@ -203,7 +203,7 @@ public class ThinkMongoDao {
     }
 
     public <T extends SimpleMongoEntity> List<Map<String,Object>> listForKeys(ThinkMongoQueryFilter<T> filter,String... selectKeys){
-        Query query = ThinkMongoQueryBuilder.build(filter);
+        Query query = ThinkMongoQueryBuilder.build(filter,false);
         for (String selectKey : selectKeys) {
             query.fields().include(selectKey);
         }

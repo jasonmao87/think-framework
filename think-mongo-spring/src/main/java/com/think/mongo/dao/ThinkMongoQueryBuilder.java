@@ -16,8 +16,11 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ThinkMongoQueryBuilder {
 
-    protected static Query build(ThinkMongoQueryFilter queryFilter){
+    protected static Query build(ThinkMongoQueryFilter queryFilter ,boolean ignoreLimit){
         int limit = queryFilter.getLimit();
+        if(ignoreLimit){
+            limit = -1;
+        }
         Query query =null;
         if(queryFilter.getBeans().size() == 0){
             query = new Query();
