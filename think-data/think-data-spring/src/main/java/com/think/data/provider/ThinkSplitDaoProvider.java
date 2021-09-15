@@ -165,7 +165,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
             return new ArrayList<Map<String,Object>>();
         }
         int limit = sqlFilter.getLimit();
-        List<Map<String,Object>> results = new ArrayList<Map<String,Object>>( limit );
+        List<Map<String,Object>> results = new ArrayList<Map<String,Object>>( limit>0?limit:12 );
         List<Map<String,Object>> list = this._simpleMapList(sqlFilter,possibleSplits[0],keys);
         results.addAll(list);
 

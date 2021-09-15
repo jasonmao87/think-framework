@@ -91,4 +91,10 @@ public class FastJsonUtil {
         return filter;
     }
 
+    public static String toPrettyString(Object o){
+        return JSON.toJSONString(o,true);
+    }
+
+
+
 }
