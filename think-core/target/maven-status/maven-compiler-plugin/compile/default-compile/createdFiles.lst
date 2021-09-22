@@ -55,6 +55,7 @@ com\think\common\util\LongBinaryUtil.class
 com\think\common\util\rt\models\RuntimeInfoModel.class
 com\think\common\data\mysql\ThinkSqlFilter.class
 com\think\common\util\ThinkMilliSecond.class
+com\think\core\data\ThinkLogLogo.class
 com\think\common\data\ThinkFilterOp.class
 com\think\common\data\ThinkMongoFilterOp.class
 com\think\common\util\TAssert.class

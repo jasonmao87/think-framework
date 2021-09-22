@@ -321,7 +321,6 @@ public abstract class _JdbcExecutor {
                         sql += "\n\t\t";
                     }
                 }
-                sql = sql.replace("where", "WHERE\n\t").replace("WHERE", "WHERE\n\t");
                 doPrint(sql,successState,affectedCount,duration);
             }
 
@@ -341,16 +340,17 @@ public abstract class _JdbcExecutor {
     }
 
     public static final void doPrint(String sql ,  boolean successState,int affectedCount, long duration){
-        if(reportSqlTemplate == null) {
-            StringBuilder reportForPrint = new StringBuilder("\nBEGIN>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SQL EXECUTE REPORT<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<BEGIN\n")
-                    .append("EXECUTED SQL :\n\t\t{}\n").append("\n")    // param:  sql
-                    .append("EXECUTED RESULT >> STATE:{}  ROW AFFECTED :{} DURATION（毫秒）:{}\n") // params :
-                    .append("END<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<SQL EXECUTE REPORT>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>END");
-            if (reportSqlTemplate == null) {
+        if (log.isDebugEnabled()) {
+            if(reportSqlTemplate == null) {
+                StringBuilder reportForPrint = new StringBuilder("")
+                        .append("EXECUTED SQL :\n\t\t{}\n").append("\n")    // param:  sql
+                        .append("EXECUTED RESULT REPORT >> STATE:{}  ROW AFFECTED :{} DURATION（毫秒）:{}\n") ;
                 reportSqlTemplate = reportForPrint.toString().intern();
             }
+            sql = sql.replaceFirst("where", "WHERE").replaceFirst("WHERE", "WHERE\n\t\t\t");
+            log.debug(reportSqlTemplate, sql, successState , affectedCount , duration);
         }
-        log.debug(reportSqlTemplate, sql, successState , affectedCount , duration);
+
     }
 
 

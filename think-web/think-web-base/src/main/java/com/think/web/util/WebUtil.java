@@ -218,9 +218,11 @@ public class WebUtil {
         }else{
             Map<String,String> map = new HashMap();
             Enumeration<String> parameterNames = request.getParameterNames();
-            while(parameterNames.hasMoreElements()){
-                String k= parameterNames.nextElement();
-                map.put(k,request.getParameter(k));
+            if(parameterNames !=null) {
+                while (parameterNames.hasMoreElements()) {
+                    String k = parameterNames.nextElement();
+                    map.put(k, request.getParameter(k));
+                }
             }
             return map;
         }
@@ -301,6 +303,10 @@ public class WebUtil {
         }
         return Optional.ofNullable(token);
     }
+
+
+
+
 
 
 
