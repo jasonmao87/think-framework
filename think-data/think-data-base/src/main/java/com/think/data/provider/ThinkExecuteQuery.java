@@ -24,6 +24,12 @@ public class ThinkExecuteQuery {
         this.sql = sql;
         this.values = values;
 
+        for (int i = 0; i < values.length; i++) {
+            if(values[i] instanceof Enum){
+                values[i] = values[i].toString();
+            }
+        }
+
         String checkStr =  this.sql.toUpperCase().trim() ;
         if(checkStr.startsWith("SELECT")){
             this.select = true;

@@ -71,6 +71,11 @@ public class ThinkJdbcTypeConverter {
                 t = "DATETIME";
                 break;
             }
+            case ENUM:{
+                t = "VARCHAR(32)";
+                break;
+
+            }
             default:{
                 t = null;
             }
@@ -124,6 +129,10 @@ public class ThinkJdbcTypeConverter {
 
         /*专门用于存储 二进制 数据*/
         typeMap.put(BigInteger.class,ThinkSqlType.BIT);
+
+
+        /*专门用于处理枚举 */
+        typeMap.put(Enum.class,ThinkSqlType.ENUM);
 
         /** */
 

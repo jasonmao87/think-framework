@@ -1,5 +1,6 @@
 package com.think.common.data.mysql;
 
+import com.think.common.util.DateUtil;
 import com.think.core.annotations.bean.ThinkIgnore;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
@@ -8,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class ThinkUpdateMapper<T extends _Entity> {
@@ -75,6 +73,13 @@ public class ThinkUpdateMapper<T extends _Entity> {
     public ThinkUpdateMapper<T> updateInc(String k,double inc){
         if(this.checkKey(k,false)) {
             this.incMapper.put(k, inc);
+        }
+        return this;
+    }
+
+    public ThinkUpdateMapper<T> updateDateAsNow(String key){
+        if (this.checkKeyIsDateType(key) ) {
+            this.updateValue(key, DateUtil.now());
         }
         return this;
     }
@@ -164,6 +169,17 @@ public class ThinkUpdateMapper<T extends _Entity> {
             return false;
         }
         return true;
+    }
+
+    private boolean checkKeyIsDateType(String key){
+        if(this.checkKey(key,false)){
+            Field field =ClassUtil.getField(targetClass,key);
+            if (field.getType() == Date.class) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

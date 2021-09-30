@@ -1,5 +1,7 @@
 package com.think.web.core.http;
 
+import com.think.common.util.StringUtil;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,12 +35,18 @@ public class ThinkXssServletRequest extends HttpServletRequestWrapper {
         orgRequest = request;
     }
 
+
+
+
     /**
      * 覆盖getParameter方法，将参数名和参数值都做xss过滤。
      */
     @Override
     public String getParameter(String name) {
         String value = super.getParameter(name);
+        if(value == null){
+            value = "";
+        }
         if (value != null) {
             value = doEncode(value);
         }
@@ -47,12 +55,16 @@ public class ThinkXssServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public String[] getParameterValues(String name) {
+//        System.out.println("get " + name + " is done ");
         String values[] = super.getParameterValues(name);
         if (values!=null) {
             for (int i = 0; i < values.length; i++) {
                 values[i] = doEncode(values[i]);
             }
+        }else{
+            values =new String[]{""};
         }
+//        System.out.println("return values = " + values);
         return values;
     }
 
@@ -332,7 +344,7 @@ public class ThinkXssServletRequest extends HttpServletRequestWrapper {
         }
     }
 
-    public static void main(String[] args) {
-        Enumeration<String> paraNames = (Enumeration<String>) new ArrayList();
-    }
+//    public static void main(String[] args) {
+//        Enumeration<String> paraNames = (Enumeration<String>) new ArrayList();
+//    }
 }

@@ -43,6 +43,21 @@ public class ThinkQuery {
         this.badList = new ArrayList<>();
      }
     private void init(ThinkSqlFilter filter){
+        if(filter.getKeyCondition("enable")==null && filter.getEnableRequired()!=null){
+            switch (filter.getEnableRequired()) {
+                case MATCH_ENABLE:  {
+                    filter.eq("enable",true);
+                    break;
+                }
+                case MATCH_DISABLE:{
+                    filter.eq("enable",false);
+                    break;
+                }
+                case MATCH_ALL:{
+                    break;
+                }
+            }
+        }
         this.filter = filter ;
         this.optimization();
         this.filterSize = simpleList.size() + badList.size() + perfectList.size();

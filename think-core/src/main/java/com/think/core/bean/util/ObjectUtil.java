@@ -3,7 +3,8 @@ package com.think.core.bean.util;
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.core.bean._Entity;
-import lombok.Data;
+import com.think.core.enums.TEnum;
+import com.think.structure.ThinkExplainList;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -50,6 +51,8 @@ public class ObjectUtil  {
 
     public static final <T> T mapToBean( Map<String, Object> map,Class<T> targetClass ,String...  ignoreKeys  ){
         T t = null;
+
+//        Map<String, TEnum> cacheTEnum = null;
         try {
             Set<String> ignores = new HashSet<>();
             if(ignoreKeys!=null && ignoreKeys.length>0){
@@ -66,10 +69,15 @@ public class ObjectUtil  {
                 Field field = ClassUtil.getField(t.getClass(), key);
                 if(field!= null){
                     try{
-                        field.setAccessible(true);
-                        ClassUtil.setValue(field,t,map.get(key));
-                    }catch (Exception e){
-                    }
+                        if(field.getType().getSuperclass()!=null && field.getType().getSuperclass().equals(Enum.class)){
+                            Object x = enumValue(field.getType(), (String) map.get(key));
+                            field.setAccessible(true);
+                            ClassUtil.setValue(field, t, x);
+                        }else{
+                            field.setAccessible(true);
+                            ClassUtil.setValue(field,t,map.get(key));
+                        }
+                    }catch (Exception e){}
                 }
             }
 
@@ -91,7 +99,52 @@ public class ObjectUtil  {
                 log.error("Exception @ObjectUtil::mapToBean -> {}",e);
             }
         }
+
+//        try {
+//            if (t instanceof _Entity && cacheTEnum != null) {
+//                for (Map.Entry<String, TEnum> entry : cacheTEnum.entrySet()) {
+//                    ((_Entity) t).getEnumsValueExplain().add(entry.getValue().toRemark());
+//                }
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+
         return t;
+    }
+
+
+    public static final<T extends _Entity>  void doThinkEntityTEnumExplain(T t ){
+        ThinkExplainList thinkExplainList = t.getThinkTEnumsValueExplain();
+        if (!thinkExplainList.isInit()) {
+            List<Field> fieldList = ClassUtil.getFieldList(t.getClass());
+            for (Field field : fieldList) {
+                if (isTEnum(field)) {
+//                field.getType()
+                    TEnum tEnum = (TEnum) ClassUtil.getProperty(t,field.getName());
+//                    tEnum.explain(field.getName());
+                    thinkExplainList.add(tEnum.explain(field.getName()));
+                }
+            }
+        }
+
+    }
+
+
+    public static  <T extends Enum> T enumValue(Class type , String value){
+        return (T) Enum.valueOf(type,value);
+    }
+
+    public static final boolean isTEnum(Field field){
+        Class<?>[] interfaces = field.getType().getInterfaces();
+        if(interfaces.length >0){
+            for (Class<?> i : interfaces) {
+                if (i == TEnum.class) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static final  <T extends _Entity> void setDbPersistent(T t) {

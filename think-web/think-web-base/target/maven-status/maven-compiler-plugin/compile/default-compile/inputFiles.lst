@@ -2,6 +2,9 @@ D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\t
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\http\ThinkXssServletRequest.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\ThinkWebMvcConfigurer.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\R.java
+D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\converter\ConvertAbleEnum.java
+D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\converter\EnumConverterFactory.java
+D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\converter\IConverterFactory.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\filter\ThinkWebFilter.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\interceptor\ThinkParentInterceptor.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\util\WebUtil.java

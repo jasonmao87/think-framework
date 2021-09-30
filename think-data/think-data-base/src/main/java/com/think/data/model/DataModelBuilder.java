@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.*;
 
 @Slf4j
@@ -160,6 +161,14 @@ public class DataModelBuilder {
                 modal.setUsingText(tColumn.usingText());
             }
         }
+        try {
+            if (field.getType().getSuperclass()!=null &&  field.getType().getSuperclass().equals(Enum.class)) {
+                modal.setEnumState(true);
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         if(isId){
             modal.setPk(isId);
@@ -189,8 +198,12 @@ public class DataModelBuilder {
                 modal.setComment(apiModelProperty.value());
             }
         }
-        String jdbcTypeString = ThinkJdbcTypeConverter.toJdbcTypeString(field.getType(),tColumn);
-        if(StringUtil.isEmpty(jdbcTypeString)){
+        Type conoverType = field.getType();
+        if(modal.isEnumState()){
+            conoverType = Enum.class;
+        }
+        String jdbcTypeString = ThinkJdbcTypeConverter.toJdbcTypeString(conoverType,tColumn);
+        if(StringUtil.isEmpty(jdbcTypeString)){;
             throw new ThinkDataModelException(name + "对应的属性（"+field.getType().getName()+"）暂时无法映射成相应的数据库列属性！" );
         }
         modal.setSqlTypeString(jdbcTypeString);

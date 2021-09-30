@@ -1,13 +1,12 @@
 package com.think.core.bean;
 
-import com.think.common.data.mysql.ThinkSqlFilter;
-import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.util.DateUtil;
-import com.think.common.util.IdUtil;
-import com.think.common.util.StringUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkColumn;
 import com.think.core.annotations.bean.ThinkIgnore;
+import com.think.core.bean.util.ClassUtil;
+import com.think.core.bean.util.ObjectUtil;
+import com.think.structure.ThinkExplainList;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,11 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
 public abstract class _Entity implements Serializable {
+    private static final long serialVersionUID = 8257751739282533823L;
+
 
     @ApiModelProperty(hidden = true)
     private Long id = null;
@@ -112,6 +115,24 @@ public abstract class _Entity implements Serializable {
     }
 
 
+    @Remark("枚举解释器")
+    @ThinkIgnore
+    @ApiModelProperty(hidden = true)
+    private static ThinkExplainList EnumsValueExplain = null;
 
 
+    @ApiModelProperty(value = "枚举解释" ,hidden = true)
+    public ThinkExplainList getThinkTEnumsValueExplain() {
+        if (EnumsValueExplain ==null) {
+            EnumsValueExplain = new ThinkExplainList();
+            ObjectUtil.doThinkEntityTEnumExplain(this);
+        }
+        return EnumsValueExplain;
+    }
+
+
+    @ApiModelProperty(value = "模型对象类型（可快速通过数据字典获取详情）" ,hidden = true)
+    public String getThinkModelType(){
+        return this.getClass().getSimpleName();
+    }
 }

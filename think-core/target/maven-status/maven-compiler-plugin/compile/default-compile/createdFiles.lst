@@ -1,10 +1,12 @@
 com\think\common\data\mongo\ThinkMongoFilterBean$1.class
 com\think\moudles\auth\RoleModel.class
 com\think\common\result\state\ThinkResultState$1.class
+com\think\exception\ThinkDataVerificationException.class
 com\think\common\util\ThinkIdGenerator.class
 com\think\core\annotations\bean\ThinkClollection.class
 com\think\core\enums\ResultDataType.class
 com\think\core\enums\ThinkResultLevel.class
+com\think\core\enums\TEnum.class
 com\think\core\executor\IAsyncTokenFilter.class
 com\think\common\util\ThinkMilliSecond$1.class
 com\think\core\bean\SimpleMongoEntity.class
@@ -29,6 +31,7 @@ com\think\core\executor\ThinkAsyncExecutor.class
 com\think\common\result\ThinkResultBuilder.class
 com\think\common\util\DateUtil.class
 com\think\core\bean\_Entity.class
+com\think\core\enums\TEnableRequired.class
 com\think\exception\ThinkException.class
 com\think\common\util\rt\ThinkDefaultTargetTypeUtil.class
 com\think\common\data\IFilterChecker.class
@@ -55,12 +58,14 @@ com\think\common\util\LongBinaryUtil.class
 com\think\common\util\rt\models\RuntimeInfoModel.class
 com\think\common\data\mysql\ThinkSqlFilter.class
 com\think\common\util\ThinkMilliSecond.class
+com\think\core\enums\TEnableRequired$1.class
 com\think\core\data\ThinkLogLogo.class
 com\think\common\data\ThinkFilterOp.class
 com\think\common\data\ThinkMongoFilterOp.class
 com\think\common\util\TAssert.class
 com\think\structure\ThinkRandomSet.class
 com\think\common\util\TimeUtil.class
+com\think\core\bean\TEnumExplain.class
 com\think\common\util\security\Base64Util.class
 com\think\common\util\security\MD5Util.class
 com\think\common\result\ThinkResult.class
@@ -70,6 +75,7 @@ com\think\core\bean\util\ClassUtil.class
 com\think\common\util\rt\ThinkMachineUtil.class
 com\think\core\security\ThinkTokenExtendEntry.class
 com\think\common\util\ThinkCollectionUtil.class
+com\think\structure\ThinkExplainList.class
 com\think\structure\ThinkSimpleHolder.class
 com\think\core\supports\ClasspathPackageScaner.class
 com\think\common\data\ThinkMongoFilterOp$1.class
@@ -110,6 +116,7 @@ com\think\structure\table\ThinkGridColumnModel.class
 com\think\common\util\NumberCompareUtil.class
 com\think\core\security\ThinkSecurityKey.class
 com\think\core\bean\SimplePrimaryEntity.class
+com\think\common\util\TVerification.class
 com\think\common\util\office\ThinkExcelUtil$1.class
 com\think\common\util\security\RSAUtil.class
 com\think\core\bean\SimpleRefEntity.class

@@ -19,6 +19,7 @@ com\think\data\Manager.class
 com\think\data\bean\api\ThinkBeanApi.class
 com\think\data\provider\ThinkExecuteQuery.class
 com\think\data\RuntimeQuerysEntry.class
+com\think\data\provider\ThinkQuery$1.class
 com\think\data\dao\TCache.class
 com\think\data\exception\ThinkDataRuntimeException.class
 com\think\data\bean\api\ThinkBeanFilterAction.class

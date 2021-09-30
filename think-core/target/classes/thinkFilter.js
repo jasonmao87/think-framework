@@ -328,7 +328,7 @@ function ThinkWebFilter( ){
      * @returns {string}
      */
     this.customDescFilter = function(limit ,sortKey ,lastValue){
-        if(lastValue){ // 做排序 的处理  filter 中 apped id > lastId
+        if(lastValue){ // 做排序 的处理  filter 中 append id > lastId
             if(isNaN( lastValue)){
                 this.lessThanNumber(sortKey,lastValue)
             }else{

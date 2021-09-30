@@ -12,5 +12,6 @@ public enum ThinkSqlType {
     DATE ,
     TIME ,
     TEXT ,
-    DATETIME;
+    DATETIME,
+    ENUM ;   //尝试支持枚举 
 }

@@ -62,6 +62,9 @@ public class ThinkColumnModel implements Serializable {
     @Remark("使用text作为key的类型")
     private boolean usingText = false;
 
+    @Remark("是否枚举对象")
+    private boolean enumState ;
+
 
     protected ThinkColumnModel() {
     }
@@ -109,6 +112,9 @@ public class ThinkColumnModel implements Serializable {
         this.indexModal = indexModal;
     }
 
+    public void setEnumState(boolean enumState) {
+        this.enumState = enumState;
+    }
 
     public void setSqlTypeString(String sqlTypeString ) {
         this.sqlTypeString = sqlTypeString;
@@ -169,6 +175,9 @@ public class ThinkColumnModel implements Serializable {
     }
 
 
+    public boolean isEnumState() {
+        return enumState;
+    }
 
     protected void setIndexValue(int indexValue) {
         this.indexValue = indexValue;
@@ -215,6 +224,9 @@ public class ThinkColumnModel implements Serializable {
     }
 
     public int getLength() {
+        if(isEnumState()){
+            return 32;
+        }
         if (this.getType().getTypeName().equalsIgnoreCase("boolean")) {
             return 1;
         }
@@ -222,6 +234,7 @@ public class ThinkColumnModel implements Serializable {
             //mediumtext
             return 16777215;
         }
+
         return length;
     }
 

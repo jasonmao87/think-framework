@@ -7,6 +7,7 @@ import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.enums.TEnableRequired;
 import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +23,9 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     private static IFilterChecker filterChecker = null;
 
     private List<IThinkResultFilter> resultFilterList;
+
+    @Remark("针对enable的匹配要求")
+    private TEnableRequired enableRequired = null;
 
     @Remark("目标对象class")
     private Class<T> tClass;
@@ -58,6 +62,10 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         this.resultFilterList.add(filter);
         return this;
+    }
+
+    public TEnableRequired getEnableRequired() {
+        return enableRequired;
     }
 
     public List<IThinkResultFilter> getResultFilterList() {
@@ -103,6 +111,8 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         if (jsonObject.containsKey("limit")) {
             filter.limit = jsonObject.getInteger("limit");
         }
+
+
         /**
          * 如果 filter
          */
@@ -110,6 +120,16 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
             boolean strict = jsonObject.getBoolean("strictFastMatch");
             filter.strictFastMatch = strict;
         }
+        /**
+         * 针对enable 参数的 独立 参数 处理
+         */
+        if(jsonObject.containsKey("enableRequired")){
+            try {
+                String enableRequired = jsonObject.getString("enableRequired");
+                filter.enableRequired = TEnableRequired.valueOf(enableRequired);
+            }catch (Exception e){}
+        }
+
         Map<String, String> sortQuery = (Map<String, String>) jsonObject.getOrDefault("sortQuery", new HashMap<>());
         String sortKey = sortQuery.getOrDefault("key","id");
         if(sortQuery.getOrDefault("sort","desc").equalsIgnoreCase("desc")){
@@ -146,6 +166,23 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
             }
         }
         return filter;
+    }
+
+    public ThinkSqlFilter<T> enableRequired(TEnableRequired required){
+        if (this.getKeyCondition("enable")!=null) {
+            log.warn("已经再ThinkSQLFilter中指定了enable的需求属性，该操作可能引起不必要的误解,但您的调用仍然被接受");
+        }
+        if(this.enableRequired!=null){
+            log.warn("已经指定了EnableRequired为{}，由于本次操作被替换为：{}" ,this.enableRequired,required );
+        }
+
+        this.enableRequired = required;
+        return this;
+    }
+
+    public ThinkSqlFilter<T> idIs( Serializable v){
+        this.eq("id",v);
+        return this;
     }
 
     public ThinkSqlFilter<T> eq(String k ,Serializable v){
