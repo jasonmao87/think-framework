@@ -21,7 +21,6 @@ public class WWWWW {
 //
 //    @GetMapping("/test")
 //    public Map test(int size){
-//        System.out.println("test ");
 //        try {
 //            List<MongotestBean> list = new ThinkFastList<>(MongotestBean.class);
 //            long begin = System.currentTimeMillis();

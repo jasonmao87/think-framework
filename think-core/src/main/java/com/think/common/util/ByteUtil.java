@@ -15,7 +15,6 @@ public class ByteUtil {
             length ++ ;
             binaryString = "0"+binaryString;
         }
-        //System.out.println(binaryString);
         byte[] bytes = new byte[length/8];
         for(int i= 0 ; i < bytes.length; i++){
             int start = (i*8);

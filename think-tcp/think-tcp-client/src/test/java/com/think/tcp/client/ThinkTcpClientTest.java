@@ -22,9 +22,9 @@ class ThinkTcpClientTest {
 //            ThinkTcpClient.getInstance().bindMessageConsumer(new IMessageConsumer() {
 //                @Override
 //                public void accept(TMessage message) {
-//                    System.out.println("收到 消息 ");
+//                    L.print("收到 消息 ");
 //                    String s = message.getData(String.class);
-//                    System.out.println(s);
+//                    L.print(s);
 //
 //                }
 //            });
@@ -34,19 +34,19 @@ class ThinkTcpClientTest {
 //                Thread.sleep(3000);
 //
 ////
-//////                System.out.println(" thread .... count " + Thread.activeCount());
-//////                System.out.println(Thread.getAllStackTraces().size());
+//////                L.print(" thread .... count " + Thread.activeCount());
+//////                L.print(Thread.getAllStackTraces().size());
 ////                if(false) {
 ////                    if (ThinkTcpClient.getInstance().isActive()) {
-////                        System.out.println("fasong ");
+////                        L.print("fasong ");
 ////                        ThinkTcpClient.getInstance().send(message);
 ////
 ////                        ThinkTcpClient.getInstance().close();
 ////                    } else {
-////                        System.out.println("重连-------------");
+////                        L.print("重连-------------");
 ////                        ThinkTcpClient.getInstance().connect("127.0.0.1", 8888);
 ////                        ThinkTcpClient.getInstance().send(message);
-////                        System.out.println("重连------------成功");
+////                        L.print("重连------------成功");
 ////                    }
 ////                }
 ////                ThinkTcpClient.getInstance().send(message);

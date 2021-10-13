@@ -30,10 +30,4 @@ public class ThinkDefaultTargetTypeUtil<T> {
         return classType;
     }
 
-    public static void main(String[] args) {
-        Class<List<SimplePrimaryEntity>> classType = new ThinkDefaultTargetTypeUtil<List<SimplePrimaryEntity>>().getClassType();
-        System.out.println(classType.getName());
-
-
-    }
 }

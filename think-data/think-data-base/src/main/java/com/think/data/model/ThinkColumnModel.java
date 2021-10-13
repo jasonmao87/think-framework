@@ -19,6 +19,9 @@ public class ThinkColumnModel implements Serializable {
     @Remark("类型 ")
     private Type type;
 
+    @Remark("是TFlowState模型")
+    private boolean stateModel = false;
+
 //    @Remark("需要针对参数值进行校验")
 //    private boolean verificationRequired  ;
 
@@ -163,6 +166,10 @@ public class ThinkColumnModel implements Serializable {
         this.editAble = editAble;
     }
 
+    protected void setStateModel(boolean stateModel) {
+        this.stateModel = stateModel;
+    }
+
     public void setFastMatchAble(boolean fastMatchAble) {
         this.fastMatchAble = fastMatchAble;
     }
@@ -259,6 +266,9 @@ public class ThinkColumnModel implements Serializable {
      * @return
      */
     public boolean isFastMatchAble() {
+        if(this.isStateModel()){
+            return false;
+        }
         if(this.fastMatchAble) {
             if (this.isHasIndex()) {
                 return false;
@@ -296,5 +306,9 @@ public class ThinkColumnModel implements Serializable {
 
     public boolean isThinkLinkedId(){
         return key.equalsIgnoreCase("thinkLinkedId");
+    }
+
+    public boolean isStateModel() {
+        return stateModel;
     }
 }

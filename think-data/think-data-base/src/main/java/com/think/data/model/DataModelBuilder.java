@@ -1,8 +1,10 @@
 package com.think.data.model;
 
 import com.think.common.util.StringUtil;
+import com.think.common.util.TVerification;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.*;
+import com.think.core.bean.TFlowState;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.data.Manager;
@@ -104,10 +106,12 @@ public class DataModelBuilder {
         //初始化 列模型
         List<ThinkColumnModel> columnModalList = new ArrayList<>();
         for(Field f : fields){
+
             ThinkColumnModel modal = buildColumn(f);
             if(modal!= null){
                 columnModalList.add(modal);
             }
+
         }
         ThinkColumnModel[] clms = new ThinkColumnModel[columnModalList.size()];
         columnModalList.toArray(clms);
@@ -140,6 +144,9 @@ public class DataModelBuilder {
         if(field.getAnnotation(ThinkIgnore.class) != null){
             return null;
         }
+
+
+
         if(field.getName().equalsIgnoreCase("thinkLinkedId")){
             if(Manager.isThinkLinkedIdSupportAble() == false){
                 return null;
@@ -154,6 +161,13 @@ public class DataModelBuilder {
         boolean isId = name.equalsIgnoreCase("id");
         ThinkColumn tColumn = field.getAnnotation(ThinkColumn.class);
         ThinkColumnModel modal = new ThinkColumnModel();
+        if(field.getType() == TFlowState.class){
+            ThinkStateColumn stateColumn = field.getAnnotation(ThinkStateColumn.class);
+            TVerification.valueOf(stateColumn).throwIfNull(field.getName() +"为流程状态字段，必须配合ThinkStateColumn注解使用");
+            modal.setComment(stateColumn.comment());
+            //标记为状态流程字段，会映射出一大堆字段出来 ！
+            modal.setStateModel(true);
+        }
         modal.setKey(name);
         modal.setType(field.getType());
         if(field.getType().getSimpleName().equalsIgnoreCase("String")){
@@ -203,7 +217,7 @@ public class DataModelBuilder {
             conoverType = Enum.class;
         }
         String jdbcTypeString = ThinkJdbcTypeConverter.toJdbcTypeString(conoverType,tColumn);
-        if(StringUtil.isEmpty(jdbcTypeString)){;
+        if(StringUtil.isEmpty(jdbcTypeString) && (conoverType!=TFlowState.class)){;
             throw new ThinkDataModelException(name + "对应的属性（"+field.getType().getName()+"）暂时无法映射成相应的数据库列属性！" );
         }
         modal.setSqlTypeString(jdbcTypeString);

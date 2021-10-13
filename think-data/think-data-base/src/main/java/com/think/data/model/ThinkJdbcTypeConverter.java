@@ -3,6 +3,7 @@ package com.think.data.model;
 import com.think.common.util.ByteUtil;
 import com.think.core.annotations.bean.ThinkColumn;
 import com.think.core.bean.util.ClassUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -13,9 +14,76 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class ThinkJdbcTypeConverter {
 
+    public static String toJdbcTypeAsString(ThinkSqlType sqlType ,int len , boolean nullAble){
+        String t = "" ;
+        switch (sqlType){
+            case NONE:{
+                t = null;
+                break;
+            }
+            case VARCHAR:{
+                t = "VARCHAR(" +len +")" ;
+                break;
+            }
+            case BIT:{
+                t = "BIT(1)";
+                break;
+            }
+            case CHAR:{
+                t = "VARCHAR(" + len + ")";
+                break;
+            }
+            case DATE:{
+                t= "DATE";
+                break;
+            }
+            case TIME:{
+                t = "TIME";
+                break;
+            }
+            case FLOAT:{
+                t = "DOUBLE";
+                break;
+            }
+            case BIGINT:{
+                t= "BIGINT";
+                break;
+            }
+            case DOUBLE:{
+                t = "DOUBLE";
+                break;
+            }
+            case INTEGER:{
+                t = "INT";
+                break;
+            }
+            case DATETIME:{
+                t = "DATETIME";
+                break;
+            }
+            case ENUM:{
+                t = "VARCHAR(32)";
+                break;
+
+            }
+            default:{
+                t = null;
+            }
+
+        }
+        if(t == null){
+            return null;
+        }else {
+            return (t + " " )+ (nullAble ? "NULL" : "NOT NULL");
+        }
+    }
+
+
     protected static String toJdbcTypeString(Type type, ThinkColumn tColumn){
+//        log.info("{} - {} " , type,tColumn);
         String t = "" ;
 
         int len =  tColumn!=null?tColumn.length():36;
@@ -86,8 +154,6 @@ public class ThinkJdbcTypeConverter {
         }else {
             return (t + " " )+ (nullAble ? "NULL" : "NOT NULL");
         }
-
-
     }
 
     private static final ThinkSqlType getType(Type type){
@@ -147,26 +213,4 @@ public class ThinkJdbcTypeConverter {
 
 
     byte[] nn = new byte[2];
-
-//
-//    public static void main(String[] args) throws NoSuchFieldException {
-//        //Field field = ThinkJdbcTypeConverter.class.getField("nn");
-//
-//        List<Field> list = ClassUtil.getFieldList(ThinkJdbcTypeConverter.class);
-//        for(Field field : list){
-//            //System.out.println(field);
-//            System.out.println(field.getType().getName());
-//        }
-//        String v = "";
-//        for(int i=0;i<3200;i++){
-//            v +="9";
-//        }
-//        BigInteger bigInteger = new BigInteger(v);
-//        System.out.println(bigInteger.toByteArray().length);
-//        System.out.println(bigInteger.toByteArray().length * 8);
-//        System.out.println(ByteUtil.byteToHex(bigInteger.toByteArray()));
-//        System.out.println(ByteUtil.byteToHex(bigInteger.toByteArray()).length());
-//
-//    }
-
 }

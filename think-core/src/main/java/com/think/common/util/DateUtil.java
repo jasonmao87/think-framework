@@ -171,9 +171,6 @@ public class DateUtil extends TimeUtil{
          return date(  now() );
     }
 
-    public static void main(String[] args) {
-        System.out.println( new Date(0));
-    }
     /**
      * 相当于 1970-1-1 ,我们可以理解为 0.或者替代NULL
      * @return

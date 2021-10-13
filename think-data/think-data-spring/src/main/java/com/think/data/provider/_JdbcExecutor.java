@@ -371,43 +371,4 @@ public abstract class _JdbcExecutor {
     }
 
 
-//    public static void main(String[] args) {
-//
-//        String sql = "select * from tb_abc where id = ? and name = ? and c =? ";
-//
-//        sql=sql.replace("where" ,"where\n\t")
-//                .replace("WHERE" , "WHERE\n\t")
-//                .replaceAll("AND","AND\n\t")
-//                .replaceAll("and","and\n\t")
-//                .replaceAll("OR","OR\n\t")
-//                .replaceAll("or","or\n\t");
-//        System.out.println(sql);
-//
-//        String[] queryArr = sql.toUpperCase().split(" ");
-//        StringBuffer sb =new StringBuffer();
-//
-//        /**
-//         *
-//         */
-//        int tlen = 0 ;
-//
-//        for(String t :  queryArr){
-//            if(StringUtil.isNotEmpty(t)){
-//                sb.append(t);
-//                if(t.equals("SELECT")){
-//                    sb.append("\n\t");
-//                    tlen =1 ;
-//                }
-//
-//
-//
-//
-//            }else{
-//
-//            }
-//
-//
-//        }
-//
-//    }
 }

@@ -35,21 +35,6 @@ public class ThinkUpdaterBuilder {
             throw new ThinkRuntimeException("对象尚未持久化或无法找到主键id，无法构建");
         }
         updateMapper.setTargetDataId(t.getId());
-//        for(String k : keys){
-//            tableModel.containsSortKey(k);
-//            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(k, t.getClass());
-//
-//            Introspector.getBeanInfo(t.getClass()).getMethodDescriptors()[0].getMethod().in
-//             propertyDescriptor.
-//            Method readMethod = propertyDescriptor.getReadMethod();
-//            System.out.println(readMethod.getName());
-//            System.out.println(readMethod.getReturnType());
-//
-//        }
-
-
-
-
 
         return null;
     }

@@ -42,26 +42,6 @@ public class ThinkExplainList implements Serializable {
         return explainDetail;
     }
 
-//
-//    public static void main(String[] args) {
-//        ThinkExplainList x = new ThinkExplainList();
-//
-//        List<Field> fieldList = ClassUtil.getFieldList(ThinkExplainList.class);
-//        fieldList.forEach(f ->{
-//            System.out.print(f.getName() + " > " );
-//            System.out.print(f.getType().getAnnotatedInterfaces().length);
-//
-//            for (AnnotatedType xx : f.getType().getAnnotatedInterfaces()) {
-//                System.out.print( "TEnum  "+ xx.getType().getTypeName() + "   " +( xx.getType()==TEnum.class));
-//            }
-//
-//            for (Class<?> xx : f.getType().getInterfaces()) {
-//                System.out.print( "  getInterfaces   "+ xx.getTypeName());
-//            }
-//            System.out.println( " " +f.getType().isInterface());
-//        });
-//    }
-
 
     public boolean isInit() {
         return init;

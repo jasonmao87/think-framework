@@ -2,16 +2,41 @@
 package com.think.data.model;
 
 import com.think.core.annotations.Remark;
-import com.think.core.annotations.bean.ThinkColumn;
+import com.think.core.annotations.bean.ThinkStateColumn;
+import com.think.core.bean.TFlowBuilder;
 import com.think.data.Manager;
 import com.think.data.exception.ThinkDataModelException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
 
+
+@Slf4j
 @Remark("表模型")
 public class ThinkTableModel implements Serializable {
+
+
+//    public static final String[] flowStateSuffixes =new String[]{
+//            flowStateSuffix_Result,
+//            flowStateSuffix_StartTime,
+//            flowStateSuffix_CancelTime,
+//            flowStateSuffix_CompleteTime,
+//            flowStateSuffix_ResultMessage
+//    };
+
+    public static final boolean isInStateSuffix(String suffix){
+        switch (suffix){
+            case ThinkStateColumn.flowStateSuffix_StateValue: return true;
+            case ThinkStateColumn.flowStateSuffix_CancelTime : return true;
+            case ThinkStateColumn.flowStateSuffix_StartTime : return true;
+            case ThinkStateColumn.flowStateSuffix_CompleteTime : return true;
+            case ThinkStateColumn.flowStateSuffix_ResultMessage : return true;
+
+        }
+        return false;
+    }
 
 
     public final String getDbType() {
@@ -220,15 +245,7 @@ public class ThinkTableModel implements Serializable {
      * @return
      */
     public boolean containsKey(String k) {
-        if(columnModels == null){
-            throw new ThinkDataModelException("尚未初始化列模型");
-        }
-        for(ThinkColumnModel modal : columnModels){
-            if(modal.getKey().equalsIgnoreCase(k)){
-                return true;
-            }
-        }
-        return false;
+        return getKey(k)!=null;
     }
 
     public boolean containsKeys(String[] keys){
@@ -248,12 +265,34 @@ public class ThinkTableModel implements Serializable {
      * @return
      */
     public ThinkColumnModel getKey(String key){
-        if(columnModels == null){
+        String realKey = null;
+         if(columnModels == null){
             throw new ThinkDataModelException("尚未初始化列模型");
         }
+        boolean stateColumn = false;
+        if(key.contains(ThinkStateColumn.splitFlag)) {
+            String[] ksplit = key.split(ThinkStateColumn.splitFlag);
+            if (!TFlowBuilder.safeKeySuffix(ThinkStateColumn.splitFlag  +ksplit[1])) {
+                return null;
+            }
+            stateColumn = true;
+            realKey = ksplit[0];
+        }else{
+            realKey = key;
+        }
+
         for(ThinkColumnModel modal : columnModels){
            //L.info("check K |{}| --- for each in |{}|" ,key,modal.getKey());
-            if(modal.getKey().equalsIgnoreCase(key)){
+
+            if(modal.getKey().equalsIgnoreCase(realKey)){
+                if(stateColumn){
+                    if(modal.isStateModel()){
+                        return modal;
+                    }else {
+                        log.warn("状态键 {} 存在，但是后缀不正确 :{}" ,realKey,key );
+                        return null;
+                    }
+                }
                 return modal;
             }
         }

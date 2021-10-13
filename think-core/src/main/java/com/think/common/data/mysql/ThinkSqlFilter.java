@@ -5,6 +5,9 @@ import com.think.common.data.IFilterChecker;
 import com.think.common.data.ThinkFilterOp;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
+import com.think.core.annotations.bean.ThinkStateColumn;
+import com.think.core.bean.TFlowBuilder;
+import com.think.core.bean.TFlowState;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.core.enums.TEnableRequired;
@@ -452,14 +455,27 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
      */
     private boolean check(String key){
         if(filterChecker ==null) {
-            Field field = ClassUtil.getField(tClass, key);
-            if (field == null) {
+            if(key.contains(ThinkStateColumn.splitFlag)){
+                Field field = ClassUtil.getField(tClass,key.split(ThinkStateColumn.splitFlag)[0]);
+                if(field.getType() == TFlowState.class){
+                    String sf = key.split(ThinkStateColumn.splitFlag)[1];
+                    return TFlowBuilder.safeKeySuffix(sf);
+
+                }
                 return false;
+            }else{
+                Field field = ClassUtil.getField(tClass, key);
+
+                if (field == null) {
+                    return false;
+                }
+                if (field.getAnnotation(ThinkIgnore.class) != null) {
+                    return false;
+                }
+                return true;
+
             }
-            if (field.getAnnotation(ThinkIgnore.class) != null) {
-                return false;
-            }
-            return true;
+
         }else{
             return filterChecker.checkKey(key,tClass);
         }

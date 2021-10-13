@@ -2,16 +2,15 @@ package com.think.data.provider;
 
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
+import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.data.exception.ThinkDataModelException;
-import com.think.data.model.DataModelBuilder;
-import com.think.data.model.ThinkColumnModel;
-import com.think.data.model.ThinkTableModel;
-import com.think.data.model.ThinkIndexModel;
+import com.think.data.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ThinkDataDDLBuilder {
+    String[] stateKeySuffix = new String[]{};
 
 
    public static final String createSpiltSQL(ThinkTableModel tableModal , int splitYear){
@@ -35,37 +34,71 @@ public class ThinkDataDDLBuilder {
            if(cm.getKey().equalsIgnoreCase("id")){
                continue;
            }
-           sql.append(" ,")
-                   .append(cm.getKey())
-                   .append(" ")
-                   .append(cm.getSqlTypeString());
-           if(StringUtil.isNotEmpty(cm.getComment())) {
-               sql.append(" COMMENT ").append("'").append(cm.getComment()).append("'");
-           }
-           /**
-            * 支持高效排序  ，且列不包含索引 ,且 列 类型是 String/ boolean  类型的 ，那么创建 附加 索引
-            */
-           if(cm.isFastMatchAble()){
-               if(cm.isUsingText()){
-                   throw new ThinkDataModelException( cm.getKey()+"为text类型，不允许使用fastMatchAble的支持");
+           if(cm.isStateModel()){
+               String dateSQL = ThinkJdbcTypeConverter.toJdbcTypeAsString(ThinkSqlType.DATETIME,0,false);
+               String intSQL = ThinkJdbcTypeConverter.toJdbcTypeAsString(ThinkSqlType.INTEGER,0,false);
+               String varCharSQL = ThinkJdbcTypeConverter.toJdbcTypeAsString(ThinkSqlType.VARCHAR,64,false);
+
+               sql.append(",").append(cm.getKey()).append(ThinkStateColumn.flowStateSuffix_CancelTime)
+                       .append(" ").append(dateSQL).append(" ").append( "COMMENT ").append( "'").append(cm.getComment()).append("_CancelTime" ).append("'");
+
+               sql.append(",").append(cm.getKey()).append(ThinkStateColumn.flowStateSuffix_CompleteTime)
+                       .append(" ").append(dateSQL).append(" ").append( "COMMENT ").append( "'").append(cm.getComment()).append("_CompleteTime" ).append("'");
+
+               sql.append(",").append(cm.getKey()).append(ThinkStateColumn.flowStateSuffix_StartTime)
+                       .append(" ").append(dateSQL).append(" ").append( "COMMENT ").append( "'").append(cm.getComment()).append("_StartTime" ).append("'");
+
+               sql.append(",").append(cm.getKey()).append(ThinkStateColumn.flowStateSuffix_StateValue)
+                       .append(" ").append(intSQL).append(" ").append( "COMMENT ").append( "'").append(cm.getComment()).append("_TryCount" ).append("'");
+
+               sql.append(",").append(cm.getKey()).append(ThinkStateColumn.flowStateSuffix_TryCount)
+                       .append(" ").append(intSQL).append(" ").append( "COMMENT ").append( "'").append(cm.getComment()).append("_TryCount" ).append("'");
+
+               sql.append(",").append(cm.getKey()).append(ThinkStateColumn.flowStateSuffix_ResultMessage)
+                       .append(" ").append(varCharSQL).append(" ").append( "COMMENT ").append( "'").append(cm.getComment()).append("_ResultMessage" ).append("'");
+
+
+
+
+
+           }else{
+
+               sql.append(" ,")
+                       .append(cm.getKey())
+                       .append(" ")
+                       .append(cm.getSqlTypeString());
+               if(StringUtil.isNotEmpty(cm.getComment())) {
+                   sql.append(" COMMENT ").append("'").append(cm.getComment()).append("'");
                }
-               fastMatchKeys.add(cm.getFastMatchKeyWhileExits());
-               String typeString = "VARCHAR(" + ( cm.getLength() + 32 ) + ") NOT NULL";
-               sql.append(" , ")
-                       .append( cm.getFastMatchKeyWhileExits())
-                       .append(" ")
-                       .append(typeString)
-                       .append(" COMMENT 'match key of ").append(cm.getKey()).append("'");
-               //添加 第二校验 键
-               String secondTypeString = "VARCHAR(" + ( cm.getLength() * 3 + 32 ) + ") NOT NULL";
+               /**
+                * 支持高效排序  ，且列不包含索引 ,且 列 类型是 String/ boolean  类型的 ，那么创建 附加 索引
+                */
+               if(cm.isFastMatchAble()){
+                   if(cm.isUsingText()){
+                       throw new ThinkDataModelException( cm.getKey()+"为text类型，不允许使用fastMatchAble的支持");
+                   }
+                   fastMatchKeys.add(cm.getFastMatchKeyWhileExits());
+                   String typeString = "VARCHAR(" + ( cm.getLength() + 32 ) + ") NOT NULL";
+                   sql.append(" , ")
+                           .append( cm.getFastMatchKeyWhileExits())
+                           .append(" ")
+                           .append(typeString)
+                           .append(" COMMENT 'match key of ").append(cm.getKey()).append("'");
+                   //添加 第二校验 键
+                   String secondTypeString = "VARCHAR(" + ( cm.getLength() * 3 + 32 ) + ") NOT NULL";
 
-               sql.append(" , ")
-                       .append( cm.getSecondaryFastMatchKeyWhileExits())
-                       .append(" ")
-                       .append(secondTypeString)
-                       .append(" COMMENT 'match Secondary key of ").append(cm.getKey()).append("'");
+                   sql.append(" , ")
+                           .append( cm.getSecondaryFastMatchKeyWhileExits())
+                           .append(" ")
+                           .append(secondTypeString)
+                           .append(" COMMENT 'match Secondary key of ").append(cm.getKey()).append("'");
+
+               }
+
 
            }
+
+
 
        }
        //列结束 开始 索引ddl

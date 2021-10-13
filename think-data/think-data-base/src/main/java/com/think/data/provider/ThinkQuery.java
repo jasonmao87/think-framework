@@ -4,6 +4,7 @@ import com.think.common.data.mysql.IThinkResultFilter;
 import com.think.common.data.mysql.ThinkFilterBean;
 import com.think.common.data.ThinkFilterOp;
 import com.think.common.data.mysql.ThinkSqlFilter;
+import com.think.common.util.TVerification;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean._Entity;
@@ -107,7 +108,11 @@ public class ThinkQuery {
         String k =bean.getKey();
         ThinkTableModel tableModal = Manager.getModelBuilder().get(filter.gettClass()) ;
         ThinkColumnModel columnModal = tableModal.getKey(k);
+
+//        TVerification.valueOf(columnModal.isStateModel()).throwIfTrue("流程状态字段"+columnModal.getKey()+"不能作为查询参数");
         if(columnModal!=null) {
+
+
             if (columnModal.isFastMatchAble()) {
                 bean.setFastMatchAble(true);
                 if (this.extendFastMatchKeyList == null) {
@@ -447,14 +452,5 @@ public class ThinkQuery {
     }
 
 
-    //
-//    public static void main(String[] args) {
-//        String s = "dadad,fdada";
-//        String[] ar = s.split(",");
-//        Object x = ar ;
-//        System.out.println( s instanceof String );
-//        System.out.println( x  instanceof String[]);
-//        System.out.println(x instanceof String );
-//    }
 
 }

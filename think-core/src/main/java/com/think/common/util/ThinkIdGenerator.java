@@ -12,44 +12,6 @@ import java.util.Date;
 public class ThinkIdGenerator {
     private static ThinkIdGenerator instance = null;
 
-//
-//    public static void main(String[] args) {
-//        try {
-//            IdUtil.instance(1);
-//
-//        }catch (Exception e){}
-//
-//        long x  =1610446346435L ;
-//        long id =696034626303426561L;
-//        //946721446828
-//        System.out.println(946721446828L);
-//        System.out.println(timeMillis20000101);
-//
-//
-//        System.out.println("A"+Long.toBinaryString(id) + "  " +Long.toBinaryString(id).length() + " " + id);
-//        System.out.println("B"+Long.toBinaryString(IdUtil.idToMillis(id)) + " " + IdUtil.idToMillis(id) + " " + x);
-////        System.out.println(Long.toBinaryString( id>>20 ) + " " +  (id >> 20)+ " " + (id>>20));
-//        System.out.println("C"+Long.toBinaryString(x) +  " " + x );
-//
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss S");
-//
-//
-//
-//
-//        long y = 1610439615211L ;
-//        long y20 = y<<20 | 1<<10 | 1;
-//        long z = y20>>20;
-//        System.out.println( y == z );
-//
-//
-//        long _id = IdUtil.nextId();
-//        long t = IdUtil.idToMillis(_id);
-//        System.out.println(_id);
-//        System.out.println(IdUtil.idToDate(_id));
-//        System.out.println(t);
-//
-//
-//    }
 
     protected final static synchronized ThinkIdGenerator getInstance(int machineBitLength , int machineId){
         if(null == instance){

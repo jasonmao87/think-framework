@@ -14,8 +14,6 @@ public class TVerification<T extends Object>{
     private T t ;
 
     public static final <T> TVerification valueOf(T  t){
-//        System.out.println(t.getClass());
-//        System.out.println( t instanceof Long);
         Object x = t ;
 
 

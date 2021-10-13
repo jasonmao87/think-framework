@@ -60,31 +60,4 @@ public class DesensitizationUtil {
     }
 
 
-//
-//    public static void test(String source){
-//        String t = encode(source);
-//        System.out.println(t + " - > "  + decode(t));
-//    }
-//    public static void main(String[] args) {
-//
-//        test("15957493009");
-//        test("13819865889");
-//        test("中华人民共和国");
-//        test("南京市中观大道890-1号😄");
-//        test("南京市中观大道890-2号😄");
-//
-//        test("#3P");
-//        System.out.println(decode("3P"));
-//
-//        test(" k ");
-////
-////        for(int i = 15000 ; i <28000; i++){
-////            System.out.print("   "+ i + ":" + (char)i );
-////            if(i %50==0){
-////                System.out.println();
-////            }
-////        }
-//
-//
-//    }
 }

@@ -118,32 +118,4 @@ public class ThinkRuntimeUtil {
         return result.toString();
     }
 
-//
-//    public static void main(String[] args) {
-//
-//        OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
-//
-//        System.out.println(operatingSystemMXBean.getName());
-//        System.out.println(operatingSystemMXBean.getArch());
-//        System.out.println(operatingSystemMXBean.getAvailableProcessors());
-//        System.out.println(operatingSystemMXBean.getSystemLoadAverage());
-//        System.out.println(operatingSystemMXBean.getVersion());
-//        System.out.println(operatingSystemMXBean.getObjectName());
-//
-//        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-//
-//        try {
-//            System.out.println(InetAddress.getLocalHost().getHostName());
-//            System.out.println(InetAddress.getLocalHost().getCanonicalHostName());
-//            System.out.println(InetAddress.getLoopbackAddress());
-//            System.out.println(InetAddress.getLocalHost().toString());
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//
-//
-//
-//
-//
-//    }
 }

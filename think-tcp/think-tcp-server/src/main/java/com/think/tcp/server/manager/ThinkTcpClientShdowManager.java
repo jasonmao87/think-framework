@@ -40,7 +40,7 @@ public class ThinkTcpClientShdowManager {
         if(clientHolder.containsKey(channelId)){
             clientHolder.get(channelId).active();
         }else {
-            //System.out.println("client hold ==== " + channelId);
+
             if(log.isDebugEnabled()){
                 log.debug("hold a new tcpClient , current count is  {}" ,clientHolder.size() +1 );
             }

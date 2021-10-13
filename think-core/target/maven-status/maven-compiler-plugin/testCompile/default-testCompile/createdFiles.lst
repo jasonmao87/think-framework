@@ -1,5 +1,8 @@
 com\think\core\security\ThinkSecurityManagerTest.class
+com\think\core\bean\util\ObjectUtilTest.class
+com\think\core\bean\util\TbX_FOR_TEST.class
 com\think\data\provider\ThinkSqlFilterTest.class
 com\think\common\util\security\ThinkHashUtilTest.class
+com\think\moudles\auth\UserAccountModelTest.class
 com\think\core\security\ThinkConfigTest.class
 com\think\data\provider\TestTableBean.class

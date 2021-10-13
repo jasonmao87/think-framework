@@ -74,43 +74,6 @@ public class ThinkAsyncExecutor {
         return CompletableFuture.runAsync(runnable,ThinkThreadExecutor.getExecutor());
 
     }
-//
-//    public static void main(String[] args) throws IOException {
-//
-//        Path rootPath = Paths.get("X:\\tmp");
-//
-//
-//        Files.walkFileTree(rootPath, new FileVisitor<Path>() {
-//            @Override
-//            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-//
-//                return FileVisitResult.CONTINUE;
-//            }
-//
-//            @Override
-//            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-//
-//                    System.out.println("--:" + file + "  owner:"+ Files.getOwner(file) + " lastModified:" + Files.getLastModifiedTime(file) + " SIZE:" + Files.size(file)/1024);
-//
-//                return FileVisitResult.CONTINUE;
-//            }
-//
-//            @Override
-//            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-//                System.out.println("visit file failed: " + file);
-//                return FileVisitResult.CONTINUE;
-//            }
-//
-//            @Override
-//            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-//                //System.out.println("<<<<: " + dir);
-//                return FileVisitResult.CONTINUE;
-//            }
-//        });
-//
-//    }
-
-
 
 
 

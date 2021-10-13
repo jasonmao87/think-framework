@@ -1,7 +1,9 @@
 com\think\common\data\mongo\ThinkMongoFilterBean$1.class
 com\think\moudles\auth\RoleModel.class
+com\think\core\bean\TFlowBuilder.class
 com\think\common\result\state\ThinkResultState$1.class
 com\think\exception\ThinkDataVerificationException.class
+com\think\common\data\mysql\permission\SqlFilterPermissionRule.class
 com\think\common\util\ThinkIdGenerator.class
 com\think\core\annotations\bean\ThinkClollection.class
 com\think\core\enums\ResultDataType.class
@@ -73,12 +75,15 @@ com\think\common\util\security\SHAUtil.class
 com\think\moudles\auth\UserAccountModel.class
 com\think\core\bean\util\ClassUtil.class
 com\think\common\util\rt\ThinkMachineUtil.class
+com\think\core\bean\TFlowState.class
+com\think\core\bean\TFlowBuilder$AbleChecker.class
 com\think\core\security\ThinkTokenExtendEntry.class
 com\think\common\util\ThinkCollectionUtil.class
 com\think\structure\ThinkExplainList.class
 com\think\structure\ThinkSimpleHolder.class
 com\think\core\supports\ClasspathPackageScaner.class
 com\think\common\data\ThinkMongoFilterOp$1.class
+com\think\common\data\mysql\permission\ThinkSqlFilterPermissionFilter.class
 com\think\core\bean\util\ObjectUtil.class
 com\think\core\data\ThinkVersionManager.class
 com\think\moudles\event\EventActionParam.class
@@ -90,9 +95,9 @@ com\think\common\result\state\ThinkResultState.class
 com\think\core\bean\BaseVo.class
 com\think\common\data\mysql\ThinkFilterBean.class
 com\think\common\util\IdUtil.class
+com\think\common\util\L.class
 com\think\core\executor\ThinkThreadExecutor$ThinkRunsPolicy.class
 com\think\core\executor\ThinkAsyncTask.class
-com\think\core\bean\util\TbX.class
 com\think\core\annotations\bean\ThinkIndexes.class
 com\think\core\executor\ThinkThreadExecutor.class
 com\think\common\data\mongo\ThinkMongoQueryFilter.class
@@ -105,7 +110,9 @@ com\think\common\util\FileUtil.class
 com\think\structure\ThinkReadOnlyList.class
 com\think\structure\TCacheBean.class
 com\think\common\util\FastJsonUtil.class
+com\think\core\security\token2\ITokenExtend.class
 com\think\structure\ThinkFastList$1.class
+com\think\common\data\mysql\TFlowStateUpdate.class
 com\think\structure\ThinkCacheMap$1.class
 com\think\common\util\PasswordCheckInfo.class
 com\think\structure\table\ThinkGridModel.class
@@ -115,8 +122,10 @@ com\think\core\executor\ThinkBackgroundTask.class
 com\think\structure\table\ThinkGridColumnModel.class
 com\think\common\util\NumberCompareUtil.class
 com\think\core\security\ThinkSecurityKey.class
+com\think\core\annotations\bean\ThinkStateColumn.class
 com\think\core\bean\SimplePrimaryEntity.class
 com\think\common\util\TVerification.class
+com\think\core\security\token2\ThinkTokenV2.class
 com\think\common\util\office\ThinkExcelUtil$1.class
 com\think\common\util\security\RSAUtil.class
 com\think\core\bean\SimpleRefEntity.class

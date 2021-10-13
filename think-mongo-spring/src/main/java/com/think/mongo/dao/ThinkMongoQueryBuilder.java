@@ -211,16 +211,5 @@ public class ThinkMongoQueryBuilder {
         return false;
     }
 
-//    public static void main(String[] args) {
-//        String s = "abc123";
-//        String v= "%b%2";
-//        v = "^" +v + "$";
-//        v = v.replaceAll("%",".*");
-//        System.out.println(v);
-//        Pattern pattern = Pattern.compile(v);
-//
-//        System.out.println(pattern.matcher(s).find());
-//
-//    }
 
 }

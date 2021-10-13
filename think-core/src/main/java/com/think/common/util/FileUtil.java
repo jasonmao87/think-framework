@@ -13,12 +13,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class FileUtil {
-//
-//
-//    public static void main(String[] args) {
-//        File file = new File("D://h/test.html.xdaxx");
-//        System.out.println(fileType(file));
-//    }
+
 
 
     public static final String fileType(File file){

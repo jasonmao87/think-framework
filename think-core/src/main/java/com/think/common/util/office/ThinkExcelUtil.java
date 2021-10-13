@@ -1,6 +1,7 @@
 package com.think.common.util.office;
 
 import com.think.common.util.FileUtil;
+import com.think.common.util.L;
 import org.apache.poi.hssf.converter.ExcelToHtmlConverter;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
@@ -35,9 +36,9 @@ public class ThinkExcelUtil {
     public static void main(String[] args) throws ParserConfigurationException, TransformerException, IOException {
 
         Long x = -91L ;
-        System.out.println(x.toBinaryString(-91));
-        System.out.println(Short.MAX_VALUE);
-        System.out.println(Short.MIN_VALUE);
+        L.print(x.toBinaryString(-91));
+        L.print(Short.MAX_VALUE);
+        L.print(Short.MIN_VALUE);
 
         String s = excelToHtml("D:\\oneDrive\\软件部产品推进和设计文件夹\\我部重要文档方案等\\部门制度\\版本管理办法\\试行内容1.81版本\\x.xlsx");
 
@@ -123,7 +124,7 @@ public class ThinkExcelUtil {
             content = new String(outStream.toByteArray());
         }
         //获取h2中值，就是sheet的name
-        System.out.println(content);
+        L.print(content);
         List<String> h2 = getH2(content);
         //去掉h2标签
         String s1 = content.replaceAll("<h2.+?</h2>", "");
@@ -296,7 +297,7 @@ public class ThinkExcelUtil {
 //            cellNew.setCellStyle(          cellStyle );
 //
             //cellNew.setCellStyle(cell.getCellStyle());
-            //System.out.println(cellNew.toString() + " >?" + cellNew.getCellStyle().getFillBackgroundColor());
+            //L.print(cellNew.toString() + " >?" + cellNew.getCellStyle().getFillBackgroundColor());
             transform(workbookOld, workbookNew, (XSSFCell) cell, cellNew);
         }
         return Math.max(lastColumn, rowOld.getLastCellNum());
@@ -333,7 +334,7 @@ public class ThinkExcelUtil {
                 cellNew.setCellValue(cellOld.getStringCellValue());
                 break;
             default:
-                System.out.println("transform: Unbekannter Zellentyp "
+                L.print("transform: Unbekannter Zellentyp "
                         + cellOld.getCellType());
         }
     }

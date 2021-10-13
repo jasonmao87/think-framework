@@ -4,6 +4,7 @@ import com.think.common.util.StringUtil;
 import com.think.core.bean.SimplePrimaryEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
@@ -13,8 +14,9 @@ import java.util.Date;
  * @Description : 请输入
  */
 @Data
+@Slf4j
 @Accessors(chain = true)
-public class TbX extends SimplePrimaryEntity {
+public class TbX_FOR_TEST extends SimplePrimaryEntity {
 
     private String name;
 
@@ -26,11 +28,15 @@ public class TbX extends SimplePrimaryEntity {
     private String man = StringUtil.randomNumber(10);
 
     static {
-        System.out.println("HELLO I AM HERE");
+        if (log.isInfoEnabled()) {
+            log.info("HELLO I AM HERE");
+        }
     }
 
 
     public static void print(){
-        System.out.println(StringUtil.randomNumber(13));
+        if (log.isInfoEnabled()) {
+            log.info(StringUtil.randomNumber(13));
+        }
     }
 }

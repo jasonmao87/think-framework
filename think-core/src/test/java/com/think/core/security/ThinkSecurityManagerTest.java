@@ -1,5 +1,6 @@
 package com.think.core.security;
 
+import com.think.common.util.L;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -8,6 +9,6 @@ public class ThinkSecurityManagerTest {
 
     @Test
     public void setSecurityKey() {
-        System.out.println(ThinkSecurityKey.generateKey());
+        L.print(ThinkSecurityKey.generateKey());
     }
 }

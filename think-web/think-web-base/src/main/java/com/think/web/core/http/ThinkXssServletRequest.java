@@ -55,7 +55,6 @@ public class ThinkXssServletRequest extends HttpServletRequestWrapper {
 
     @Override
     public String[] getParameterValues(String name) {
-//        System.out.println("get " + name + " is done ");
         String values[] = super.getParameterValues(name);
         if (values!=null) {
             for (int i = 0; i < values.length; i++) {
@@ -64,7 +63,6 @@ public class ThinkXssServletRequest extends HttpServletRequestWrapper {
         }else{
             values =new String[]{""};
         }
-//        System.out.println("return values = " + values);
         return values;
     }
 

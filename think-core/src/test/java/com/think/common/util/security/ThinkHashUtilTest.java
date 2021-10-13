@@ -1,5 +1,6 @@
 package com.think.common.util.security;
 
+import com.think.common.util.L;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +10,7 @@ class ThinkHashUtilTest {
     @Test
     void simpleStrHashcode() {
         String str ="abc";
-        System.out.println(Integer.toString(Integer.MAX_VALUE,36));
-        System.out.println(ThinkHashUtil.simpleStrHashcode("abcxxx"));
+        L.print(Integer.toString(Integer.MAX_VALUE,36));
+        L.print(ThinkHashUtil.simpleStrHashcode("abcxxx"));
     }
 }

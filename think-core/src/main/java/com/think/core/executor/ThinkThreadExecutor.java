@@ -274,7 +274,7 @@ public class ThinkThreadExecutor {
 
             if(!offerResult ) {
                 try{
-                    //System.out.println("阻塞put ");
+                    // 阻塞pu
                     if (log.isWarnEnabled()) {
                         log.warn("【2】异步线程过于繁忙才提示得警告,多次异步排队未成功，尝试塞生产线程排队，强制等待任务进入队列。----当前异步线程缓冲队列容量[{}]",queueCapacity);
                     }

@@ -2,6 +2,7 @@ package com.think.common.util;
 
 import com.github.stuxuhai.jpinyin.PinyinFormat;
 import com.github.stuxuhai.jpinyin.PinyinHelper;
+import lombok.extern.slf4j.Slf4j;
 //import com.sun.istack.internal.NotNull;
 
 import java.text.SimpleDateFormat;
@@ -9,6 +10,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class StringUtil {
 
     public static final String UTF8 = "UTF-8";
@@ -358,71 +360,6 @@ public class StringUtil {
 
 
 
-//
-//    public static void main(String[] args) {
-//        /*
-//        原始长度 ： 0013  转换后长度 :0035,倍率： 2.69    综合结果： 样本数 :1162  ,最大倍率 3.9, 综合倍率:2.65
-//原始长度 ： 0016  转换后长度 :0038,倍率： 2.37    综合结果： 样本数 :1163  ,最大倍率 3.9, 综合倍率:2.65
-//原始长度 ： 0010  转换后长度 :0030,倍率： 3.0    综合结果： 样本数 :1164  ,最大倍率 3.9, 综合倍率:2.65
-//原始长度 ： 0014  转换后长度 :0036,倍率： 2.57    综合结果： 样本数 :1165  ,最大倍率 3.9, 综合倍率:2.65
-//原始长度 ： 0007  转换后长度 :0020,倍率： 2.85    综合结果： 样本数 :1166  ,最大倍率 3.9, 综合倍率:2.65
-//原始长度 ： 0033  转换后长度 :0089,倍率： 2.69    综合结果： 样本数 :1167  ,最大倍率 3.9, 综合倍率:2.65
-//原始长度 ： 0046  转换后长度 :0133,倍率： 2.89    综合结果： 样本数 :1168  ,最大倍率 3.9, 综合倍率:2.66
-//原始长度 ： 0013  转换后长度 :0032,倍率： 2.46    综合结果： 样本数 :1169  ,最大倍率 3.9, 综合倍率:2.65
-//原始长度 ： 0036  转换后长度 :0114,倍率： 3.16    综合结果： 样本数 :1170  ,最大倍率 3.9, 综合倍率:2.66
-//
-//原始长度 ： 0015  转换后长度 :0046,倍率： 3.06    综合结果： 样本数 :1171  ,最大倍率 3.9, 综合倍率:2.66
-//
-//加强医院信息系统的安全保障和患者隐私保护。
-//
-//
-//
-//
-//
-//
-//
-//
-//原始长度 ： 0021  转换后长度 :0061,倍率： 2.90    综合结果： 样本数 :1172  ,最大倍率 3.9, 综合倍率:2.66
-//
-//
-//         */
-//        int total = 0 ;
-//        long totalSource = 0;
-//        long totalResult = 0 ;
-//        long maxB = 1;
-//        Scanner scanner = new Scanner(System.in);
-//        while (scanner.hasNextLine()) {
-//
-//            String zhs = scanner.nextLine();
-//            for(String zh :zhs.split(" ")) {
-//
-//                if (zh.length() > 5) {
-//
-//
-//                    total++;
-//                    int lenSource = zh.trim().length();
-//                    int lenResult = getFullPinyinReplaceSymbolWithSpecialCode(zh, "#").length();
-//                    totalSource += lenSource;
-//                    totalResult += lenResult;
-//                    int b = lenResult * 100 / lenSource;
-//                    if (b > maxB) {
-//                        maxB = b;
-//                    }
-//
-//                    System.out.println("原始长度 ： " + x(lenSource) + "  转换后长度 :" + x(lenResult) + ",倍率： " + x(lenSource, lenResult) + "    综合结果： 样本数 :" + x(total) + "  ,最大倍率 " + x(100, maxB) + ", 综合倍率:" + x(totalSource, totalResult));
-//                }
-//            }
-//        }
-//
-//
-////
-////        System.out.println(zh.length());
-////        System.out.println(getFullPinyin(zh) + "  :> " + getFullPinyin(zh) .length() );
-////        System.out.println(getShortPinyin(zh) + "  :> " + getShortPinyin(zh) .length());
-////        System.out.println(getShortPinyinReplaceSymbolWithSpecialCode(zh,"#") + "  :> " + getShortPinyinReplaceSymbolWithSpecialCode(zh,"#") .length());
-////        System.out.println(getFullPinyinReplaceSymbolWithSpecialCode(zh,"#") + "  :> " + getFullPinyinReplaceSymbolWithSpecialCode(zh,"#") .length());
-//    }
-
 
 
 
@@ -505,13 +442,5 @@ public class StringUtil {
 
     }
 
-
-
-
-
-    public static void main(String[] args) {
-//        System.out.println(getShortPinyinReplaceSymbolWithSpecialCode("你好","#"));
-//        System.out.println(getFullPinyinReplaceSymbolWithSpecialCode("你好","#"));
-    }
 
 }
