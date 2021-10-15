@@ -1,5 +1,6 @@
 package com.think.data.model;
 
+import com.think.common.util.StringUtil;
 import com.think.core.annotations.Remark;
 
 import java.io.Serializable;
@@ -26,6 +27,9 @@ public class ThinkIndexModel implements Serializable {
             }
             sb.append(uk ? "UNIQUE_INDEX" : "INDEX");
             this.indexName = sb.toString();
+            if(indexName.length() >48){
+                this.indexName = (uk ? "UNIQUE_INDEX" : "INDEX") + StringUtil.randomStr(16);
+            }
         }else{
             this.indexName = "";
         }
