@@ -265,10 +265,12 @@ public class ThinkTableModel implements Serializable {
      * @return
      */
     public ThinkColumnModel getKey(String key){
+
         String realKey = null;
-         if(columnModels == null){
+        if(columnModels == null){
             throw new ThinkDataModelException("尚未初始化列模型");
         }
+
         boolean stateColumn = false;
         if(key.contains(ThinkStateColumn.splitFlag)) {
             String[] ksplit = key.split(ThinkStateColumn.splitFlag);
@@ -278,7 +280,13 @@ public class ThinkTableModel implements Serializable {
             stateColumn = true;
             realKey = ksplit[0];
         }else{
-            realKey = key;
+            if(key.startsWith("fs_")){
+                realKey = key.replaceFirst("fs_","");
+            } else if(key.startsWith("fss_")){
+                realKey = key.replaceFirst("fss_","");
+            }else {
+                realKey = key;
+            }
         }
 
         for(ThinkColumnModel modal : columnModels){

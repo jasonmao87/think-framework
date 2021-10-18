@@ -138,17 +138,17 @@ public class ThinkUpdateQueryBuilder {
                     //值 校验
                     ThinkDataValidator.verification(t.getClass(), cm.getKey(), v);
                 }
+
+
                 /**
-                 * 脱敏处理
+                 * 处理脱敏，并 添加 到valueList ，
                  */
                 if(cm.isSensitive() && v instanceof String ){
-                    v = DesensitizationUtil.encode((String) v);
+                    values.add(DesensitizationUtil.encode((String) v));
+                }else{
+                    values.add(v);
                 }
-                /**
-                 * 脱敏处理
-                 */
 
-                values.add(v);
                 i++;
 
                 if(cm.isFastMatchAble()){
@@ -368,22 +368,25 @@ public class ThinkUpdateQueryBuilder {
                         ThinkDataValidator.verification(t.getClass(),columnModal.getKey(),v);
                     }
 
-                    /**
-                     * 脱敏处理
-                     */
-                    if(columnModal.isSensitive() && v instanceof String ){
-                        v = DesensitizationUtil.encode((String) v);
-                    }
-                    /**
-                     * 脱敏处理
-                     */
 
 
                     if(index > 0){
                         sql.append(",");
                     }
                     sql.append(" ").append(columnModal.getKey()).append(" = ?");
-                    valuesList.add((Serializable)v);
+                    /**
+                     * 脱敏处理 并 添加值 到list
+                     */
+                    if(columnModal.isSensitive() && v instanceof String ){
+                        valuesList.add(DesensitizationUtil.encode((String) v));
+                    }else{
+                        valuesList.add((Serializable)v);
+                    }
+                    /**
+                     * 脱敏处理
+                     */
+
+
                     index ++ ;
 
                     //如果支持排序支持 开始
@@ -449,20 +452,24 @@ public class ThinkUpdateQueryBuilder {
                 //值 校验
                 ThinkDataValidator.verification(updaterMapper.getTargetClass(),k,v);
             }
-            /**
-             * 脱敏处理
-             */
-            if(columnModal!=null && columnModal.isSensitive() && v instanceof String ){
-                v = DesensitizationUtil.encode((String) setMapper.get(k) );
-            }
-            /**
-             * 脱敏处理
-             */
+
             if(setIndex >0){
                 sql.append(", ");
             }
             sql.append( k).append(" = ").append(" ? ");
-            values.add( v );
+
+            /**
+             * 脱敏处理
+             */
+            if(columnModal!=null && columnModal.isSensitive() && v instanceof String ){
+                values.add( DesensitizationUtil.encode((String) setMapper.get(k) ));
+            }else{
+                values.add( v );
+            }
+            /**
+             * 脱敏处理
+             */
+
             setIndex ++ ;
 
             //如果支持排序支持 开始

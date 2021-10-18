@@ -122,7 +122,7 @@ public class ObjectUtil  {
                     try{
                         mapSetValueToBean(map,t,field,key);
                     }catch (Exception e){
-                        log.error("赋值未成功，相关KEY = {}" ,key);
+                        //log.error("赋值未成功，相关KEY = {}" ,key);
                     }
                     ignores.add(key);
                 }

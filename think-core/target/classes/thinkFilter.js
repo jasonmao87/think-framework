@@ -24,6 +24,7 @@ Array.prototype.pushModal=function(filterBeanModal){
         this.push( filterBeanModal)
     }
 }
+
 function ThinkWebFilter( ){
     this.filterBody = [];
     this._eq = function (k , v , dataType) {

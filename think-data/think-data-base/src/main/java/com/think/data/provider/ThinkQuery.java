@@ -228,37 +228,41 @@ public class ThinkQuery {
                 String sqlPart =""+ keyCondition.getQueryPart();
                 sqlPart = sqlPart.replaceFirst(sourceKey,fastMatchKey);
                 if(index > 0 || startWithAnd){
-                    sb.append("AND ");
+                    sb.append("AND (");
+                }else{
+                    sb.append(" (");
                 }
                 index ++ ;
                 sb.append(sqlPart);
                 Serializable[] vaules = keyCondition.getValues();
                 for(int i=0 ;i < vaules.length; i++){
                     String v =(String) vaules[i];
-                    String redoValue ;
-                    if(true ==keyCondition.isSensitive()){
-                        //处理  sort 支持 值  ----
-                        redoValue = reDoStringAsFastMatchForQuery(DesensitizationUtil.encodeWithIgnore(v,'%'),false);
-                    }else {
-                        //处理  sort 支持 值  ----
-                        redoValue = reDoStringAsFastMatchForQuery(v,false);
-                    }
+                    String redoValue  = reDoStringAsFastMatchForQuery(v,false);
+                    //快排支持情况下，忽略  脱敏 ！
+//                    if(true ==keyCondition.isSensitive() ){
+//                        //处理  sort 支持 值  ----
+//                        redoValue = reDoStringAsFastMatchForQuery(DesensitizationUtil.encodeWithIgnore(v,'%'),false);
+//                    }else {
+//                        //处理  sort 支持 值  ----
+//                        redoValue = reDoStringAsFastMatchForQuery(v,false);
+//                    }
                     paramValues.add(redoValue);
                 }
 
                 // secondary key append
                 String sqlPartSecondary  = sqlPart.replaceFirst("fs_","fss_");
-                sb.append("AND ").append(sqlPartSecondary);
+                sb.append("OR ").append(sqlPartSecondary);
+                sb.append(" ) ");
                 for(int i=0 ;i < vaules.length; i++){
                     String v =(String) vaules[i];
-                    String redoValue ;
-                    if(true ==keyCondition.isSensitive()){
-                        //处理  sort 支持 值  ----
-                        redoValue = reDoStringAsFastMatchForQuery(DesensitizationUtil.encodeWithIgnore(v,'%'),true);
-                    }else {
-                        //处理  sort 支持 值  ----
-                        redoValue = reDoStringAsFastMatchForQuery(v,true);
-                    }
+                    String redoValue = reDoStringAsFastMatchForQuery(v,true);
+//                    if(true ==keyCondition.isSensitive()){
+//                        //处理  sort 支持 值  ----
+//                        redoValue = reDoStringAsFastMatchForQuery(DesensitizationUtil.encodeWithIgnore(v,'%'),true);
+//                    }else {
+//                        //处理  sort 支持 值  ----
+//                        redoValue = reDoStringAsFastMatchForQuery(v,true);
+//                    }
                     paramValues.add(redoValue);
                 }
 
