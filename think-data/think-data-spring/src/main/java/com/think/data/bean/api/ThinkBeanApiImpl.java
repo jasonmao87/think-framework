@@ -13,9 +13,7 @@ import com.think.data.dao.ThinkDao;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Date :2021/8/18
@@ -66,8 +64,18 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
     }
 
     @Override
-    public ThinkResult<Integer> createMany(List<T> t) {
-        return dao.batchInsert(t);
+    public ThinkResult<Integer> createMany(List<T> list)  {
+        if (list.size() == 1) {
+            ThinkResult<T> result = this.create(list.get(0));
+            if(result.isSuccess()){
+                return ThinkResult.success(1);
+            }else{
+                return result.intResult();
+            }
+        }
+
+
+        return dao.batchInsert(list);
     }
 
     //    @Override
@@ -247,5 +255,11 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
         updateMapper.setTargetDataId(id)
                 .updateTFlowState(update);
         return this.update(updateMapper);
+    }
+
+
+    @Override
+    public ThinkSqlFilter<T> emptySqlFilter(int limit) {
+        return ThinkSqlFilter.build(targetClass(),limit);
     }
 }

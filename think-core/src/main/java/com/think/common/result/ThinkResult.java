@@ -122,6 +122,14 @@ public class ThinkResult<T> implements Serializable {
     }
 
 
+    public static final <T> ThinkResult<T> notYet(T t){
+        return new ThinkResult(false,false,"尚未完成",t,null,ResultCode.REQUIRED_NOT_YET);
+    }
+
+    public static final <T> ThinkResult<T> notYet(){
+        return notYet(null);
+    }
+
 
 
     public static final <T> ThinkResult<T> fail( String message,ResultCode code){

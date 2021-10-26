@@ -61,6 +61,11 @@ public enum ResultCode {
      */
     SUCCESS ,
 
+    /**
+     * 尚未完成
+     */
+    REQUIRED_NOT_YET ,
+
 
     /**
      * 异步处理结果

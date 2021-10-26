@@ -1,6 +1,7 @@
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\TEnum.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\security\MD5Util.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\security\RSAUtil.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mysql\ThinkSqlCheckResult.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\SimpleHttpUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\StringUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\SimplePrimaryEntity.java

@@ -30,6 +30,18 @@ public abstract class _JdbcExecutor {
     public <T extends _Entity> void tableInit(String tableName){
 
         if (Manager.isTableInitialized(tableName) == false) {
+            // TODO:  临时代码 ，协助系统自动完成 createUserName 和 updateUserName 字段的增加 ！  该代码应该在一定时间后予以删除 ！当然该代码有大概率执行不了，所以tryCatch掉
+            try{
+                String addCreateUserNameAndUpdateUserName  = "ALTER TABLE " + tableName + " " +
+                        "ADD COLUMN createUserName varchar(32) NOT NULL AFTER createUserId  ," +
+                        "ADD COLUMN updateUserName varchar(32) NOT NULL AFTER updateUserId " ;
+                getJdbcTemplate().update(addCreateUserNameAndUpdateUserName);
+            }catch (Exception e){
+
+            }
+
+
+
             try {
 
                 String showTableExitsSql = "show tables like '" +tableName +"'";
@@ -40,23 +52,23 @@ public abstract class _JdbcExecutor {
                 }catch (Exception r){
 
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("检查表{}是否存在  --> {}::{}", tableName,showTableExitsSql ,showTableExitsMap);
+                if (log.isTraceEnabled()) {
+                    log.trace("检查表{}是否存在  --> {}::{}", tableName,showTableExitsSql ,showTableExitsMap);
                 }
                 if(showTableExitsMap.isEmpty()){
-                    if(log.isDebugEnabled()){
-                        log.debug("确定表{}不存在..",tableName);
+                    if(log.isTraceEnabled()){
+                        log.trace("确定表{}不存在..",tableName);
                     }
                     String sql;
                     if (Manager.getModelBuilder().get(getTargetClass()).isYearSplitAble()) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("即将创建表【时间拆分】 {}", tableName);
+                        if (log.isTraceEnabled()) {
+                            log.trace("即将创建表【时间拆分】 {}", tableName);
                         }
                         int splitYear = Integer.parseInt(tableName.split("_split_")[1]);
                         sql = ThinkDataDDLBuilder.createSpiltSQL(Manager.getModelBuilder().get(getTargetClass()), splitYear);
                     } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("即将创建普通表 {} ", tableName);
+                        if (log.isTraceEnabled()) {
+                            log.trace("即将创建普通表 {} ", tableName);
                         }
                         sql = ThinkDataDDLBuilder.createSQL(Manager.getModelBuilder().get(getTargetClass()));
                     }
@@ -70,11 +82,13 @@ public abstract class _JdbcExecutor {
                     if (rt().isPresent()) {
                         rt().get().fireDDL(sql, duration);
                     }
-                    if (log.isDebugEnabled()) {
-                        log.debug("表结构构建完成....");
+                    if (log.isTraceEnabled()) {
+                        log.trace("表结构构建完成....");
                     }
                 }else{
                     Manager.recordTableInit(tableName);
+
+
 
                     /*
                     //是否需要关联id支持
@@ -348,7 +362,9 @@ public abstract class _JdbcExecutor {
                 reportSqlTemplate = reportForPrint.toString().intern();
             }
             sql = sql.replaceFirst("where", "WHERE").replaceFirst("WHERE", "WHERE\n\t\t\t");
-            log.debug(reportSqlTemplate, sql, successState , affectedCount , duration);
+            if (log.isDebugEnabled()) {
+                log.debug(reportSqlTemplate, sql, successState , affectedCount , duration);
+            }
         }
 
     }

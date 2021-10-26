@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _JdbcExecutor  implements ThinkDao<T>  {
@@ -129,9 +130,53 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
                 }
             }
         }
+
+        int size = list.size();
+        if(size > 60) {
+            Queue<T> queue = new LinkedList<>();
+            for (T t : list) {
+                queue.offer(t);
+            }
+            List<T> tempList = new ArrayList<T>();
+            while (queue.peek() != null) {
+                tempList.add(queue.poll());
+                if (tempList.size() == 50) {
+                    ThinkResult<Integer> result =this.batchInsert(tempList);
+                    if ( result.isNotSuccess() ) {
+                        return this.rollbackInsert(list,result);
+                    }
+                    tempList.clear();
+                }
+            }
+            if(tempList.size()>0) {
+                if (tempList.size() > 1) {
+                    ThinkResult<Integer> result = this.batchInsert(tempList);
+                    if ( result.isNotSuccess() ) {
+                        return this.rollbackInsert(list,result);
+                    }
+                } else {
+                    ThinkResult<T> result = this.insert(tempList.get(0));
+                    if ( result.isNotSuccess()) {
+                        return this.rollbackInsert(list,result);
+                    }
+                }
+            }
+            return ThinkResult.success(size);
+        }
+
         ThinkExecuteQuery query = ThinkUpdateQueryBuilder.batchInsertSQL(list);
         return executeUpdate(query,finalTableName());
     }
+
+    public ThinkResult<Integer> rollbackInsert(List<T> list ,ThinkResult result){
+        Long[] idArray = list.stream()
+                .map(T::getId)
+                .collect(Collectors.toList())
+                .toArray(new Long[list.size()]);
+        this.physicalDelete(idArray);
+        return result;
+    }
+
 
 
     @Override

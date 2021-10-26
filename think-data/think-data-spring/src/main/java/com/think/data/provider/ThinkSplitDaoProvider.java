@@ -349,9 +349,13 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     }
 
     public ThinkResult<Integer> _batchInsert(List<T> list ,int splitYear){
-        if(list.size() >1) {
-            ThinkExecuteQuery query = ThinkUpdateQueryBuilder.batchInsertSQL(list);
-            return this.executeUpdate(query, finalTableName(splitYear));
+        if(list.size() >0) {
+            if(list.size() >1) {
+                ThinkExecuteQuery query = ThinkUpdateQueryBuilder.batchInsertSQL(list);
+                return this.executeUpdate(query, finalTableName(splitYear));
+            }else{
+                return this.insert(list.get(0)).intResult();
+            }
         }
         return ThinkResult.fail("无可插入数据", ResultCode.REQUEST_PARAM_ERROR);
     }

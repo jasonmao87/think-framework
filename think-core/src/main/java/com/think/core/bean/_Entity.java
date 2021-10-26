@@ -75,11 +75,18 @@ public abstract class _Entity implements Serializable {
     private String createUserId ="";
 
     @ThinkColumn(nullable = false,length = 32)
-    @ApiModelProperty(value = "最后人UserId",hidden = true)
+    @ApiModelProperty(value = "最后人修改人UserId",hidden = true)
     private String updateUserId = "";
+
+    @ApiModelProperty(value = "创建人名称",hidden = true)
+    private String createUserName = "";
+
+    @ApiModelProperty(value = "最后人修改人名称",hidden = true)
+    private String updateUserName  ="";
 
     @ApiModelProperty(value = "数据版本号",hidden = true)
     private int version = 0 ;
+
 
 
     @ThinkIgnore

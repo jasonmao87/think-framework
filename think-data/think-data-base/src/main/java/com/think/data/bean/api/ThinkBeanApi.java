@@ -38,7 +38,7 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
 
     ThinkResult<T> create(T t);
 
-    ThinkResult<Integer> createMany(List<T> t);
+    ThinkResult<Integer> createMany(List<T> list);
 
 
     ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper);
@@ -116,6 +116,9 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
 
     @Remark(value = "目标对象的流程状态重置" )
     ThinkResult<Integer> tFlowResultChangeToClearState(long id , String mainKey );
+
+
+    ThinkSqlFilter<T> emptySqlFilter(int limit);
 
 
 

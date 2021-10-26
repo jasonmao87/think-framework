@@ -55,8 +55,8 @@ public abstract class SimpleRefEntity extends _Entity {
     }
 
     @Remark("构建一个空的updateMapper")
-    public <T extends SimpleRefEntity> ThinkUpdateMapper<T> buildEmptyUpdateMapper(){
-        ThinkUpdateMapper<T> updateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(getClass());
+    public <T extends SimpleRefEntity> ThinkUpdateMapper<T> buildEmptyUpdateMapper(Class<T> tClass){
+        ThinkUpdateMapper<T> updateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(tClass);
         if(this.rootPrimaryId >0) {
             updateMapper.getFilter().eq("rootPrimaryId", this.rootPrimaryId);
         }
@@ -68,15 +68,15 @@ public abstract class SimpleRefEntity extends _Entity {
      * @return
      */
     @Remark(value = " 构建包含当前id的 updateMapper ，无法在设置 filter",description = "如果id不存在，返回空的updateMapper")
-    public  <T extends SimpleRefEntity> ThinkUpdateMapper<T>  buildUpdateMapperWithCurrentId(){
+    public  <T extends SimpleRefEntity> ThinkUpdateMapper<T>  buildUpdateMapperWithCurrentId(Class<T> tClass){
         if(this.getId() !=null && this.getId()>0) {
-            ThinkUpdateMapper<T> tThinkUpdateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(getClass()).setTargetDataId(this.getId());
+            ThinkUpdateMapper<T> tThinkUpdateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(tClass).setTargetDataId(this.getId());
             if(this.rootPrimaryId >0) {
                 tThinkUpdateMapper.getFilter().eq("rootPrimaryId", this.rootPrimaryId);
             }
             return tThinkUpdateMapper;
         }
-        return this.buildEmptyUpdateMapper();
+        return this.buildEmptyUpdateMapper(tClass);
     }
 
 }

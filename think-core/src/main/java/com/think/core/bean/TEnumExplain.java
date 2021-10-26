@@ -50,4 +50,6 @@ public class TEnumExplain implements Serializable {
     public List<Map<String, String>> getExplain() {
         return explain;
     }
+
+
 }

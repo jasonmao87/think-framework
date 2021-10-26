@@ -128,6 +128,7 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
     @Remark(value = "目标对象的流程状态重置" )
     ThinkResult<Integer> tFlowResultChangeToClearState(long id , String mainKey );
 
+    ThinkSqlFilter<T> emptySqlFilter(int limit);
 
 
 }

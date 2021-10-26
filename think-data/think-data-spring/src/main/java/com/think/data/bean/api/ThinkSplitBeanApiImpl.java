@@ -253,4 +253,9 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
                 .updateTFlowState(update);
         return this.update(updateMapper,dao.computeSplitYearById(id));
     }
+
+    @Override
+    public ThinkSqlFilter<T> emptySqlFilter(int limit) {
+        return ThinkSqlFilter.build(targetClass(),limit);
+    }
 }

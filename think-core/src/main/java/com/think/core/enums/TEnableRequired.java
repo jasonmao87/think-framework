@@ -33,6 +33,9 @@ public enum TEnableRequired implements TEnum {
             map.put(enableRequiredEnum.name(),toCN(enableRequiredEnum));
             list.add(map);
         }
+
+
+
         return list;
     }
 
@@ -40,4 +43,6 @@ public enum TEnableRequired implements TEnum {
     public TEnumExplain explain(String keyName) {
         return new TEnumExplain(keyName,getClass().getTypeName(),"启禁用匹配要求",list());
     }
+
+
 }

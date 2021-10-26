@@ -13,7 +13,10 @@ import java.util.regex.Pattern;
 @Slf4j
 public class StringUtil {
 
-    public static final String UTF8 = "UTF-8";
+    public static final String UTF8 =  new String("UTF-8").intern();
+
+    public static final String EMPTY_JSON = new String("{}").intern();
+    public static final String EMPTY_STRING = new String("").intern();
 
 
     private static char[] allCharDic = {
@@ -440,6 +443,13 @@ public class StringUtil {
         }
         return sb.toString();
 
+    }
+
+    public static final String getEmptyJsonStr(){
+        return EMPTY_JSON;
+    }
+    public static final String getEmptyStr(){
+        return EMPTY_STRING;
     }
 
 

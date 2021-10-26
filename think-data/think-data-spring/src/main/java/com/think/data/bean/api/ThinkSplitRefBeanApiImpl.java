@@ -140,4 +140,10 @@ public class ThinkSplitRefBeanApiImpl<T extends SimpleRefEntity>  implements Thi
         }
         return this.count(sqlFilter,rootPrimaryId);
     }
+
+
+    @Override
+    public ThinkSqlFilter<T> emptySqlFilter(int limit) {
+        return ThinkSqlFilter.build(targetClass(),limit);
+    }
 }

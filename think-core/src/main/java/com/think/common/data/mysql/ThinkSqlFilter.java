@@ -172,13 +172,16 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
     public ThinkSqlFilter<T> enableRequired(TEnableRequired required){
+        if(required == null){
+            required = TEnableRequired.MATCH_ALL;
+        }
+
         if (this.getKeyCondition("enable")!=null) {
             log.warn("已经再ThinkSQLFilter中指定了enable的需求属性，该操作可能引起不必要的误解,但您的调用仍然被接受");
         }
         if(this.enableRequired!=null){
             log.warn("已经指定了EnableRequired为{}，由于本次操作被替换为：{}" ,this.enableRequired,required );
         }
-
         this.enableRequired = required;
         return this;
     }

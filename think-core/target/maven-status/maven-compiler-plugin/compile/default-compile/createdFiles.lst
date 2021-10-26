@@ -9,6 +9,7 @@ com\think\core\annotations\bean\ThinkClollection.class
 com\think\core\enums\ResultDataType.class
 com\think\core\enums\ThinkResultLevel.class
 com\think\core\enums\TEnum.class
+com\think\common\data\mysql\ThinkSqlCheckResult.class
 com\think\core\executor\IAsyncTokenFilter.class
 com\think\common\util\ThinkMilliSecond$1.class
 com\think\core\bean\SimpleMongoEntity.class

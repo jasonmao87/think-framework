@@ -108,22 +108,40 @@ public class ThinkMongoDao {
         this.checkAndInitIndex(t.getClass());
         IdFixTool.dataInit(t);
 //        Update update = new Update();
-        Map<String,Object> map = ObjectUtil.beanToMap(t);
         ThinkMongoQueryFilter<? extends SimpleMongoEntity> filter = ThinkMongoQueryFilter.build(t.getClass()).eq("id", t.getId()).eq("thinkUpdateKey",t.getThinkUpdateKey());
-        map.keySet().forEach(k->{
-            if(!k.equalsIgnoreCase("id") ){
-                if(k.equalsIgnoreCase("thinkUpdateKey")){
-                   filter.findAndModifyUpdate(k, IdUtil.nextId());
-                }else{
-                    filter.findAndModifyUpdate(k,map.get(k));
-                }
-            }
-        });
-         t = (T) findOneAndModify(filter,true);
-         if(t ==null){
-             return ThinkResult.error("修改失败，可能涉及脏写被拦截！",new ThinkException("可能涉及脏写被拦截"));
-         }
-         return ThinkResult.successIfNoNull(t);
+        filter
+                .findAndModifyUpdate("thinkUpdateKey",IdUtil.nextId());
+        List<Map<String, Object>> findResult  = this.listForKeys(filter, "thinkUpdateKey" ,"_id");
+        if(findResult.size() > 0 ){
+            t.setThinkUpdateKey(IdUtil.nextId());
+            t = this.getMongoTemplate().save(t);
+            return ThinkResult.successIfNoNull(t);
+        }else{
+            return ThinkResult.error("修改失败，可能涉及脏写被拦截！",new ThinkException("可能涉及脏写被拦截"));
+        }
+
+//
+//        Map<String,Object> map = ObjectUtil.beanToMap(t);
+//
+//
+//        ThinkMongoQueryFilter<? extends SimpleMongoEntity> filter = ThinkMongoQueryFilter.build(t.getClass()).eq("id", t.getId()).eq("thinkUpdateKey",t.getThinkUpdateKey());
+//
+//        map.keySet().forEach(k->{
+//            if(!k.equalsIgnoreCase("id") ){
+//                if(k.equalsIgnoreCase("thinkUpdateKey")){
+//                   filter.findAndModifyUpdate(k, IdUtil.nextId());
+//                }else{
+//                    filter.findAndModifyUpdate(k,map.get(k));
+//                }
+//            }
+//        });
+//
+//
+//         t = (T) findOneAndModify(filter,true);
+//         if(t ==null){
+//             return ThinkResult.error("修改失败，可能涉及脏写被拦截！",new ThinkException("可能涉及脏写被拦截"));
+//         }
+//         return ThinkResult.successIfNoNull(t);
     }
 
 
@@ -219,6 +237,8 @@ public class ThinkMongoDao {
         }
         return mapList;
     }
+
+
 
 
     public ThinkResult<Long> delete(String id , Class targetClass){

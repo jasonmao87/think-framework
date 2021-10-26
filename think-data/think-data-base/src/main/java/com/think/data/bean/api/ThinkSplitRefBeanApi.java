@@ -93,5 +93,7 @@ public interface ThinkSplitRefBeanApi <T extends SimpleRefEntity> {
     long countByStringSqlFilter(String filter,long rootPrimaryId, ThinkBeanFilterAction action);
 
 
+    ThinkSqlFilter<T> emptySqlFilter(int limit);
+
 
 }
