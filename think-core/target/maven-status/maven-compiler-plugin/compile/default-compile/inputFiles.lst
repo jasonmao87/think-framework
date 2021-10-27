@@ -50,6 +50,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\secu
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkSecurityKey.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\ThinkVersionManager.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mysql\permission\ThinkSqlFilterPermissionFilter.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\ThinkPeakReduction.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\ThinkAsyncExecutor.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\ClasspathPackageScanner.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkMongoKV.java

@@ -74,6 +74,7 @@ com\think\common\util\security\MD5Util.class
 com\think\common\result\ThinkResult.class
 com\think\common\util\security\SHAUtil.class
 com\think\moudles\auth\UserAccountModel.class
+com\think\common\util\PeakBean.class
 com\think\core\bean\util\ClassUtil.class
 com\think\common\util\rt\ThinkMachineUtil.class
 com\think\core\bean\TFlowState.class
@@ -123,6 +124,7 @@ com\think\core\executor\ThinkBackgroundTask.class
 com\think\structure\table\ThinkGridColumnModel.class
 com\think\common\util\NumberCompareUtil.class
 com\think\core\security\ThinkSecurityKey.class
+com\think\common\util\ThinkPeakReduction.class
 com\think\core\annotations\bean\ThinkStateColumn.class
 com\think\core\bean\SimplePrimaryEntity.class
 com\think\common\util\TVerification.class

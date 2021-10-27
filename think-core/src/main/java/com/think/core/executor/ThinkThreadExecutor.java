@@ -26,7 +26,7 @@ public class ThinkThreadExecutor {
     /**
      * 后台任务 队列，最大容量为128
      */
-    private static BlockingQueue<BackTaskHolder> taskHolderArrayBlockingQueue = new ArrayBlockingQueue<BackTaskHolder>(128);
+    private static BlockingQueue<BackTaskHolder> taskHolderArrayBlockingQueue = new ArrayBlockingQueue<BackTaskHolder>(256);
     /**
      * 核心线程数量，不会被回收
      */
@@ -56,8 +56,14 @@ public class ThinkThreadExecutor {
      */
     public static synchronized final boolean shutDownBackgroundTasks(){
         if(startControlState){
+            if (log.isInfoEnabled()) {
+                log.info("准备关闭后台任务...");
+            }
             startControlState = false;
         }else{
+            if (log.isInfoEnabled()) {
+                log.info("当前后台任务并未启动，无需关闭");
+            }
             return false;
         }
         while (runState){
@@ -65,6 +71,9 @@ public class ThinkThreadExecutor {
             try{
                 Thread.sleep(100);
             }catch (Exception e){}
+        }
+        if (log.isInfoEnabled()) {
+            log.info("后台任务成功关闭");
         }
         return true;
     }
@@ -95,64 +104,50 @@ public class ThinkThreadExecutor {
             long start = ThinkMilliSecond.currentTimeMillis();
             long executeCount= 0;
             long executeErrorCount = 0;
-            Set<String> removeSet = new HashSet<>();
             while (startControlState){
-                for (BackTaskHolder holder : taskHolderArrayBlockingQueue) {
-                    if(holder.canRun()){
-                        long now = ThinkMilliSecond.currentTimeMillis();
-                        if (holder.getMaxLoop() == 0) {
-                            //说明执行次数用尽，不在继续执行.这边为了注释，让jvm 自己优化代码
-                            removeSet.add(holder.getId());
-                            //添加到 移除set
-                        } else {
-                            if (now - (holder.getInterval() * 1000 * 60) > holder.getLastExecuteTime()) {
-
-                                try {
-                                    if (log.isTraceEnabled()) {
-                                        log.trace("未来需删除调试期日志：-------------------------------------START-----------------------------------------------");
-                                        log.trace("本次执行携带得TOKEN信息：{}" , ThinkExecuteThreadSharedTokenManager.get());
-                                        log.trace("未来需删除调试期日志：-------------------------------------FINISH----------------------------------------------");
-                                    }
-                                    holder.setLastExecuteTime(now);
-                                    holder.getTask().execute();
-                                } catch (Exception e) {
-                                    executeErrorCount ++ ;
-
-                                }finally {
-                                    executeCount ++;
+                if(taskHolderArrayBlockingQueue.peek()!=null){
+                    BackTaskHolder taskHolder = taskHolderArrayBlockingQueue.poll();
+                    if(taskHolder != null){
+                        if(taskHolder.canRun()){
+                            if (log.isTraceEnabled()) {
+                                log.trace("未来需删除调试期日志：-------------------------------------START-----------------------------------------------");
+                                log.trace("本次执行携带得TOKEN信息：{}" , ThinkExecuteThreadSharedTokenManager.get());
+                                log.trace("未来需删除调试期日志：-------------------------------------FINISH----------------------------------------------");
+                            }
+                            taskHolder.setLastExecuteTime(ThinkMilliSecond.currentTimeMillis());
+                            try {
+                                taskHolder.getTask().execute();
+                            }catch (Exception e){
+                                executeErrorCount ++ ;
+                                if (log.isErrorEnabled()) {
+                                    log.error("执行后台任务出现异常" ,e );
                                 }
+                            }finally {
+                                executeCount ++ ;
                             }
                         }
-                        try {
-                            /**休眠 1秒钟  */
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
+                        if(taskHolder.canRemove() == false) {
+                            taskHolderArrayBlockingQueue.offer(taskHolder);
                         }
+                    }
+                }else{
+                    if (log.isTraceEnabled()) {
+                        log.trace("后台任务队列未有更多的任务需要执行，休眠1秒钟后检查");
+                    }
+                    try {
+                        Thread.sleep(1000L);
+                    }catch (Exception e){}
+                    if (log.isTraceEnabled()) {
+                        log.trace("后台任务线程恢复");
                     }
 
                 }
             }
-
-            long end = ThinkMilliSecond.currentTimeMillis();
-            runState = false;
-            if (log.isInfoEnabled()) {
-                log.info("____________________________________________________________________________________________________________________________");
-                log.info("think 后台任务线程安全结束，开始停止执行后台任务....");
-                log.info("后台任务存活时长 = {} ，共执行{}次后台任务吗，其中捕获异常{}次" , (end -start) , executeCount,executeErrorCount);
-                log.info("____________________________________________________________________________________________________________________________");
+            if (log.isWarnEnabled()) {
+                log.warn("后台任务线程即将关闭...");
             }
-            removeSet.forEach(k->{
-                if (log.isInfoEnabled()) {
-                    log.info("任务执行次数用尽，移除后台任务[{}]",k);
-                }
-                taskHolderArrayBlockingQueue.removeIf(t->t.getId().equals(k));
-            });
-            removeSet.clear();
-
         });
-//        CompletableFuture.runAsync(()->{
-//
-//        },getExecutor());
+
     }
 
 
@@ -192,7 +187,7 @@ public class ThinkThreadExecutor {
 
         if(delay >0){
             if (log.isDebugEnabled()) {
-                log.debug("添加后台执行任务,将在{} {} 后执行{}次....",delay,unit.toString(),maxLoop);
+                log.debug("添加后台执行任务,将在{} {} 后执行{}次..如果轮询执行间隔为{}分钟..",delay,unit.toString(),maxLoop,intervalMinutes);
                 log.debug("携带得tokenInfo：{}", ThinkExecuteThreadSharedTokenManager.get());
             }
             long delayMillis ;
@@ -327,6 +322,9 @@ class BackTaskHolder{
         this.maxLoop =maxLoop;
         this.initTime = ThinkMilliSecond.currentTimeMillis();
         this.token= token;
+        if(maxLoop == 0){
+            throw new ThinkRuntimeException("后台任务的轮询次数不能设置为0，必须设置为大于0的数，需要永远轮询下去，请设置为-1");
+        }
     }
 
     public void setDelayMillis(long delayMillis) {
@@ -364,6 +362,11 @@ class BackTaskHolder{
     public boolean canRun(){
         long time =ThinkMilliSecond.currentTimeMillis();
         return time-initTime > delayMillis;
+    }
+
+
+    public boolean canRemove(){
+        return maxLoop == 0;
     }
 
 
