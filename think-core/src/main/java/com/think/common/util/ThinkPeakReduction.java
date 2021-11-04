@@ -34,15 +34,24 @@ public class ThinkPeakReduction {
     public static final void peakReduction(long key1,long key2){
         String mk = buildKey(key1,key2);
         PeakBean peakBean = holder.getOrDefault(mk, new PeakBean(key1, key2));
-        while (!peakBean.canReduction()) {
-            peakBean.reduction();
-            if (log.isDebugEnabled()) {
-                log.info("瞬时请求过高，逻辑削峰接入...");
-            }
-            try{
-                Thread.sleep(5);
-            }catch (Exception e){}
+
+        int reductionResult = peakBean.reduction();
+        while (reductionResult == -1 ){
+            reductionResult = peakBean.reduction();
         }
+        if (log.isDebugEnabled()) {
+            if( reductionResult == 1){
+                log.debug("瞬时请求过大，逻辑削峰介入...");
+            }
+        }
+//
+//        while (!peakBean.canReduction()) {
+//            try{
+//                Thread.sleep(5);
+//            }catch (Exception e){}
+//
+//        }
+//        peakBean.reduction();
         holder.put(mk,peakBean);
         callCheck();
     }
@@ -87,7 +96,7 @@ public class ThinkPeakReduction {
 
 
 }
-
+@Slf4j
 class PeakBean{
 
     private String mainKey ;
@@ -103,28 +112,36 @@ class PeakBean{
     }
 
 
-    private void active(){
-        this.lastActiveTime = ThinkMilliSecond.currentTimeMillis();
-    }
-
-    public boolean canReduction(){
-        return lock?false:true;
-    }
-
-
-    public synchronized boolean reduction(){
+    /**
+     * @return  1： 削峰介入 ， 0 表示未介入
+     */
+    private synchronized int active(){
         lock = true;
-        if(ThinkMilliSecond.currentTimeMillis() - lastActiveTime >ThinkPeakReduction.reductionsMillis){
-            this.active();
-            lock = false;
-            return true;
-        }else{
+        int r = 0 ;
+        if(ThinkMilliSecond.currentTimeMillis() - lastActiveTime <ThinkPeakReduction.reductionsMillis){
             try{
-                Thread.sleep(ThinkPeakReduction.reductionsMillis );
+                Thread.sleep(ThinkPeakReduction.reductionsMillis);
+                r =1 ;
             }catch (Exception e){}
         }
+        this.lastActiveTime = ThinkMilliSecond.currentTimeMillis();
+        lock = false;
+        return r ;
+    }
 
-        return reduction();
+
+    /**
+     *
+     * @return
+     *      返回 0 表示未介入 ，1表示 介入 ，-1 表示 未执行 ，需要重新调用
+     */
+    public  int reduction(){
+        if(lock != true){
+            int  r = this.active();
+            return r ;
+        }
+        return -1;
+
     }
     public boolean destroyAble(){
         return ThinkMilliSecond.currentTimeMillis() - lastActiveTime > (ThinkPeakReduction.reductionsMillis*2);

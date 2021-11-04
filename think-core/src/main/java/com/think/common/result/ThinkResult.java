@@ -1,6 +1,7 @@
 package com.think.common.result;
 
 import com.think.common.result.state.ResultCode;
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.annotations.Remark;
 import com.think.core.bean.util.ObjectUtil;
@@ -87,6 +88,16 @@ public class ThinkResult<T> implements Serializable {
             log.warn("throw info : {}" ,throwable);
 
         }
+    }
+
+
+    public <T> ThinkResult<T> appendMessage(String message){
+        if (StringUtil.isEmpty(message)) {
+            this.message= message;
+        }else{
+            this.message += " "+message;
+        }
+        return (ThinkResult<T>) this;
     }
 
 

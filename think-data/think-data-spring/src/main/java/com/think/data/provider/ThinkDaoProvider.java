@@ -254,13 +254,14 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
     @Override
     public ThinkResult<Integer> physicalDelete(long id) {
         if(log.isWarnEnabled()) {
-            T t = this.findOne(id);
+            Map t = this.findOne(id ,"id");
             if(t == null){
                 log.warn("不存在id = {}的数据，放弃物理删除！" ,id );
-                return ThinkResult.fail("不存在指定数据,放弃执行物理删除",ResultCode.REQUEST_NO_RESOURCE);
+                return ThinkResult.success(0).appendMessage("未删除任何数据");
+//                return ThinkResult.fail("不存在指定数据,放弃执行物理删除",ResultCode.REQUEST_NO_RESOURCE);
             }else {
                 if(log.isWarnEnabled()) {
-                    log.warn("即将物理删除数据 class ={} ，id ={} ,DATA : {} ", targetClass.getName(), id, t.toString());
+                    log.warn("即将物理删除数据 class ={} ，id ={} ,TABLE =  {} ", targetClass.getName(), id, finalTableName());
                 }
             }
         }
@@ -290,9 +291,10 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
         if(log.isWarnEnabled()) {
             List<T> list = this.list(sqlFilter);
 
-            if(list.size()<0){
+            if(list.size()==0){
                 log.warn("不存在id在{}内的数据，放弃物理删除！" ,  Arrays.toString(ids));
-                return ThinkResult.fail("不存在指定数据,放弃执行物理删除",ResultCode.REQUEST_NO_RESOURCE);
+                return ThinkResult.success(0).appendMessage("未删除任何数据");
+//                return ThinkResult.fail("不存在指定数据,放弃执行物理删除",ResultCode.REQUEST_NO_RESOURCE);
             }else {
                 if(log.isWarnEnabled()) {
                     for (int i = 0; i < list.size(); i++) {
