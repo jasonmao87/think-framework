@@ -392,7 +392,8 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         if(total>0){
             return ThinkResult.success(total);
         }else {
-            return ThinkResult.fail("未匹配到任何数据，或其他错误",ResultCode.REQUEST_NO_RESOURCE);
+            return ThinkResult.success(0).appendMessage("未删除任何数据");
+            //return ThinkResult.fail("未匹配到任何数据，或其他错误",ResultCode.REQUEST_NO_RESOURCE);
         }
     }
 
@@ -449,7 +450,8 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         if(total>0){
             return ThinkResult.success(total);
         }else {
-            return ThinkResult.fail("未匹配到任何数据，或其他错误",ResultCode.REQUEST_NO_RESOURCE);
+            return ThinkResult.success(1).appendMessage("未删除任何数据");
+            //return ThinkResult.fail("未匹配到任何数据，或其他错误",ResultCode.REQUEST_NO_RESOURCE);
         }
     }
 
@@ -466,7 +468,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     public ThinkResult _physicalBatchDelete(List<Long> idList,int splitYear){
         ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
         if(idList.size() ==0){
-            return ThinkResult.success(0);
+            return ThinkResult.success(0).appendMessage("未删除任何数据");
 //            return ThinkResult.fail("非法的参数，必须指定id",ResultCode.SERVER_FORBIDDEN);
         }else if(idList.size()>1){
             sqlFilter.in("id",idList.toArray(new Long[idList.size()]));

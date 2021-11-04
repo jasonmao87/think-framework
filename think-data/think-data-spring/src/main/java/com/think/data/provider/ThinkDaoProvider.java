@@ -97,6 +97,29 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
         return this.list(sqlFilter).size() > 0 ;
      }
 
+     public ThinkResult<Integer> checkIdBeforeBatchInsert(List<T> list){
+         //检查 id 是否 冲突
+         Long[] idArray = _DaoSupport.getIdArray(list);
+         if(idArray.length >0) {
+             ThinkSqlFilter<T> checkIdSqlFilter = ThinkSqlFilter.build(targetClass, -1).in("id", idArray);
+             List<Map<String, Object>> findExistIdList = this.list(checkIdSqlFilter, "id");
+             if(findExistIdList.size() >0){
+                 StringBuilder idErrorInfo = new StringBuilder("以下id可能存在冲突：");
+                 int i=0;
+                 for (Map<String, Object> map : findExistIdList) {
+                     if(i > 0){
+                         idErrorInfo.append(",");
+                     }
+                     idErrorInfo.append( map.get("id"));
+                     i ++ ;
+                 }
+                 idErrorInfo.append("操作被拒绝");
+                 return ThinkResult.forbidden(idErrorInfo.toString());
+             }
+         }
+         return ThinkResult.success();
+     }
+
 
     @Override
     public ThinkResult<T> insert(T t) {
@@ -130,6 +153,11 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
                 }
             }
         }
+        ThinkResult<Integer> checkIdBeforeBatchInsertResult = this.checkIdBeforeBatchInsert(list);
+        if(checkIdBeforeBatchInsertResult.isNotSuccess()){
+            return checkIdBeforeBatchInsertResult;
+        }
+
 
         int size = list.size();
         if(size > 60) {
@@ -222,7 +250,7 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
     public ThinkResult<Integer> delete(Long[] ids) {
         ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
         if(ids.length ==0){
-            return ThinkResult.success(0);
+            return ThinkResult.success(0).appendMessage("未删除任何数据");
             //return ThinkResult.fail("非法的参数，必须指定id",ResultCode.REQUEST_NO_RESOURCE);
         }else if(ids.length>1){
             sqlFilter.in("id",ids);

@@ -321,4 +321,20 @@ public class _DaoSupport{
             return new String[]{"*"};
         }
     }
+
+
+    protected static final <T extends _Entity> Long[] getIdArray(List<T> list){
+        if(list!=null && list.size()>0) {
+            List<Long> idList = new ArrayList<>(list.size());
+            for (T t : list) {
+                if (t.getId() != null) {
+                    idList.add(t.getId());
+                }
+            }
+            return idList.toArray(new Long[idList.size()]);
+        }
+        return new Long[]{};
+    }
+
+
 }
