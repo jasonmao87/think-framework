@@ -12,6 +12,7 @@ com\think\core\enums\TEnum.class
 com\think\common\data\mysql\ThinkSqlCheckResult.class
 com\think\core\executor\IAsyncTokenFilter.class
 com\think\common\util\ThinkMilliSecond$1.class
+com\think\common\util\TimeUtil$1.class
 com\think\core\bean\SimpleMongoEntity.class
 com\think\exception\ThinkRuntimeException.class
 com\think\common\util\rt\ThinkRuntimeUtil.class
@@ -90,6 +91,7 @@ com\think\core\bean\util\ObjectUtil.class
 com\think\core\data\ThinkVersionManager.class
 com\think\moudles\event\EventActionParam.class
 com\think\common\util\ClasspathPackageScanner.class
+com\think\common\util\ThinkConsoleLogger.class
 com\think\common\util\MathUtil.class
 com\think\core\annotations\bean\ThinkMongoIndex.class
 com\think\core\executor\BackTaskHolder.class
@@ -108,10 +110,12 @@ com\think\common\util\office\ThinkDocUtil.class
 com\think\common\util\RandomUtil.class
 com\think\common\result\ResultInfo.class
 com\think\core\security\ThinkTokenExtends.class
+com\think\common\util\ThinkTimer.class
 com\think\common\util\FileUtil.class
 com\think\structure\ThinkReadOnlyList.class
 com\think\structure\TCacheBean.class
 com\think\common\util\FastJsonUtil.class
+com\think\common\util\ThinkTimer$1.class
 com\think\core\security\token2\ITokenExtend.class
 com\think\structure\ThinkFastList$1.class
 com\think\common\data\mysql\TFlowStateUpdate.class
@@ -127,6 +131,7 @@ com\think\core\security\ThinkSecurityKey.class
 com\think\common\util\ThinkPeakReduction.class
 com\think\core\annotations\bean\ThinkStateColumn.class
 com\think\core\bean\SimplePrimaryEntity.class
+com\think\core\bean\IThinkFilterAndUpdateMapperBuilder.class
 com\think\common\util\TVerification.class
 com\think\core\security\token2\ThinkTokenV2.class
 com\think\common\util\office\ThinkExcelUtil$1.class

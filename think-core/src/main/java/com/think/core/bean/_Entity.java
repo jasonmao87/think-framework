@@ -20,7 +20,7 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public abstract class _Entity implements Serializable {
+public abstract class _Entity<T extends _Entity> implements IThinkFilterAndUpdateMapperBuilder<T> {
     private static final long serialVersionUID = 8257751739282533823L;
 
 
@@ -108,18 +108,18 @@ public abstract class _Entity implements Serializable {
         return dbPersistent;
     }
 
-    @Remark(value = "只允许ID未设置的 情况下设置id，不然不会有任何作用！！！",description = "")
-    public _Entity setId(Long id){
-        if(this.id == null || this.id < 1) {
-            this.id = id;
-        }else{
-            Logger log = LoggerFactory.getLogger(getClass());
-            if (log.isWarnEnabled()) {
-                log.warn("拒绝动态修改Id！");
-            }
-        }
-        return this;
-    }
+//    public _Entity setId(Long id){
+//        if(this.id == null || this.id < 1) {
+//            this.id = id;
+//        }else{
+//            Logger log = LoggerFactory.getLogger(getClass());
+//            if (log.isWarnEnabled()) {
+//                log.warn("拒绝动态修改Id！");
+//            }
+//        }
+//        return this;
+//    }
+
 
 
     @Remark("枚举解释器")
@@ -142,4 +142,91 @@ public abstract class _Entity implements Serializable {
     public String getThinkModelType(){
         return this.getClass().getSimpleName();
     }
+
+
+
+    @Remark(value = "只允许ID未设置的 情况下设置id，不然不会有任何作用！！！",description = "")
+    public <T extends _Entity> T setId(Long id ){
+        if(this.id == null || this.id < 1) {
+            this.id = id;
+        }else{
+            Logger log = LoggerFactory.getLogger(getClass());
+            if (log.isWarnEnabled()) {
+                log.warn("拒绝动态修改Id！");
+            }
+        }
+        return (T) this;
+    }
+
+    public <T extends _Entity> T  setCreateUserName(String createUserName) {
+        if(createUserName == null){
+            createUserName = "";
+        }
+        this.createUserName = createUserName;
+        return (T) this;
+    }
+
+    public <T extends _Entity> T setUpdateUserName(String updateUserName) {
+        if(updateUserName ==null){
+            updateUserName = "";
+        }
+        this.updateUserName = updateUserName;
+        return (T) this;
+    }
+
+    public <T extends _Entity> T setUpdateUserId(String updateUserId) {
+        if(updateUserId == null){
+            updateUserId ="";
+        }
+        this.updateUserId = updateUserId;
+        return (T) this;
+    }
+
+    public <T extends _Entity> T setCreateUserId(String createUserId) {
+        if(createUserId == null){
+            createUserId = "";
+        }
+        this.createUserId = createUserId;
+        return (T) this;
+    }
+
+    public <T extends _Entity> T setCreateTime(Date createTime) {
+        if(createTime == null){
+            createTime = DateUtil.zeroDate();
+        }
+        this.createTime = createTime;
+        return (T) this;
+    }
+
+
+    public  <T extends _Entity> T setLastUpdateTime(Date lastUpdateTime) {
+        if(lastUpdateTime == null){
+            lastUpdateTime = DateUtil.zeroDate();
+        }
+        this.lastUpdateTime = lastUpdateTime;
+        return (T) this;
+    }
+
+
+    public Date getCreateTime() {
+        return returnDateValue(this.createTime);
+    }
+
+    public Date getLastUpdateTime() {
+        return returnDateValue(lastUpdateTime);
+    }
+
+
+    private Date returnDateValue(Date date){
+        if(date == null){
+            return DateUtil.zeroDate();
+        }
+        return date;
+    }
+
+
+    public <T extends _Entity> Class<T> getSelfClass(){
+        return (Class<T>) this.getClass();
+    }
+
 }

@@ -3,6 +3,8 @@ package com.think.common.util;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 时间工具类
@@ -129,6 +131,10 @@ public class TimeUtil {
 
 
 
+
+
+
+
     public static boolean isAM(Date datetime){
         return hourOfTime(datetime) < 12;
     }
@@ -137,8 +143,89 @@ public class TimeUtil {
         return !isAM(datetime);
     }
 
+    public static final ThinkTimer timer(){
+        return new ThinkTimer();
+    }
+
+    public static void sleepForSeconds(int durationSeconds){
+        sleep(durationSeconds,TimeUnit.SECONDS);
+    }
+
+    public static void sleep(int duration,TimeUnit unit){
+        try{
+            switch (unit){
+                case MILLISECONDS:{
+                    TimeUnit.MILLISECONDS.sleep(duration);
+                    break;
+                }
+                case SECONDS:{
+                    TimeUnit.SECONDS.sleep(duration);
+                    break;
+                }
+                case MINUTES:{
+                    TimeUnit.MINUTES.sleep(duration);
+                    break;
+                }
+                case HOURS:{
+                    TimeUnit.HOURS.sleep(duration);
+                    break;
+                }
+                case DAYS:{
+                    TimeUnit.DAYS.sleep(duration);
+                    break;
+                }
+                case NANOSECONDS:{
+                    TimeUnit.NANOSECONDS.sleep(duration);
+                    break;
+                }
+                case MICROSECONDS:{
+                    TimeUnit.MICROSECONDS.sleep(duration);
+                    break;
+                }
+            }
+        }catch (Exception e){}
+
+    }
 
 
 
+}
+
+class ThinkTimer{
+
+    private long begin ;
+
+    protected ThinkTimer(){
+        begin = ThinkMilliSecond.currentTimeMillis();
+    }
+
+    public long duration(TimeUnit unit){
+
+        long duration = ThinkMilliSecond.currentTimeMillis() - begin;
+        switch (unit){
+            case MILLISECONDS:{
+                return duration;
+            }
+            case NANOSECONDS:{
+                return TimeUnit.MILLISECONDS.toNanos(duration);
+            }
+            case MICROSECONDS:{
+                return TimeUnit.MILLISECONDS.toMicros(duration);
+            }
+            case SECONDS:{
+                return TimeUnit.MILLISECONDS.toSeconds(duration);
+            }
+            case MINUTES:{
+                return TimeUnit.MILLISECONDS.toMinutes(duration);
+            }
+            case HOURS:{
+                return TimeUnit.MILLISECONDS.toHours(duration);
+            }
+            case DAYS:{
+                return TimeUnit.MILLISECONDS.toDays(duration);
+            }
+        }
+        return duration;
+    }
 
 }
