@@ -3,6 +3,7 @@ package com.think.core.bean;
 
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
+import com.think.common.result.ThinkResult;
 import com.think.common.util.DateUtil;
 import com.think.common.util.IdUtil;
 import com.think.core.annotations.Remark;
@@ -79,4 +80,27 @@ public abstract class SimpleRefEntity<T extends SimplePrimaryEntity> extends _En
         return this.buildEmptyUpdateMapper(tClass);
     }
 
+
+    @Override
+    public ThinkSqlFilter<T> buildEmptyFilter(int limit, Class<T> tClass) {
+        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(tClass, limit);
+        sqlFilter.eq("rootPrimaryId" ,rootPrimaryId);
+        return sqlFilter;
+    }
+
+    @Override
+    public ThinkUpdateMapper<T> buildEmptyUpdateMapper() {
+        ThinkSqlFilter<T> sqlFilter = buildEmptyFilter(-1,getSelfClass());
+        ThinkUpdateMapper<T> thinkUpdateMapper = ThinkUpdateMapper.build(getSelfClass());
+        thinkUpdateMapper.setFilter(sqlFilter);
+        return thinkUpdateMapper;
+    }
+
+
+    @Override
+    public ThinkUpdateMapper<T> buildUpdateMapperWithCurrentId() {
+        ThinkUpdateMapper<T> tThinkUpdateMapper = buildEmptyUpdateMapper();
+        tThinkUpdateMapper.getFilter().eq("id",this.getId());
+        return tThinkUpdateMapper;
+    }
 }
