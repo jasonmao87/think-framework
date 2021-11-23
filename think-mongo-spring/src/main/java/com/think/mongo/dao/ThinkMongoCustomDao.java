@@ -51,8 +51,21 @@ public class ThinkMongoCustomDao {
         ThinkMongoIndexBuilder.checkAndInitIndex(targetClass,customCollectionName,mongoTemplate);
     }
 
+    public <T extends SimpleMongoEntity> T  findOne(ThinkMongoQueryFilter<T> filter){
+        filter.updateLimit(1);
+        List<T> list = list(filter);
+        if(list.size() > 0){
+            return list.get(0);
+        }
+        return  null;
+
+    }
+
     @Remark("只能处理匹配到的第一条记录")
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter){
+        if(!filter.containsUpdate()){
+            return findOne(filter);
+        }
         Query query = ThinkMongoQueryBuilder.build(filter,false);
         Update update = new Update();
         update.set("thinkUpdateKey",IdUtil.nextId());
@@ -68,6 +81,9 @@ public class ThinkMongoCustomDao {
 
     @Remark("只能处理匹配到的第一条记录")
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter ,boolean returnNew){
+        if(!filter.containsUpdate()){
+            return findOne(filter);
+        }
         Query query = ThinkMongoQueryBuilder.build(filter,false);
         Update update = new Update();
         filter.getModifyUpdateMapper().forEach((k, v)->{
@@ -248,4 +264,7 @@ public class ThinkMongoCustomDao {
         }
         return ThinkResult.fastFail();
     }
+
+
+
 }

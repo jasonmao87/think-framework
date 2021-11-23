@@ -225,6 +225,7 @@ public abstract class _Entity<T extends _Entity> implements IThinkFilterAndUpdat
     }
 
 
+    @ApiModelProperty(hidden = true)
     public <T extends _Entity> Class<T> getSelfClass(){
         return (Class<T>) this.getClass();
     }

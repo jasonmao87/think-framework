@@ -443,6 +443,10 @@ public class ThinkMongoQueryFilter<T extends SimpleMongoEntity> implements Seria
         return this;
     }
 
+    public boolean containsUpdate(){
+        return  this.getModifyUpdateMapper().size() + this.getModifyIncMapper().size() >0;
+    }
+
 
 
     public boolean containsKey(String key){

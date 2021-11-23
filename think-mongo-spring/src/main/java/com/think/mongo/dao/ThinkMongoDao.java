@@ -58,11 +58,24 @@ public class ThinkMongoDao {
 //
 //    }
 
+    public <T extends SimpleMongoEntity> T  findOne(ThinkMongoQueryFilter<T> filter){
+        filter.updateLimit(1);
+        List<T> list = list(filter);
+        if(list.size() > 0){
+            return list.get(0);
+        }
+        return  null;
+
+    }
+
 
 
 
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter ){
         Query query = ThinkMongoQueryBuilder.build(filter,false);
+        if(!filter.containsUpdate()){
+            return this.findOne(filter);
+        }
         Update update = new Update();
         filter.getModifyUpdateMapper().forEach((k, v)->{
             update.set(k,v);
@@ -77,6 +90,9 @@ public class ThinkMongoDao {
 
     @Remark("只能处理匹配到的第一条记录")
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter ,boolean returnNew){
+        if(!filter.containsUpdate()){
+            return this.findOne(filter);
+        }
         Query query = ThinkMongoQueryBuilder.build(filter,false);
         Update update = new Update();
         filter.getModifyUpdateMapper().forEach((k, v)->{
