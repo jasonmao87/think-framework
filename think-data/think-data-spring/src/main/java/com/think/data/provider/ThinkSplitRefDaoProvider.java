@@ -69,6 +69,7 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public List<String> showSplitTables() {
+        long durtion = 1000*60*5;
         if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
             String showtables = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
             List<String> list = jdbcTemplate.queryForList(showtables, String.class);
@@ -133,6 +134,7 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter, long rootPrimaryId) {
+        sqlFilter.eq("rootPrimaryId" ,rootPrimaryId);
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         int splitYear = _DaoSupport.computeSpiltYearById(rootPrimaryId);
         ThinkExecuteQuery executeQuery = query.selectFullKeys(targetClass);
@@ -211,9 +213,13 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
     @Override
     public ThinkResult<Integer> delete(long id, long rootPrimaryId) {
         ThinkUpdateMapper<T> updaterMapper = ThinkUpdateMapper.build(targetClass)
-                .updateValue("id",-id)  ;        //id 调整为 -id
+                .updateValue("id",-id)  ;
+        /*
+        //id 调整为 -id
 //                .updateValue("deleteState",true)
 //                .updateValue("deleteTime" , DateUtil.now());
+
+         */
         ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass)
                 .eq("id",id)
                 .eq("rootPrimaryId",rootPrimaryId)

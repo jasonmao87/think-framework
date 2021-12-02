@@ -7,6 +7,7 @@ com\think\common\data\mysql\permission\SqlFilterPermissionRule.class
 com\think\common\util\ThinkIdGenerator.class
 com\think\core\annotations\bean\ThinkClollection.class
 com\think\core\enums\ResultDataType.class
+com\think\core\security\ThinkSecurityKeyBuilder.class
 com\think\core\enums\ThinkResultLevel.class
 com\think\core\enums\TEnum.class
 com\think\common\data\mysql\ThinkSqlCheckResult.class
@@ -116,6 +117,7 @@ com\think\structure\ThinkReadOnlyList.class
 com\think\structure\TCacheBean.class
 com\think\common\util\FastJsonUtil.class
 com\think\common\util\ThinkTimer$1.class
+com\think\core\security\ThinkKey.class
 com\think\core\security\token2\ITokenExtend.class
 com\think\structure\ThinkFastList$1.class
 com\think\common\data\mysql\TFlowStateUpdate.class
