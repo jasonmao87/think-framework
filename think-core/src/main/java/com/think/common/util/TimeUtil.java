@@ -8,8 +8,33 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 时间工具类
+ * @author JASONMAO
  */
 public class TimeUtil {
+
+
+    /** 30 秒的 毫秒值 */
+    public static final long MILLIS_OF_30_SECONDS= 30000L;
+
+    public static final long MILLIS_OF_15_SECONDS = 15000L;
+
+    public static final long MILLIS_OF_5_MINUTES = 300000L;
+
+
+    public static final long MILLIS_OF_SECONDS(int seconds){
+        return 1000L * seconds;
+    }
+
+    public static final long MILLIS_OF_MINUTES(int minutes){
+        return 60000L* minutes  ;
+    }
+
+    public static final long MILLIS_OF_HOURS(int hours){
+        return 3600000L* hours;
+    }
+
+
+
 
     /**
      * @param date
@@ -189,6 +214,8 @@ public class TimeUtil {
 
 
 
+
+
 }
 
 class ThinkTimer{
@@ -229,3 +256,6 @@ class ThinkTimer{
     }
 
 }
+
+
+
