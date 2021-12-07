@@ -202,6 +202,9 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     }
 
     public List<Map<String,Object>> _simpleMapList(ThinkSqlFilter<T> sqlFilter, int splitYear,String... keys){
+        if(sqlFilter.mayBeEmptyResult()){
+            return new ArrayList<>();
+        }
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.selectForKeys(targetClass ,keys ) ;
         List<Map<String,Object>> list = this.executeSelectList(executeQuery,finalTableName(splitYear));

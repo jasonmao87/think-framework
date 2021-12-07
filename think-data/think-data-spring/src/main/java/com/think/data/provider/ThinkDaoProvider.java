@@ -397,6 +397,10 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
 
     @Override
     public List<Map<String, Object>> list(ThinkSqlFilter<T> sqlFilter, String... keys) {
+        if(sqlFilter.mayBeEmptyResult()){
+            return new ArrayList<>();
+        }
+
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.selectForKeys(targetClass,keys) ;
         return executeSelectList(executeQuery,finalTableName());

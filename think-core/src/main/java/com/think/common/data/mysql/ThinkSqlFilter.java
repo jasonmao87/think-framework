@@ -48,6 +48,9 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     @Remark("限制查询年份，仅对按年切分表有效")
     private int filterSplitYear ;
 
+    @Remark("可能为空结果")
+    private boolean mayBeEmptyResult = false;
+
 
     @Remark(value = "支持快速匹配的严格模式",description = "true 时候为严格匹配，如果 false，不知道 可以 匹配到 不指导")
     private boolean strictFastMatch = false;
@@ -251,7 +254,12 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
     public ThinkSqlFilter<T> in(String k , Serializable... v){
-        if(v==null || v.length == 1){
+        if(v == null || v.length == 0){
+            if (log.isWarnEnabled()) {
+                log.warn(" {} in 语法未包含任何 值，这样查询结果必然无法匹配到任何数据 ！" ,k);
+            }
+            mayBeEmptyResult = true;
+        }else if( v.length == 1){
             return eq(k,v[0]);
         }else{
             this._append(k,ThinkFilterOp.IN,v);
@@ -261,7 +269,9 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
 
     public ThinkSqlFilter<T> notIn(String k , Serializable... v){
-        if(v==null || v.length == 1){
+        if(v == null){
+            return this;
+        }else if( v.length == 1){
             return notEq(k,v[0]);
         }else{
             this._append(k,ThinkFilterOp.NOT_IN,v);
@@ -686,5 +696,9 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
             returnMap.put(entry.getKey(),entry.getValue());
         }
         return returnMap;
+    }
+
+    public boolean mayBeEmptyResult() {
+        return mayBeEmptyResult;
     }
 }
