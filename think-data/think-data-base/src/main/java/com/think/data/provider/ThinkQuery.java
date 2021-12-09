@@ -49,6 +49,7 @@ public class ThinkQuery {
                 case MATCH_ENABLE:  {
                     filter.eq("enable",true);
                     break;
+
                 }
                 case MATCH_DISABLE:{
                     filter.eq("enable",false);
@@ -197,7 +198,9 @@ public class ThinkQuery {
 
         // 处理 key or 逻辑 ....
         Map<String, Serializable> keyOrMap = this.filter.getKeyOrMap();
+        boolean op_keyOrLike = false;
         if(!keyOrMap.isEmpty() && keyOrMap.size()>1) {
+
             if(paramValues.size()>0){
                 sb.append(" AND ");
             }
@@ -205,11 +208,24 @@ public class ThinkQuery {
             int index = 0;
 
             for (Map.Entry<String, Serializable> kv : keyOrMap.entrySet()) {
+
                 if(index>0){
                     sb.append("OR ");
                 }
-                sb.append(" ").append(kv.getKey()).append("=").append("? ");
-                paramValues.add(kv.getValue());
+                if( filter.isKeyOrTypeUsingLike()){
+                    sb.append(" ").append(kv.getKey()).append(" LIKE ").append("? ");
+                }else {
+                    sb.append(" ").append(kv.getKey()).append("=").append("? ");
+                }
+                Serializable v = kv.getValue();
+                try{
+                    ThinkColumnModel columnModel = Manager.getModelBuilder().get(filter.gettClass()).getKey(kv.getKey());
+                    if(columnModel.isSensitive()){
+                        v =DesensitizationUtil.encodeWithIgnore((String) v, '%');
+                    }
+                }catch (Exception e){}
+                paramValues.add(v);
+
                 index++;
             }
             sb.append(") ");

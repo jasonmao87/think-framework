@@ -112,6 +112,7 @@ com\think\common\util\RandomUtil.class
 com\think\common\result\ResultInfo.class
 com\think\core\security\ThinkTokenExtends.class
 com\think\common\util\ThinkTimer.class
+com\think\common\data\TbA.class
 com\think\common\util\FileUtil.class
 com\think\structure\ThinkReadOnlyList.class
 com\think\structure\TCacheBean.class

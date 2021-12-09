@@ -1,4 +1,5 @@
 com\think\core\security\ThinkSecurityManagerTest.class
+com\think\common\data\mysql\ThinkSqlFilterTest.class
 com\think\core\bean\util\ObjectUtilTest.class
 com\think\core\bean\util\TbX_FOR_TEST.class
 com\think\data\provider\ThinkSqlFilterTest.class

@@ -7,6 +7,7 @@ import com.think.common.result.state.ResultCode;
 import com.think.common.util.DateUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.bean.BaseVo;
+import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean.SimpleRefEntity;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
@@ -268,4 +269,29 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
         }
         return physicalDelete(longIds,rootPrimaryId);
     }
+//
+//    public static void main(String[] args) {
+//
+//        String sqlFilter = "filter: {\n" +
+//                "\t\"limit\": 10,\n" +
+//                "\t\"sortQuery\": {\"key\": \"id\" ,\"sort\": \"desc\"}," +
+//                "   keyOrBody:{" +
+//                "      id : 1 , id2 : 2 " +
+//                "   }\n" +
+//                "\t\"filterBody\": {\n" +
+//                "\t\t\"id\": {\n" +
+//                "\t\t\t\"op\": \"LG\",\n" +
+//                "\t\t\t\"type\": \"number\",\n" +
+//                "\t\t\t\"v\": 0\n" +
+//                "\t\t}\n" +
+//                "\t} \n" +
+//                "}";
+//
+//        System.out.println("xx");
+//        ThinkSqlFilter<SimplePrimaryEntity> simplePrimaryEntityThinkSqlFilter = ThinkSqlFilter.parseFromJSON(sqlFilter, SimplePrimaryEntity.class);
+//
+//        System.out.println(simplePrimaryEntityThinkSqlFilter.toString());
+//        System.out.println("Xx");
+//    }
+
 }

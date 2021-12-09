@@ -2,6 +2,7 @@ package com.think.data.provider;
 
 import com.think.common.data.mysql.IThinkResultFilter;
 import com.think.common.result.ThinkResult;
+import com.think.common.util.PasswordUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean._Entity;
@@ -11,6 +12,7 @@ import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -28,7 +30,7 @@ public abstract class _JdbcExecutor {
     }
 
     public <T extends _Entity> void tableInit(String tableName){
-
+        this.checkTransactionAndLogPrint();
         if (Manager.isTableInitialized(tableName) == false) {
             // TODO:  临时代码 ，协助系统自动完成 createUserName 和 updateUserName 字段的增加 ！  该代码应该在一定时间后予以删除 ！当然该代码有大概率执行不了，所以tryCatch掉
             try{
@@ -161,6 +163,18 @@ public abstract class _JdbcExecutor {
 //        }
     }
 
+    public void checkTransactionAndLogPrint(){
+        if (log.isDebugEnabled()) {
+            boolean actualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
+            if(actualTransactionActive){
+                String currentTransactionName = TransactionSynchronizationManager.getCurrentTransactionName();
+
+                log.debug("**********************本次执有事务 -- {}********************************" ,currentTransactionName );
+            }
+        }
+    }
+
+
     public Map<String,Object> executeOne( ThinkExecuteQuery executeQuery, String finalTableName){
         this.tableInit(finalTableName);
         Map<String,Object> result = null;
@@ -185,7 +199,7 @@ public abstract class _JdbcExecutor {
                 rt().get().fireSelect(sql,success,affectedCount,duration,executeQuery.getValues()).throwInfo(throwable);
             }
             if(log.isDebugEnabled()){
-                this.outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
+                outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
                 //log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
             }
         }
@@ -226,7 +240,7 @@ public abstract class _JdbcExecutor {
                 rt().get().fireSelect(sql,success,affectedCount,duration,executeQuery.getValues()).throwInfo(throwable);
             }
             if(log.isDebugEnabled()){
-                this.outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
+                outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
                 //log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
             }
         }
@@ -273,7 +287,7 @@ public abstract class _JdbcExecutor {
                 }
             }
             if(log.isDebugEnabled()){
-                this.outputSQLInfo(sql,executeQuery.getValues(),success,result,duration);
+                outputSQLInfo(sql,executeQuery.getValues(),success,result,duration);
                 /*
                 log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
 

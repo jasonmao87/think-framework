@@ -55,12 +55,17 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     @Remark(value = "支持快速匹配的严格模式",description = "true 时候为严格匹配，如果 false，不知道 可以 匹配到 不指导")
     private boolean strictFastMatch = false;
 
+
     @Remark("Group key")
     private String[] groupByKeys ;
 
     private List<ThinkFilterBean> beans = new ArrayList<>();
 
     private Map<String,Serializable> keyOrMap = new HashMap<>();
+
+    @Remark("key or 使用 LIKE 模式，默认未 EQ")
+    private boolean keyOrTypeUsingLike  = false;
+
 
     public ThinkSqlFilter<T> resultFilter(IThinkResultFilter filter){
         if (this.resultFilterList==null) {
@@ -157,7 +162,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
                     }else{
                         realKey = k;
                     }
-                    if (filterChecker.checkKey(realKey,tClass)) {
+                    if (filter.check(realKey)) {
                         ThinkFilterBean bean = ThinkFilterBean.parseFromJSON(realKey,filterMap.getJSONObject(k)) ;
                         if(bean !=null){
                             filter.beans.add(bean);
@@ -171,7 +176,34 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
                 }
             }
         }
+        if(jsonObject.containsKey("keyOrBody")) {
+            JSONObject keyOrBody = jsonObject.getJSONObject("keyOrBody");
+            String[] keys = keyOrBody.keySet().toArray(new String[keyOrBody.size()]);
+            if(keys.length ==2 ){
+                filter.keyOr( keys[0],(Serializable) keyOrBody.get(keys[0]) ,keys[1],(Serializable)keyOrBody.get(keys[1]));
+            }else if(keys.length ==3){
+                filter.keyOr( keys[0],(Serializable) keyOrBody.get(keys[0]) ,keys[1],(Serializable)keyOrBody.get(keys[1]) ,  keys[2],(Serializable) keyOrBody.get(keys[2]) );
+            }else if(keys.length ==4 ){
+                filter.keyOr( keys[0],(Serializable) keyOrBody.get(keys[0]) ,keys[1],(Serializable)keyOrBody.get(keys[1]) ,  keys[2],(Serializable) keyOrBody.get(keys[2]) ,  keys[3],(Serializable) keyOrBody.get(keys[3]) );
+            }
+            // 检查 使用key or 的方式 ！
+            String keyOrType = (String) jsonObject.getOrDefault("keyOrType", "EQ");
+            if(keyOrType.equalsIgnoreCase("like")){
+                filter.keyOrUsingLike();
+            }
+        }
+
         return filter;
+    }
+
+
+    public ThinkSqlFilter<T> keyOrUsingLike(){
+        this.keyOrTypeUsingLike = true;
+        return this;
+    }
+
+    public boolean isKeyOrTypeUsingLike() {
+        return keyOrTypeUsingLike;
     }
 
     public ThinkSqlFilter<T> enableRequired(TEnableRequired required){
@@ -296,22 +328,34 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         if(!this.keyOrMap.isEmpty() ){
             throw new ThinkRuntimeException("ThinkSqlFilter 中只允许调用一次keyOr方法");
         }
-        keyOrMap.put(k1,v1);
-        keyOrMap.put(k2,v2);
+//        if (log.isDebugEnabled()) {
+//            log.debug(" {} :{}   {}:{}" , k1,v1,k2,v2);
+//        }
+        if (check(k1) && check(k2)) {
+            this.keyOrMap.put(k1,v1);
+            this.keyOrMap.put(k2,v2);
+        }else{
+        }
+
         return this;
     }
 
     @Remark("转换成SQL >> ... where ... and  ( k1 =v1 or k2 =v2 or k3 =v3) ")
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2,String k3, Serializable v3){
-       this.keyOr(k1,v1,k2,v2);
-       this.keyOrMap.put(k3,v3);
-       return this;
+        if (check(k3)) {
+            this.keyOr(k1,v1,k2,v2);
+            this.keyOrMap.put(k3,v3);
+        }
+
+        return this;
      }
 
     @Remark("转换成SQL >> ... where ... and  ( k1 =v1 or k2 =v2 or k3 =v3 or k4 =v4) ")
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2,String k3, Serializable v3,String k4, Serializable v4){
-        this.keyOr(k1,v1,k2,v2,k3,v3);
-        keyOrMap.put(k4,v4);
+        if(check(k4)){
+            this.keyOr(k1,v1,k2,v2,k3,v3);
+            this.keyOrMap.put(k4,v4);
+        }
         return this;
     }
 
@@ -692,7 +736,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
             return new HashMap<>();
         }
         Map<String, Serializable> returnMap = new HashMap<>();
-        for (Map.Entry<String, Serializable> entry : returnMap.entrySet()) {
+        for (Map.Entry<String, Serializable> entry : keyOrMap.entrySet()) {
             returnMap.put(entry.getKey(),entry.getValue());
         }
         return returnMap;
