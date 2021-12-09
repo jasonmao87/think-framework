@@ -106,7 +106,6 @@ public class ThinkThreadExecutor {
             long executeCount= 0;
             long executeErrorCount = 0;
             while (startControlState){
-                TimeUtil.sleep(1,TimeUnit.MILLISECONDS);
                 if(taskHolderArrayBlockingQueue.peek()!=null){
                     BackTaskHolder taskHolder = taskHolderArrayBlockingQueue.poll();
                     if(taskHolder != null){
@@ -134,17 +133,17 @@ public class ThinkThreadExecutor {
                     }
                 }else{
                     if (log.isTraceEnabled()) {
-                        log.trace("后台任务队列未有更多的任务需要执行，休眠1秒钟后检查");
+                        log.trace("后台任务队列未有更多的任务需要执行，休眠2秒钟后检查");
                     }
-                    try {
-                        Thread.sleep(1000L);
-                    }catch (Exception e){}
+                    TimeUtil.sleepForSeconds(2);
                     if (log.isTraceEnabled()) {
                         log.trace("后台任务线程恢复");
                     }
 
                 }
-            }
+                TimeUtil.sleep(1,TimeUnit.MILLISECONDS);
+
+            }// end of while
             if (log.isWarnEnabled()) {
                 log.warn("后台任务线程即将关闭...");
             }
