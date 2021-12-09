@@ -2,6 +2,7 @@ package com.think.core.executor;
 
 import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
+import com.think.common.util.TimeUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.security.ThinkToken;
 import com.think.exception.ThinkRuntimeException;
@@ -105,6 +106,7 @@ public class ThinkThreadExecutor {
             long executeCount= 0;
             long executeErrorCount = 0;
             while (startControlState){
+                TimeUtil.sleep(1,TimeUnit.MILLISECONDS);
                 if(taskHolderArrayBlockingQueue.peek()!=null){
                     BackTaskHolder taskHolder = taskHolderArrayBlockingQueue.poll();
                     if(taskHolder != null){
@@ -279,7 +281,7 @@ public class ThinkThreadExecutor {
                     //实在没办法了，让生产线程自己玩吧。这边一般不可能进入
                     if (!executor.isShutdown()) {
                         if (log.isWarnEnabled()) {
-                            log.warn("【3】异步线程远远超过了系统预期，出发最严格得容错机制，将直接使用生产线程执行该任务！" ,queueCapacity);
+                            log.warn("【3】异步线程远远超过了系统预期，触发最严格得容错机制，将直接使用生产线程执行该任务！" ,queueCapacity);
                         }
                         r.run();
                     }
