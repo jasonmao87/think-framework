@@ -47,11 +47,17 @@ public final class ThinkToken implements Serializable {
     @ApiModelProperty("扩展信息")
     private Map<String,Map<String,Object>> extend;
 
+    @ApiModelProperty("附属信息")
+    private ThinkTokenAttachment attachment ;
+
     @ApiModelProperty("初始化时间")
     private long initTime;
 
     @ApiModelProperty("过期时间")
     private long expireTime;
+
+    @ApiModelProperty("token类型")
+    private String tokenType  ="DEFAULT";
 
 
     public String getCurrentRegion() {
@@ -114,4 +120,19 @@ public final class ThinkToken implements Serializable {
         }
     }
 
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public String getTokenType() {
+        return tokenType;
+    }
+
+    public ThinkTokenAttachment getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(ThinkTokenAttachment attachment) {
+        this.attachment = attachment;
+    }
 }

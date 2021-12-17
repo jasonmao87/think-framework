@@ -58,6 +58,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\exec
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\ClasspathPackageScanner.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkMongoKV.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkSecurityKeyBuilder.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkTokenAttachment.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\_Entity.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\moudles\event\EventActionParam.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkColumn.java

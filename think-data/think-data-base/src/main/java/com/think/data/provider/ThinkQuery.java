@@ -1,10 +1,8 @@
 package com.think.data.provider;
 
-import com.think.common.data.mysql.IThinkResultFilter;
 import com.think.common.data.mysql.ThinkFilterBean;
 import com.think.common.data.ThinkFilterOp;
 import com.think.common.data.mysql.ThinkSqlFilter;
-import com.think.common.util.TVerification;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean._Entity;
@@ -195,43 +193,106 @@ public class ThinkQuery {
         //append bad
         this.appendFilterParamList(badList,sb,paramValues.size()>0);
         sb.append(" ");
+        /**
+         * 处理KEY OR的逻辑
+         */
+        this._appendKeyOr(sb);
+        queryStr = sb.toString();
+    }
 
-        // 处理 key or 逻辑 ....
-        Map<String, Serializable> keyOrMap = this.filter.getKeyOrMap();
-        boolean op_keyOrLike = false;
-        if(!keyOrMap.isEmpty() && keyOrMap.size()>1) {
 
+    private void _appendKeyOr(StringBuilder sb){
+        List<ThinkFilterBean> filterKeyOrBeans = filter.getKeyOrBeans();
+        if(!filterKeyOrBeans.isEmpty() && filterKeyOrBeans.size() >1){
             if(paramValues.size()>0){
-                sb.append(" AND ");
+                sb.append("AND ");
             }
-            sb.append(" (");
-            int index = 0;
+            int index = 0 ;
+            sb.append("( ");
 
-            for (Map.Entry<String, Serializable> kv : keyOrMap.entrySet()) {
-
+            for (ThinkFilterBean filterBean : filterKeyOrBeans) {
                 if(index>0){
                     sb.append("OR ");
                 }
-                if( filter.isKeyOrTypeUsingLike()){
-                    sb.append(" ").append(kv.getKey()).append(" LIKE ").append("? ");
-                }else {
-                    sb.append(" ").append(kv.getKey()).append("=").append("? ");
-                }
-                Serializable v = kv.getValue();
+                String k  = filterBean.getKey();
+                Serializable v =  filterBean.getValues()[0];
+                String sv = (String) v;
+
                 try{
-                    ThinkColumnModel columnModel = Manager.getModelBuilder().get(filter.gettClass()).getKey(kv.getKey());
+                    ThinkColumnModel columnModel = Manager.getModelBuilder().get(filter.gettClass()).getKey(k);
                     if(columnModel.isSensitive()){
-                        v =DesensitizationUtil.encodeWithIgnore((String) v, '%');
+                        sv =DesensitizationUtil.encodeWithIgnore((String) v, '%');
                     }
                 }catch (Exception e){}
-                paramValues.add(v);
+                if(filter.isKeyOrTypeUsingLike()){
+                    this.checkFastMatchAble(filterBean);
+                    sb.append(" ").append(k).append(" LIKE ? ");
+                    paramValues.add(sv);
+                    if (filterBean.isFastMatchAble()) {
+                        sb.append("OR fs_").append(k).append(" LIKE ? ");
+                        sb.append("OR fss_").append(k).append(" LIKE ? ");
+                        paramValues.add(reDoStringAsFastMatchForQuery((String) v,false));
+                        paramValues.add(reDoStringAsFastMatchForQuery((String) v,true));
+                    }
+                }else{
+                    sb.append(filterBean.getQueryPart());
+                    paramValues.add(sv);
+                }
 
-                index++;
-            }
+
+                index ++ ;
+
+
+
+            }//end of for
             sb.append(") ");
+
+
+
         }
-        queryStr = sb.toString();
+
+
+
+//
+//        // 处理 key or 逻辑 ....
+//        Map<String, Serializable> keyOrMap = this.filter.getKeyOrMap();
+//        boolean op_keyOrLike = false;
+//        if(!keyOrMap.isEmpty() && keyOrMap.size()>1) {
+//
+//            if(paramValues.size()>0){
+//                sb.append(" AND ");
+//            }
+//            sb.append(" (");
+//            int index = 0;
+//
+//
+//
+//            for (Map.Entry<String, Serializable> kv : keyOrMap.entrySet()) {
+//
+//                if(index>0){
+//                    sb.append("OR ");
+//                }
+//                if( filter.isKeyOrTypeUsingLike()){
+//                    sb.append(" ").append(kv.getKey()).append(" LIKE ").append("? ");
+//                }else {
+//                    sb.append(" ").append(kv.getKey()).append("=").append("? ");
+//                }
+//                Serializable v = kv.getValue();
+//                try{
+//                    ThinkColumnModel columnModel = Manager.getModelBuilder().get(filter.gettClass()).getKey(kv.getKey());
+//                    if(columnModel.isSensitive()){
+//                        v =DesensitizationUtil.encodeWithIgnore((String) v, '%');
+//                    }
+//                }catch (Exception e){}
+//                paramValues.add(v);
+//
+//                index++;
+//            }
+//            sb.append(") ");
+//        }
+
     }
+
 
     private void appendFastMatchSupport(StringBuilder sb, boolean startWithAnd){
 
@@ -263,7 +324,7 @@ public class ThinkQuery {
 //                        redoValue = reDoStringAsFastMatchForQuery(v,false);
 //                    }
                     paramValues.add(redoValue);
-                }
+                }   // end of inner for
 
                 // secondary key append
                 String sqlPartSecondary  = sqlPart.replaceFirst("fs_","fss_");
@@ -284,8 +345,9 @@ public class ThinkQuery {
 
 
 
-            }
-        }
+            } // end of FOR
+        }//end of if
+//        /**清空 快速匹配 支持list */
     }
 
 

@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class SimpleRefEntity<T extends SimplePrimaryEntity> extends _Entity<T> {
     private static final long serialVersionUID = -6512682758436782849L;
 
+    @ApiModelProperty(hidden = true)
     @Remark("关联业务主表的id，主表只允许是顶级的，即使是从表的关联数据，也应该输入顶级表的主键Id")
     @ThinkColumn(nullable = false)
     private long rootPrimaryId =-1;
@@ -50,11 +51,13 @@ public abstract class SimpleRefEntity<T extends SimplePrimaryEntity> extends _En
     }
 
 
+    @Override
     @Remark("构建一个空的filter")
     public ThinkSqlFilter<T> buildEmptyFilter(int limit){
         return ThinkSqlFilter.build(getSelfClass(),limit);
     }
 
+    @Override
     @Remark("构建一个空的updateMapper")
     public ThinkUpdateMapper<T> buildEmptyUpdateMapper(Class<T> tClass){
         ThinkUpdateMapper<T> updateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(tClass);

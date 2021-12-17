@@ -61,7 +61,10 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
     private List<ThinkFilterBean> beans = new ArrayList<>();
 
-    private Map<String,Serializable> keyOrMap = new HashMap<>();
+//    private Map<String,Serializable> keyOrMap = new HashMap<>();
+
+    private List<ThinkFilterBean> keyOrBeans = new ArrayList<>();
+
 
     @Remark("key or 使用 LIKE 模式，默认未 EQ")
     private boolean keyOrTypeUsingLike  = false;
@@ -199,6 +202,12 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
     public ThinkSqlFilter<T> keyOrUsingLike(){
         this.keyOrTypeUsingLike = true;
+        List<ThinkFilterBean> newArrayList = new ArrayList<>();
+        this.keyOrBeans.forEach(t->{
+            ThinkFilterBean bean = ThinkFilterBean.LIKE(t.getKey(), (String) t.getValues()[0]);
+            newArrayList.add(bean);
+        });
+        this.keyOrBeans  = newArrayList;
         return this;
     }
 
@@ -323,19 +332,38 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
 
+    private void keyOrAppend(String k ,Serializable v){
+        if (this.check(k)) {
+            if(this.keyOrTypeUsingLike) {
+                this.keyOrBeans.add(ThinkFilterBean.LIKE(k, (String) v));
+            }else{
+                this.keyOrBeans.add(ThinkFilterBean.EQ(k,v));
+            }
+        }else{
+            log.warn("key " +k +" 不包含再模型对象中，将被忽略OR查询" );
+        }
+
+
+
+    }
+
+
     @Remark("转换成SQL >> ... where ... and  ( k1 =v1 or k2 =v2) ")
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2){
+        this.keyOrAppend(k1,v1);
+        this.keyOrAppend(k2,v2);
+        /*
         if(!this.keyOrMap.isEmpty() ){
             throw new ThinkRuntimeException("ThinkSqlFilter 中只允许调用一次keyOr方法");
         }
-//        if (log.isDebugEnabled()) {
-//            log.debug(" {} :{}   {}:{}" , k1,v1,k2,v2);
-//        }
+//
         if (check(k1) && check(k2)) {
             this.keyOrMap.put(k1,v1);
             this.keyOrMap.put(k2,v2);
         }else{
         }
+        */
+
 
         return this;
     }
@@ -344,7 +372,8 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2,String k3, Serializable v3){
         if (check(k3)) {
             this.keyOr(k1,v1,k2,v2);
-            this.keyOrMap.put(k3,v3);
+            //this.keyOrMap.put(k3,v3);
+            this.keyOrAppend(k3,v3);
         }
 
         return this;
@@ -354,7 +383,8 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2,String k3, Serializable v3,String k4, Serializable v4){
         if(check(k4)){
             this.keyOr(k1,v1,k2,v2,k3,v3);
-            this.keyOrMap.put(k4,v4);
+//            this.keyOrMap.put(k4,v4);
+            this.keyOrAppend(k4,v4);
         }
         return this;
     }
@@ -362,7 +392,8 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     @Remark("转换成SQL >> ... where ... and  ( k1 =v1 or k2 =v2 or k3 =v3 or k4 =v4 or k5 = v5 ) ")
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2,String k3, Serializable v3,String k4, Serializable v4,String k5, Serializable v5){
         this.keyOr(k1,v1,k2,v2,k3,v3,k4,v4);
-        keyOrMap.put(k5,v5);
+//        keyOrMap.put(k5,v5);
+        this.keyOrAppend(k5,v5);
         return this;
     }
 
@@ -431,6 +462,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
 
     /**
+     * 检查是否已经包含key
      * @param key
      * @param op
      * @return
@@ -445,6 +477,11 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
 
+    /**
+     * 从 filter中获取 keyCondition
+     * @param key
+     * @return
+     */
     public ThinkFilterBean getKeyCondition(String key){
         for(ThinkFilterBean bean : beans){
             if(bean.getKey().equals(key)){
@@ -731,15 +768,30 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
 
+    /**
+     * 该方法过于 简单，即将废弃
+     * @return
+     */
+    @Remark("该方法过于简单，即将废弃")
+    @Deprecated
     public Map<String, Serializable> getKeyOrMap() {
-        if(this.keyOrMap.isEmpty()){
+        if(this.keyOrBeans.isEmpty()){
             return new HashMap<>();
         }
         Map<String, Serializable> returnMap = new HashMap<>();
-        for (Map.Entry<String, Serializable> entry : keyOrMap.entrySet()) {
-            returnMap.put(entry.getKey(),entry.getValue());
-        }
+        keyOrBeans.forEach(t->{
+            returnMap.put( t.getKey(),t.getValues()[0]);
+        });
+
+//        for (Map.Entry<String, Serializable> entry : keyOrMap.entrySet()) {
+//            returnMap.put(entry.getKey(),entry.getValue());
+//        }
         return returnMap;
+    }
+
+
+    public List<ThinkFilterBean> getKeyOrBeans() {
+        return keyOrBeans;
     }
 
     public boolean mayBeEmptyResult() {

@@ -27,6 +27,7 @@ com\think\core\annotations\bean\ThinkMongoKV.class
 com\think\core\security\ThinkWebSecuritySigner.class
 com\think\common\util\security\DesensitizationUtil.class
 com\think\core\executor\ThinkAsyncExecutor$1.class
+com\think\core\security\ThinkTokenAttachment.class
 com\think\core\executor\ThinkThreadExecutor$1.class
 com\think\common\util\BinaryUtil.class
 com\think\core\executor\ThinkThreadExecutor$DefaultThinkThreadFactory.class
