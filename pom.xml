@@ -7,7 +7,7 @@
     <groupId>com.think</groupId>
     <artifactId>think-framework</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
     <modules>
         <module>think-core</module>
         <module>think-mongo-spring</module>
@@ -70,50 +70,50 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-core</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data-base</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data-spring</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-simple-redis</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-client</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-server</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-mongo-spring</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
@@ -143,18 +143,18 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-base</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-auth-support</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-service</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.4-SNAPSHOT</version>
             </dependency>
 
             <!-- think framework -dependencies -->
@@ -316,14 +316,14 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <generateBackupPoms>false</generateBackupPoms>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.mojo</groupId>-->
+<!--                <artifactId>versions-maven-plugin</artifactId>-->
+<!--                <version>2.3</version>-->
+<!--                <configuration>-->
+<!--                    <generateBackupPoms>false</generateBackupPoms>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

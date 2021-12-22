@@ -1,9 +1,0 @@
-spring:
-  data:
-    mongodb:
-      database: warmpig
-      host: dds-bp165797d09ff744-publicKey.mongodb.rds.aliyuncs.com
-      username: admin
-      password: admin
-      port: 3717
-

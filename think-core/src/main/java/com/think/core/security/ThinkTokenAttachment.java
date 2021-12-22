@@ -1,5 +1,7 @@
 package com.think.core.security;
 
+import org.apache.poi.ss.formula.functions.T;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -9,16 +11,21 @@ import java.util.Map;
  * @date : 2021/12/15 22:45
  * @description :  token 附属信息类
  */
-public interface ThinkTokenAttachment extends Serializable{
+public interface ThinkTokenAttachment<T extends Serializable> extends Serializable{
+
+
+
+
     /**
      * 获得附属对象
      * @return
      */
-    <T extends Serializable> T getAttachment();
+    T getBody();
 
     /**
      * 设置 附属对象
      * @param o
      */
-    <T extends Serializable>  void setAttachment(T o);
+    void setBody(T o);
+
 }

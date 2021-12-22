@@ -110,6 +110,18 @@ public class Manager {
             return false;
         }
     }
+
+    /**
+     * 强制修改 dataRegion ，可能会引起一些 非正常的现象！！！
+     * @param splitRegion
+     */
+    public static final void unsafeChangeDataSrv(String splitRegion){
+       if(!beginDataSrv(splitRegion)){
+           dataRuntimeThreadLocal.remove();
+           dataRuntimeThreadLocal.set(new ThinkDataRuntime(splitRegion));
+       }
+    }
+
     public static final ThinkDataRuntime getDataSrvRuntimeInfo(){
         if(dataRuntimeThreadLocal.get() == null) {
             ThinkToken token = ThinkExecuteThreadSharedTokenManager.get();
