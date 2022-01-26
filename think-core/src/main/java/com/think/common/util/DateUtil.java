@@ -3,6 +3,7 @@ package com.think.common.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -15,6 +16,7 @@ public class DateUtil extends TimeUtil{
     public static final String FMT_YMD = "yyyy-MM-dd";
 
     private static long lastCallNowTime = 0L;
+    private static Date lastCallNowDate = new Date();
 
     public static final Calendar getCalendar(){
         return Calendar.getInstance();
@@ -185,22 +187,61 @@ public class DateUtil extends TimeUtil{
      */
     public static final Date now(){
 
-        /**
-         * 发现了系统时间异常，加个日志监控 ！！
-         */
-        Date date =new Date();
-        if(date.getTime() -lastCallNowTime <0){
-            if(log.isWarnEnabled()){
-                log.warn("时间获取发现奇怪异常，上次获取now时间{}，本次获取now【{}】出现比之前更早的奇怪现象，请检查系统时间是否存在异常？？？"
-                        ,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(lastCallNowTime))
-                        ,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
-            }
+        long now =ThinkMilliSecond.currentTimeMillis();
+        lastCallNowTime = now;
+        if(now == lastCallNowTime){
+            return lastCallNowDate;
+        }else{
+            lastCallNowDate = new Date();
+            return lastCallNowDate;
         }
-        lastCallNowTime = date.getTime();
-
-        return date;
     }
 
+
+    public static final Date nowByNew(){
+        return new Date();
+    }
+
+
+//    public static void main(String[] args) {
+//        int max = 99999999;
+//        t1(max);
+//        t2(max);
+//
+//    result:
+//            99999999 of now ----73
+//            99999999 of nowtime  ----274
+
+//        System.exit(-1);
+//    }
+//
+//    static void t1(int max ){
+//        long start = System.currentTimeMillis();
+//        int x = 0;
+//        for(int i =0 ; i< max; i++){
+//            Date now = DateUtil.now();
+//            if (now.getTime() >10000) {
+//                x ++ ;
+//            }
+//        }
+//        long end = System.currentTimeMillis();
+//        System.out.println( x +" of now ----" + (end -start));
+//    }
+//
+//
+//    static void t2(int max ){
+//        long start = System.currentTimeMillis();
+//        int x = 0;
+//        for(int i =0 ; i< max; i++){
+//            Date now = DateUtil.nowTime();
+//            if (now.getTime() >10000) {
+//                x ++ ;
+//            }
+//        }
+//        long end = System.currentTimeMillis();
+//        System.out.println( x +" of nowtime  ----" + (end -start));
+//
+//    }
     /**
      * 通过年月日 解析一个时间
      * @param year
@@ -404,6 +445,16 @@ public class DateUtil extends TimeUtil{
         return endOfMonth(now());
     }
 
+
+    public static final int dayOfDay2SubtractDay1(Date day1 ,Date day2){
+        day1 = beginOfDate(day1);
+        day2 =beginOfDate(day2);
+        long sub = day2.getTime() - day1.getTime();
+        sub /=1000; // 秒
+        sub /=3600 ; //小时 = 60 *60 分*秒
+        sub /=24;
+        return Long.valueOf(sub).intValue();
+    }
 
     /**
      * date2比date1多的天数

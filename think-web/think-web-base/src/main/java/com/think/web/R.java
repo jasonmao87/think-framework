@@ -138,6 +138,10 @@ public class R<T>  implements Serializable {
     }
 
     public static R SUCCESS(Object result){
+        if(result instanceof ThinkResult){
+            log.error("SUCCESS 不能使用 ThinkResult 对象作为参数 ");
+        }
+
         R webResult = _init(ResultCode.SUCCESS);
         webResult.setMessage(webResult.getState().getDescription())
                 .setResult(result);

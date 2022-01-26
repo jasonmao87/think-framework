@@ -8,6 +8,8 @@ import com.think.core.bean.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * 通用复杂结果返回类
@@ -102,11 +104,31 @@ public class ThinkResult<T> implements Serializable {
 
 
 
-    public static final <T> ThinkResult<T> successIfNoNull(T data){
+
+
+    public static final <T> ThinkResult successIfCollectionNotEmpty(Collection<T> collections){
+        if (collections!=null && !collections.isEmpty()) {
+            return ThinkResult.success(collections);
+        }else {
+            return ThinkResult.fastFail();
+        }
+    }
+
+
+    public static final <T>  ThinkResult<T> successIfNotNull(T data){
         if (data!=null) {
             return ThinkResult.success(data);
-        }else return ThinkResult.fastFail();
+        }else {
+            return ThinkResult.fastFail();
+        }
     }
+
+
+    @Deprecated
+    public static final <T> ThinkResult<T> successIfNoNull(T data){
+        return successIfNotNull(data);
+    }
+
 
     public static final <T> ThinkResult<T> success(){
         return new ThinkResult(true,false,"",null,null,ResultCode.SUCCESS);

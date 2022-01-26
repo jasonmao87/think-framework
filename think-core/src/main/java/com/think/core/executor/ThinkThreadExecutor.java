@@ -1,5 +1,6 @@
 package com.think.core.executor;
 
+import com.think.common.result.ThinkResult;
 import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.TimeUtil;
@@ -21,6 +22,31 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public class ThinkThreadExecutor {
+
+    /**
+     * 通知 data 服务 ，数据分区改变的 线程变量
+     */
+    private static final ThreadLocal<String> dataParityRegionUpdateThreadLocal = new ThreadLocal<>();
+
+    public static final boolean isDataRegionChange(){
+        return dataParityRegionUpdateThreadLocal.get()!=null;
+    }
+
+
+    public static final void noticeDataRegionChange(String region){
+        dataParityRegionUpdateThreadLocal.set(region);
+    }
+
+    public static final synchronized String getChangedDataRagionAndRemove(){
+        String region = dataParityRegionUpdateThreadLocal.get();
+        if(region!=null){
+            dataParityRegionUpdateThreadLocal.remove();
+            return region;
+        }else{
+            return null;
+        }
+    }
+
 
     private static int queueCapacity = 128;
 
@@ -116,6 +142,18 @@ public class ThinkThreadExecutor {
                                 log.trace("未来需删除调试期日志：-------------------------------------FINISH----------------------------------------------");
                             }
                             taskHolder.setLastExecuteTime(ThinkMilliSecond.currentTimeMillis());
+                            ThinkToken token = taskHolder.getToken();
+                            if(token!=null){
+                                //通知data服务更数据新分区信息
+                                String currentRegion = token.getCurrentRegion();
+                                log.debug("通过token 获取 新的 数据分区，并通知给 data模块！- 》{}",currentRegion);
+//                                dataParityRegionUpdateThreadLocal.set(currentRegion);
+                                noticeDataRegionChange(currentRegion);
+                            }else {
+//                                dataParityRegionUpdateThreadLocal.set("");
+                                noticeDataRegionChange("");
+                            }
+
                             try {
                                 taskHolder.getTask().execute();
                             }catch (Exception e){
@@ -124,6 +162,8 @@ public class ThinkThreadExecutor {
                                     log.error("执行后台任务出现异常" ,e );
                                 }
                             }finally {
+//                                dataParityRegionUpdateThreadLocal.remove();
+                                getChangedDataRagionAndRemove();
                                 executeCount ++ ;
                             }
                         }
@@ -240,10 +280,12 @@ public class ThinkThreadExecutor {
             Thread t = new Thread(group, r,
                     namePrefix + threadNumber.getAndIncrement(),
                     0);
-            if (t.isDaemon())
+            if (t.isDaemon()) {
                 t.setDaemon(false);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
+            }
+            if (t.getPriority() != Thread.NORM_PRIORITY) {
                 t.setPriority(Thread.NORM_PRIORITY);
+            }
             return t;
         }
     }

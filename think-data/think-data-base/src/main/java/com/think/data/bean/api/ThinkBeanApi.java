@@ -35,6 +35,15 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
 
     public T findFirstOneByKey(String key , Serializable value);
 
+    /**
+     * 通过一个key 查找
+     * @param key
+     * @param value
+     * @param limit
+     * @return
+     */
+    List<T> findListByKey(String key ,Serializable value ,int limit );
+
 
     ThinkResult<T> create(T t);
 

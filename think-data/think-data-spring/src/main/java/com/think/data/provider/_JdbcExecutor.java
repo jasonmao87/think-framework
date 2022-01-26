@@ -2,10 +2,10 @@ package com.think.data.provider;
 
 import com.think.common.data.mysql.IThinkResultFilter;
 import com.think.common.result.ThinkResult;
-import com.think.common.util.PasswordUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean._Entity;
+import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
 import com.think.data.model.ThinkTableModel;
@@ -30,6 +30,8 @@ public abstract class _JdbcExecutor {
     }
 
     public <T extends _Entity> void tableInit(String tableName){
+
+
         this.checkTransactionAndLogPrint();
         if (Manager.isTableInitialized(tableName) == false) {
             // TODO:  临时代码 ，协助系统自动完成 createUserName 和 updateUserName 字段的增加 ！  该代码应该在一定时间后予以删除 ！当然该代码有大概率执行不了，所以tryCatch掉

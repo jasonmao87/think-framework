@@ -122,19 +122,15 @@ public abstract class _Entity<T extends _Entity> implements IThinkFilterAndUpdat
 
 
 
-    @Remark("枚举解释器")
-    @ThinkIgnore
-    @ApiModelProperty(hidden = true)
-    private static ThinkExplainList EnumsValueExplain = null;
-
+//    @Remark("枚举解释器")
+//    @ThinkIgnore
+//    @ApiModelProperty(hidden = true)
+//    private  ThinkExplainList EnumsValueExplain = null;
+//
 
     @ApiModelProperty(value = "枚举解释" ,hidden = true)
     public ThinkExplainList getThinkTEnumsValueExplain() {
-        if (EnumsValueExplain ==null) {
-            EnumsValueExplain = new ThinkExplainList();
-            ObjectUtil.doThinkEntityTEnumExplain(this);
-        }
-        return EnumsValueExplain;
+        return ThinkEnumsExplainHolder.getThinkExplainList(this);
     }
 
 

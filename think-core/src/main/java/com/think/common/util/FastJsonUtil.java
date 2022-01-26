@@ -23,7 +23,7 @@ public class FastJsonUtil {
 //                SerializerFeature.WriteNullNumberAsZero,
 //                SerializerFeature.WriteNullBooleanAsFalse,
 //                SerializerFeature.WriteNullStringAsEmpty,
-                SerializerFeature.PrettyFormat,
+//                SerializerFeature.PrettyFormat,
                 SerializerFeature.DisableCircularReferenceDetect
         };
     }
@@ -96,5 +96,8 @@ public class FastJsonUtil {
     }
 
 
+    public static String toJSONString(JSONObject jsonObject){
+        return JSON.toJSONStringWithDateFormat(jsonObject,"yyyy-MM-dd HH:mm:ss" ,SerializerFeature.WriteDateUseDateFormat);
+    }
 
 }

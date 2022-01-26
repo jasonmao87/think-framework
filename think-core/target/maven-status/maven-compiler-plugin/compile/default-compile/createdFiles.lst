@@ -88,6 +88,7 @@ com\think\structure\ThinkExplainList.class
 com\think\structure\ThinkSimpleHolder.class
 com\think\core\supports\ClasspathPackageScaner.class
 com\think\common\data\ThinkMongoFilterOp$1.class
+com\think\core\bean\ThinkEnumsExplainHolder.class
 com\think\common\data\mysql\permission\ThinkSqlFilterPermissionFilter.class
 com\think\core\bean\util\ObjectUtil.class
 com\think\core\data\ThinkVersionManager.class

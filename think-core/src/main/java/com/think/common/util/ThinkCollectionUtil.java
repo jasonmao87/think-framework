@@ -29,4 +29,20 @@ public class ThinkCollectionUtil {
         return collection == null || collection.isEmpty();
     }
 
+
+    public static boolean isNotEmpty(@Nullable Map<?, ?> map){
+        if(isEmpty(map)){
+            return false;
+        }
+        return map.size() > 0 ;
+    }
+
+    public static boolean isNotEmpty(@Nullable Collection<?> collection) {
+        if (isEmpty(collection)) {
+            return false;
+        }
+        return collection.size() >0 ;
+    }
+
+
 }

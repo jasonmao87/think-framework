@@ -7,6 +7,7 @@ import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.model.ThinkColumnModel;
 import com.think.data.model.ThinkTableModel;
@@ -37,6 +38,18 @@ public class ThinkQuery {
     private ThinkSqlFilter filter ;
 
     private ThinkQuery() {
+        /*这里可能不是唯一入口*/
+        if (ThinkThreadExecutor.isDataRegionChange()) {
+            String currentRegion =ThinkThreadExecutor.getChangedDataRagionAndRemove();
+
+            if (log.isDebugEnabled()) {
+
+                log.debug("需要调整新的数据分区，原因应该异步任务的线程数据分区更新通知--- 调整为 ：：：{}" , currentRegion);
+            }
+            Manager.unsafeChangeDataSrv(currentRegion);
+        }
+
+
         this.perfectList = new ArrayList<>();
         this.simpleList = new ArrayList<>();
         this.badList = new ArrayList<>();
@@ -216,15 +229,20 @@ public class ThinkQuery {
                 }
                 String k  = filterBean.getKey();
                 Serializable v =  filterBean.getValues()[0];
-                String sv = (String) v;
 
+
+
+
+                String sv = null;
                 try{
                     ThinkColumnModel columnModel = Manager.getModelBuilder().get(filter.gettClass()).getKey(k);
-                    if(columnModel.isSensitive()){
+
+                    if(v instanceof String  && columnModel.isSensitive()){
+                        sv = (String) v;
                         sv =DesensitizationUtil.encodeWithIgnore((String) v, '%');
                     }
                 }catch (Exception e){}
-                if(filter.isKeyOrTypeUsingLike()){
+                if(  v instanceof String  && filter.isKeyOrTypeUsingLike()){
                     this.checkFastMatchAble(filterBean);
                     sb.append(" ").append(k).append(" LIKE ? ");
                     paramValues.add(sv);
@@ -236,7 +254,7 @@ public class ThinkQuery {
                     }
                 }else{
                     sb.append(filterBean.getQueryPart());
-                    paramValues.add(sv);
+                    paramValues.add(v);
                 }
 
 

@@ -52,10 +52,16 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
 
     @Override
     public T findFirstOneByKey(String key, Serializable value) {
-        ThinkSqlFilter sqlFilter = ThinkSqlFilter.build(targetClass())
+        List<T> list = this.findListByKey(key, value, 1);
+        return list.size()>0?(T)list.get(0):null;
+    }
+
+    @Override
+    public List<T> findListByKey(String key, Serializable value, int limit) {
+        ThinkSqlFilter sqlFilter = ThinkSqlFilter.build(targetClass(),limit)
                 .eq(key,value);
         List<T> list = dao.list(sqlFilter);
-        return list.size()>0?(T)list.get(0):null;
+        return list;
     }
 
     @Override

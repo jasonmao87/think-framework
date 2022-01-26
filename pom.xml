@@ -18,7 +18,9 @@
     </modules>
 
     <properties>
+<!--        <spring-boot.version>2.5.8</spring-boot.version>-->
         <spring-boot.version>2.3.2.RELEASE</spring-boot.version>
+
         <junit-version>4.12</junit-version>
         <druid-version>1.1.12</druid-version>
         <mysql-driver-version>6.0.6</mysql-driver-version>

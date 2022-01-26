@@ -104,9 +104,17 @@ public class Manager {
     }
     public static final boolean beginDataSrv(String splitRegion){
         if(dataRuntimeThreadLocal.get() == null) {
+            log.debug("线程 指定数据分区 --- {}" ,splitRegion);
+
             dataRuntimeThreadLocal.set(new ThinkDataRuntime(splitRegion));
             return true;
         }else{
+            String currentP = null;
+            ThinkDataRuntime runtime = getDataSrvRuntimeInfo() ;
+            if(runtime !=null){
+                currentP = runtime.getPartitionRegion();
+            }
+            log.debug("指定数据分区未成功,当前已经有分区--- {}" ,currentP);
             return false;
         }
     }
@@ -117,6 +125,7 @@ public class Manager {
      */
     public static final void unsafeChangeDataSrv(String splitRegion){
        if(!beginDataSrv(splitRegion)){
+           log.debug("线程 强制切换指定数据分区 --- {}" ,splitRegion);
            dataRuntimeThreadLocal.remove();
            dataRuntimeThreadLocal.set(new ThinkDataRuntime(splitRegion));
        }

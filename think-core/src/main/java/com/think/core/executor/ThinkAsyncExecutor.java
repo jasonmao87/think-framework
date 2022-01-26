@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
  * @Date :2021/3/24
  * @Name :ThinkAsyncExecutor
  * @Description : 异步任务执行器
+ * @author JasonMao
  */
 @Slf4j
 public class ThinkAsyncExecutor {
@@ -61,12 +62,17 @@ public class ThinkAsyncExecutor {
                 ThinkToken token = ThinkToken.parseOfJsonString(thinkTokenString);
                 ThinkExecuteThreadSharedTokenManager.set(token);
                 try{
+                    if(token!=null) {
+                        ThinkThreadExecutor.noticeDataRegionChange(token.getCurrentRegion());
+                    }
                     task.execute();
+
                 }catch (Exception e){
                     if (log.isErrorEnabled()) {
                         log.error("",e );
                     }
                 }finally {
+                    ThinkThreadExecutor.getChangedDataRagionAndRemove();
                     ThinkExecuteThreadSharedTokenManager.remove();
                 }
             }

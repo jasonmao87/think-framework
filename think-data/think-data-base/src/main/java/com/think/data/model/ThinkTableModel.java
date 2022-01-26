@@ -4,6 +4,7 @@ package com.think.data.model;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.TFlowBuilder;
+import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.exception.ThinkDataModelException;
 import lombok.extern.slf4j.Slf4j;
@@ -189,10 +190,26 @@ public class ThinkTableModel implements Serializable {
     }
 
     public String getTableName() {
+        if (ThinkThreadExecutor.isDataRegionChange()) {
+            String currentRegion =ThinkThreadExecutor.getChangedDataRagionAndRemove();
+
+            if (log.isDebugEnabled()) {
+
+                log.debug("需要调整新的数据分区，原因应该异步任务的线程数据分区更新通知--- 调整为 ：：：{}" , currentRegion);
+            }
+            Manager.unsafeChangeDataSrv(currentRegion);
+        }
+
+
+
+
         return tableName;
     }
 
     public String getTableComment() {
+        if(tableComment!=null){
+            tableComment = tableComment.replaceAll("'","^").replaceAll("\"","^");
+        }
         return tableComment;
     }
 

@@ -254,6 +254,9 @@ public class ThinkColumnModel implements Serializable {
     }
 
     public String getComment() {
+        if(comment!=null){
+            comment = comment.replaceAll("'","^").replaceAll("\"","^");
+        }
         return comment;
     }
 

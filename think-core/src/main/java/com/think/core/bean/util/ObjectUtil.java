@@ -80,9 +80,11 @@ public class ObjectUtil  {
         }else{
 //            Field field = ClassUtil.getField(t.getClass(), key);
             if(field.getType().getSuperclass()!=null && field.getType().getSuperclass().equals(Enum.class)){
-                Object x = enumValue(field.getType(), (String) map.get(key));
-                field.setAccessible(true);
-                ClassUtil.setValue(field, t, x);
+                if(map.get(key)!=null) {
+                    Object x = enumValue(field.getType(), map.get(key).toString());
+                    field.setAccessible(true);
+                    ClassUtil.setValue(field, t, x);
+                }
             }else{
                 field.setAccessible(true);
                 ClassUtil.setValue(field,t,map.get(key));
@@ -148,8 +150,8 @@ public class ObjectUtil  {
     }
 
 
-    public static final<T extends _Entity>  void doThinkEntityTEnumExplain(T t ){
-        ThinkExplainList thinkExplainList = t.getThinkTEnumsValueExplain();
+    public static final<T extends _Entity>  ThinkExplainList doThinkEntityTEnumExplain(T t ){
+        ThinkExplainList thinkExplainList = new ThinkExplainList();
         if (!thinkExplainList.isInit()) {
             List<Field> fieldList = ClassUtil.getFieldList(t.getClass());
             for (Field field : fieldList) {
@@ -161,6 +163,7 @@ public class ObjectUtil  {
                 }
             }
         }
+        return thinkExplainList;
 
     }
 

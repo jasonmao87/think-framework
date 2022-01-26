@@ -3,6 +3,9 @@ package com.think.common.util;
 import com.think.exception.ThinkDataVerificationException;
 import org.apache.commons.math3.random.StableRandomGenerator;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * @Date :2021/9/26
  * @Name :TVerification
@@ -76,6 +79,19 @@ public class TVerification<T extends Object>{
         return throwIfNotInstanceOfType(Double.class);
     }
 
+    public final TVerification<T> throwIfCollectionIsEmpty(String message){
+        throwIfNull(message);
+        T data = getData();
+        Collection collection = (Collection) data;
+        if (collection.isEmpty()) {
+            errThrow(message);
+        }
+        return this;
+    }
+
+    public final TVerification<T> throwIfCollectionIsEmpty(){
+        return throwIfCollectionIsEmpty("容器不存在任何数据");
+    }
 
 
 

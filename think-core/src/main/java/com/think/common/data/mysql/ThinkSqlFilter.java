@@ -3,6 +3,7 @@ package com.think.common.data.mysql;
 import com.alibaba.fastjson.JSONObject;
 import com.think.common.data.IFilterChecker;
 import com.think.common.data.ThinkFilterOp;
+import com.think.common.util.DateUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
 import com.think.core.annotations.bean.ThinkStateColumn;
@@ -291,6 +292,17 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
     public ThinkSqlFilter <T> largeThanAndEqKey(String k ,Serializable k2){
         this._append(k,ThinkFilterOp.LGE_KEY,k2);
+        return this;
+    }
+
+    /**
+     * 在日期日期
+     * @param k
+     * @param d
+     * @return
+     */
+    public ThinkSqlFilter<T> onThatDay(String k, Date d){
+        this.betweenAnd(k, DateUtil.beginOfDate(d),DateUtil.endOfDate(d));
         return this;
     }
 
