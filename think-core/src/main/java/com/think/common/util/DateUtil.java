@@ -188,10 +188,10 @@ public class DateUtil extends TimeUtil{
     public static final Date now(){
 
         long now =ThinkMilliSecond.currentTimeMillis();
-        lastCallNowTime = now;
         if(now == lastCallNowTime){
             return lastCallNowDate;
         }else{
+            lastCallNowTime = now;
             lastCallNowDate = new Date();
             return lastCallNowDate;
         }
