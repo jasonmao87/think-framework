@@ -46,8 +46,15 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     @Remark("筛选记录数，limit ，-1代表不分页  ")
     private int limit  = 10 ;
 
-    @Remark("限制查询年份，仅对按年切分表有效")
-    private int filterSplitYear ;
+//    @Remark("限制查询年份，仅对按年切分表有效")
+//    private int filterSplitYear ;
+//
+
+    @Remark("限制查询开始年份，大于0有效")
+    private int filterSplitYearFrom ;
+
+    @Remark("限制查询结束年份，大于0有效")
+    private int filterSplitYearEnd ;
 
     @Remark("可能为空结果")
     private boolean mayBeEmptyResult = false;
@@ -121,7 +128,9 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         ThinkSqlFilter filter = new ThinkSqlFilter(tClass);
         if(jsonObject.containsKey("filterSplitYear")){
-            filter.filterSplitYear = jsonObject.getInteger("filterSplitYear");
+            int filterSplitYear = jsonObject.getInteger("filterSplitYear");
+            filter.filterSplitYearFrom = filterSplitYear;
+            filter.filterSplitYearEnd = filterSplitYear;
         }
         if (jsonObject.containsKey("limit")) {
             filter.limit = jsonObject.getInteger("limit");
@@ -589,6 +598,11 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
 
 
+    public ThinkSqlFilter<T> setFilterSelectYearLimit(@Remark("filterSplitYearFrom 查询限制开始年份") int filterSplitYearFrom,@Remark("filterSplitYearEnd 查询限制结束年份")int filterSplitYearEnd){
+        this.filterSplitYearFrom =  filterSplitYearFrom;
+        this.filterSplitYearEnd = filterSplitYearEnd ;
+        return this;
+    }
 
 
     public Class<T> gettClass() {
@@ -599,8 +613,16 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return limit;
     }
 
-    public int getFilterSplitYear() {
-        return filterSplitYear;
+//    public int getFilterSplitYear() {
+//        return filterSplitYear;
+//    }
+
+    public int getFilterSplitYearEnd() {
+        return filterSplitYearEnd;
+    }
+
+    public int getFilterSplitYearFrom() {
+        return filterSplitYearFrom;
     }
 
     public int getStart() {

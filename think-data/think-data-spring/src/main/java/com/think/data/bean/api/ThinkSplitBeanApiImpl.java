@@ -193,9 +193,9 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
         if(action!=null) {
             action.action(sqlFilter);
         }
-        if(sqlFilter.getFilterSplitYear() >0){
-            return this.list(sqlFilter,sqlFilter.getFilterSplitYear());
-        }
+//        if(sqlFilter.getFilterSplitYear() >0){
+//            return this.list(sqlFilter,sqlFilter.getFilterSplitYear());
+//        }
         return this.list(sqlFilter);
     }
 
@@ -212,9 +212,9 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
         if(action!=null) {
             action.action(sqlFilter);
         }
-        if(sqlFilter.getFilterSplitYear() >0){
-            return this.count(sqlFilter,sqlFilter.getFilterSplitYear());
-        }
+//        if(sqlFilter.getFilterSplitYear() >0){
+//            return this.count(sqlFilter,sqlFilter.getFilterSplitYear());
+//        }
         return this.count(sqlFilter);
     }
 
@@ -257,5 +257,10 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
     @Override
     public ThinkSqlFilter<T> emptySqlFilter(int limit) {
         return ThinkSqlFilter.build(targetClass(),limit);
+    }
+
+    @Override
+    public int computeIdYear(long id) {
+        return this.dao.computeSplitYearById(id);
     }
 }

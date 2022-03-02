@@ -33,7 +33,7 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
 
 
     @Remark("使用updateMappe更新")
-    ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper, long id );
+    ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper,@Remark("对象的Id值") long id );
     /**
      * 获取list ，会自动匹配 跨表 等复杂逻辑， 无需过多考虑，性能上略微会逊色一些
      * @param sqlFilter
@@ -54,6 +54,7 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      * @param splitYear
      * @return
      */
+    @Deprecated
     List<T> list(ThinkSqlFilter<T> sqlFilter,int splitYear);
 
     /**
@@ -62,7 +63,9 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      * @param splitYear
      * @return
      */
+    @Deprecated
     long count(ThinkSqlFilter<T> sqlFilter,int splitYear);
+
 
     /**
      * 非必须， 启用
@@ -130,5 +133,6 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
 
     ThinkSqlFilter<T> emptySqlFilter(int limit);
 
-
+    @Remark("通过id计算年份")
+    int computeIdYear(long id );
 }

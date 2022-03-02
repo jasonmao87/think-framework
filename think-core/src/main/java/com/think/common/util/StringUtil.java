@@ -472,4 +472,9 @@ public class StringUtil {
 
         return htmlStr.trim(); //返回文本字符串
     }
+
+
+    public static String fixStringIfNullAsEmpty(String str){
+        return str!=null?str:getEmptyStr();
+    }
 }

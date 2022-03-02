@@ -265,6 +265,17 @@ public class ThinkMongoDao {
         return ThinkResult.fastFail();
     }
 
+    @Remark("通过long类型的Id获取较为简短的StringId，即直接使用Long HexString的字符串形式")
+    public String defaultShortIdByLongId(long longId){
+        return Long.toHexString(longId);
+    }
+
+    @Remark("通过long类型的Id获取转换后的StringId，即直接使用Long的字符串形式")
+    public String defaultIdByLongId(long longId){
+        return Long.toString(longId);
+    }
+
+
 //
 //    public <T extends SimpleMongoEntity> List<T> page(int page,Class<T> tClass ){
 //        Query query = new Query().skip((page-1) * 50).limit(50);

@@ -143,12 +143,13 @@ public class _DaoSupport{
      * @return
      */
     protected static final  <T extends SimplePrimaryEntity> int[] possibleSplitYears(ThinkSqlFilter<T> sqlFilter, List<String> showSplitTables){
-        if(sqlFilter.getFilterSplitYear()>2000){
-            if(log.isDebugEnabled()){
-                log.debug("sqlFilter 指定了查询年份，将不在额外分析，直接限制查询年份为：{}",sqlFilter.getFilterSplitYear());
-            }
-            return new int[]{sqlFilter.getFilterSplitYear()};
-        }
+//        if(sqlFilter.getFilterSplitYear()>2000){
+//            if(log.isDebugEnabled()){
+//                log.debug("sqlFilter 指定了查询年份，将不在额外分析，直接限制查询年份为：{}",sqlFilter.getFilterSplitYear());
+//            }
+//            return new int[]{sqlFilter.getFilterSplitYear()};
+//        }
+
 
 //        if(log.isDebugEnabled()){
 //            log.debug("analysis think Sql Filter ： {} " , FastJsonUtil.parseToJSON(sqlFilter));
@@ -197,8 +198,24 @@ public class _DaoSupport{
                 }
             }
         }//end of for
+        int userLimitYearFrom = sqlFilter.getFilterSplitYearFrom();
+        int userLimitYearEnd = sqlFilter.getFilterSplitYearEnd();
+
         int maxY = computeSpiltYearById(maxId);
         int minY = computeSpiltYearById(minId);
+        if(userLimitYearEnd > 0 && userLimitYearEnd < maxY){
+            if (log.isDebugEnabled()) {
+                log.debug("用户限制了数据查询结束年份并且范围小于智能推算的年份，尊重用户选择，数据查询结束范围年费设置为 {}年" , userLimitYearEnd);
+            }
+            maxY = userLimitYearEnd;
+        }
+        if(userLimitYearFrom > 0 && userLimitYearFrom > minY){
+            if (log.isDebugEnabled()) {
+                log.debug("用户限制了数据查询开始年份并且范围小于智能推算的年份，尊重用户选择，数据查询开始范围年费设置为 {}年" , userLimitYearFrom);
+            }
+            minY = userLimitYearFrom;
+        }
+
         List<Integer> list = getAllSplitYearSuffix(sqlFilter.gettClass(),showSplitTables,sqlFilter.isDesc());
         int initedMax = -1 ;
         int initedMin =  -1 ;
