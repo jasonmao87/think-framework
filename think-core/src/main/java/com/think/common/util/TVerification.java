@@ -139,6 +139,17 @@ public class TVerification<T extends Object>{
         return throwIfNull("对象为NULL");
     }
 
+    public final TVerification<T> throwIfNotNull(String message){
+        if(t !=null){
+            errThrow(message);
+        }
+        return this;
+    }
+
+    public final TVerification<T> throwIfNotNull(){
+        return this.throwIfNotNull("对象不为NULL");
+    }
+
     public final TVerification<T> throwIfStringIsEmpty(String errMsg){
         this.throwIfNoInstanceOfString();
         if (StringUtil.isEmpty((String) t)) {

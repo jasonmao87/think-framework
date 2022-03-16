@@ -15,6 +15,7 @@
         <module>think-data</module>
         <module>think-tcp</module>
         <module>think-simple-redis</module>
+        <module>think-tcp2</module>
     </modules>
 
     <properties>

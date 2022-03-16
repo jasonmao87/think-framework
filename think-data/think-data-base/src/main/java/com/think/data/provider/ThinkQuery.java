@@ -499,7 +499,7 @@ public class ThinkQuery {
     public <T extends _Entity> ThinkExecuteQuery selectCount(){
 
         StringBuilder sb = new StringBuilder("SELECT  ")
-                .append(" count(*) ")
+                .append(" count(*) as COUNT_RESULT ")
                 .append("FROM ").append( tableName( null )).append(" ")
                 .append(queryStr).append(" ");
         List<Serializable> valueTempList = new ArrayList<>();
