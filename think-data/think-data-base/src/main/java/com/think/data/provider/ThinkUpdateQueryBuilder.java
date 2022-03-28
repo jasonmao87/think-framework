@@ -193,7 +193,7 @@ public class ThinkUpdateQueryBuilder {
 
 
         sql.append(") ");
-        return  new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null);
+        return  new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null,false);
     }
 
 
@@ -341,7 +341,7 @@ public class ThinkUpdateQueryBuilder {
             sql.append(") ");
             outIndex ++ ;
         }
-        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null);
+        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null ,false);
     }
 
     protected static <T extends _Entity> ThinkExecuteQuery updateSql(T t){
@@ -409,7 +409,7 @@ public class ThinkUpdateQueryBuilder {
         }
         sql.append(" WHERE id = ?");
         valuesList.add(t.getId());
-        return new ThinkExecuteQuery(sql.toString(),valuesList.toArray(new Serializable[valuesList.size()]),null);
+        return new ThinkExecuteQuery(sql.toString(),valuesList.toArray(new Serializable[valuesList.size()]),null,false);
     }
 
 
@@ -505,7 +505,7 @@ public class ThinkUpdateQueryBuilder {
             throw new ThinkDataRuntimeException("update 语句未指定任何条件，拒绝构建执行Query");
 
         }
-        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null);
+        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null, query.isMaybyEmpty());
     }
 
 
@@ -514,7 +514,7 @@ public class ThinkUpdateQueryBuilder {
                 .append(tableName(sqlFilter.gettClass())).append(" ");
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         sql.append(query.filterQuery());
-        return new ThinkExecuteQuery(sql.toString(),query.filterParamValueArray(),null);
+        return new ThinkExecuteQuery(sql.toString(),query.filterParamValueArray(),null, query.isMaybyEmpty());
     }
 
 

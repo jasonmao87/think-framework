@@ -8,6 +8,7 @@ import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.TFlowBuilder;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.exception.ThinkDataVerificationException;
 import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +25,8 @@ public class ThinkUpdateMapper<T extends _Entity> {
     private Map<String,Object> incMapper ;
     private Map<String,String> setKeyMapper ;
 
+    private Set<String> keySet = new HashSet<>();
+
     private  ThinkUpdateMapper(Class<T> targetClass) {
         this.targetClass = targetClass;
         //this.filter = ThinkSqlFilter.build(tClass);
@@ -39,6 +42,13 @@ public class ThinkUpdateMapper<T extends _Entity> {
         return (ThinkUpdateMapper<T>)new ThinkUpdateMapper<T>(tClass);
     }
 
+    public void ambiguityErrorCheck(String key){
+        if(this.keySet.contains(key)){
+            throw new ThinkDataVerificationException("已经存在对" +key +"的修改参数，重复修改或设置产生歧义。");
+        }else{
+            this.keySet.add(key);
+        }
+    }
 
     public ThinkSqlFilter<T> sqlFilter(){
         if(this.filter == null){
@@ -55,6 +65,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
      */
     public ThinkUpdateMapper<T> updateToKeyValue(String k , String sourceKey){
       if(this.checkKey(k,false) && this.checkKey(sourceKey,true)){
+          this.ambiguityErrorCheck(k);
           this.setKeyMapper.put(k,sourceKey);
       }
       return this;
@@ -62,6 +73,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public ThinkUpdateMapper<T> updateValue(String k, Serializable v){
         if(this.checkKey(k,false)) {
+            this.ambiguityErrorCheck(k);
             this.setMapper.put(k, v);
         }
         return this;
@@ -69,6 +81,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public ThinkUpdateMapper<T> updateInc(String k , int inc){
         if(this.checkKey(k,false)) {
+            this.ambiguityErrorCheck(k);
             this.incMapper.put(k, inc);
         }
         return this;
@@ -76,6 +89,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public ThinkUpdateMapper<T> updateInc(String k,double inc){
         if(this.checkKey(k,false)) {
+            this.ambiguityErrorCheck(k);
             this.incMapper.put(k, inc);
         }
         return this;
@@ -83,12 +97,14 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public ThinkUpdateMapper<T> updateDateAsNow(String key){
         if (this.checkKeyIsDateType(key) ) {
+            this.ambiguityErrorCheck(key);
             this.updateValue(key, DateUtil.now());
         }
         return this;
     }
 
 
+    @Deprecated
     public ThinkUpdateMapper<T> updateTFlowState(TFlowStateUpdate update){
 
         if(StringUtil.isNotEmpty(update.getTimeKey())) {

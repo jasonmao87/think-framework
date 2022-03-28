@@ -11,8 +11,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @Slf4j
@@ -205,6 +204,17 @@ public class R<T>  implements Serializable {
 
     }
 
+    public List<String> getErrorMessageStacks(){
+        if(this.getThrowable()!=null){
+            List<String> message = new ArrayList<>();
+            for (Throwable throwable : this.getThrowable().getSuppressed()) {
+                String eMessage = throwable.getMessage();
+                message.add(eMessage);
+            }
+            return message;
+        }
+        return Collections.EMPTY_LIST;
+    }
 
 
     public Map<String,Object> toMap(){

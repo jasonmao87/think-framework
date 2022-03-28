@@ -1,5 +1,6 @@
 package com.think.data.provider;
 
+import com.sun.org.apache.regexp.internal.RE;
 import com.think.common.data.mysql.IThinkResultFilter;
 import com.think.common.result.ThinkResult;
 import com.think.common.util.ThinkMilliSecond;
@@ -10,6 +11,7 @@ import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.dev.ReSave;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -178,14 +180,25 @@ public abstract class _JdbcExecutor {
 
 
     public Map<String,Object> executeOne( ThinkExecuteQuery executeQuery, String finalTableName){
-        this.tableInit(finalTableName);
         Map<String,Object> result = null;
+        if(executeQuery.isMayByEmpty()){
+            result= new HashMap<>();
+            if(executeQuery.getSql(finalTableName).toUpperCase().contains(" COUNT(*) ")){
+                result.put("COUNT_RESULT",0L);
+            }
+            log.warn("SQL FILTER 存在 IN 空数据内容，不执行实际查询，直接返回 0 或者 空值 ");
+            return result;
+        }
+        this.tableInit(finalTableName);
+
         long duration = 0L;
         long start =0L;
         int affectedCount = 0;
         boolean success = false;
         Throwable throwable = null;
         String sql = executeQuery.getSql(finalTableName);
+
+
         try{
             start = ThinkMilliSecond.currentTimeMillis();
             result = getJdbcTemplate().queryForMap(sql,executeQuery.getValues());
@@ -219,6 +232,11 @@ public abstract class _JdbcExecutor {
 
 
     public List<Map<String,Object>> executeSelectList( ThinkExecuteQuery executeQuery, String finalTableName){
+        if(executeQuery.isMayByEmpty()){
+            log.warn("SQL FILTER 存在 IN 空数据内容，不执行实际查询，直接返回 0 或者 空值 ");
+            return new ArrayList<>();
+        }
+
         this.tableInit(finalTableName);
         List<Map<String,Object>> result = null;
         long duration = 0L;
@@ -265,6 +283,11 @@ public abstract class _JdbcExecutor {
         int result = 0;
         boolean success = false;
         Throwable throwable = null;
+        if(executeQuery.isMayByEmpty()){
+            return DaoExceptionTranslater.updateFilterEmpty().setData(0);
+        }
+
+
         long start =0L;
         String sql = executeQuery.getSql(finalTableName);
         try{

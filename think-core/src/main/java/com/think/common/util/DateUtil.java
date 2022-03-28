@@ -639,6 +639,49 @@ public class DateUtil extends TimeUtil{
     }
 
 
+    public static final int dayOfYear(Date date){
+        Calendar calendar = getCalendar(date);
+        int i = calendar.get(Calendar.DAY_OF_YEAR);
+        return i;
+    }
+
+    public static final int dayOfYear(){
+        return dayOfYear(DateUtil.now());
+    }
+
+
+
+    public static final Date beginOfYear(Date date){
+        if(date == null){
+            date = DateUtil.now();
+        }
+        Calendar c = getCalendar(date);
+        c.set(Calendar.DAY_OF_YEAR,1);
+        c.set(Calendar.HOUR_OF_DAY,0);
+        c.set(Calendar.MINUTE,0);
+        c.set(Calendar.SECOND,0);
+        c.set(Calendar.MILLISECOND,0);
+        return c.getTime();
+    }
+
+    public static final Date beginOfCurrentYear(){
+        return beginOfYear(DateUtil.now());
+    }
+
+    @Deprecated
+    public static final Date endOfYear(Date date){
+        if(date == null){
+            date = DateUtil.now();
+        }        Date date1 = beginOfYear(date);
+        Date date2 = DateUtil.computeAddYears(date1, 1);
+        Date date3 = DateUtil.computeAddMinutes(date2, -1);
+        return endOfDate(date3);
+    }
+
+    public static final Date endOfCurrentYear(){
+        return endOfYear(DateUtil.now());
+    }
+
 
 }
 

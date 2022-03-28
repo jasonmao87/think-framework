@@ -119,6 +119,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         this.strictFastMatch = strictFastMatch;
     }
 
+
     public static <T extends _Entity> ThinkSqlFilter<T> parseFromJSON(String filterJson , Class<T> tClass){
         JSONObject jsonObject = null;
         try{
@@ -320,7 +321,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
             if (log.isWarnEnabled()) {
                 log.warn(" {} in 语法未包含任何 值，这样查询结果必然无法匹配到任何数据 ！" ,k);
             }
-            mayBeEmptyResult = true;
+            this.mayBeEmptyResult = true;
         }else if( v.length == 1){
             return eq(k,v[0]);
         }else{

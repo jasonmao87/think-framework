@@ -1,6 +1,7 @@
 package com.think.data.provider;
 
 import com.mysql.cj.api.xdevapi.CreateTableStatement;
+import com.sun.org.apache.regexp.internal.RE;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
 import org.springframework.dao.DataAccessException;
@@ -11,6 +12,9 @@ public class DaoExceptionTranslater {
 
 
 
+    public static ThinkResult<Integer> updateFilterEmpty(){
+        return ThinkResult.fail("执行修改对象条件非法，不允许使用KEY IN EMPTY 的条件执行修改",ResultCode.REQUEST_PARAM_ERROR);
+    }
 
     public static ThinkResult translate(Exception exception){
         String message = exception.getMessage();

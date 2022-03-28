@@ -1,6 +1,7 @@
 package com.think.data;
 
 import com.think.common.data.IFilterChecker;
+import com.think.common.data.IThinkQueryFilter;
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.core.annotations.Remark;
 import com.think.core.bean.SimplePrimaryEntity;
@@ -85,8 +86,22 @@ public class Manager {
                 }
                 return false;
             }
+
+
         });
         log.warn("ThinkData默认开启了thinkLinkedIdSupportAble得支持，进而会支持针对所有MYSQL表thinkLinkedId建立索引和默认赋值，如果不需要，请在配置文件中指定：think.data.thinkLinkedId.able =false,或手动调用Manage.disAbleThinkLinkedIdSupport() 禁用！");
+    }
+
+    private static IThinkQueryFilter iThinkQueryFilter;
+
+    public static synchronized final void setThinkQueryFilter(IThinkQueryFilter queryFilter){
+        if(iThinkQueryFilter == null){
+            iThinkQueryFilter = queryFilter;
+        }
+    }
+
+    public static IThinkQueryFilter getThinkQueryFilter() {
+        return iThinkQueryFilter;
     }
 
     public static final void endDataSrv(){

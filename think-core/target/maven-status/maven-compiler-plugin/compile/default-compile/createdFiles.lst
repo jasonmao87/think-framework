@@ -28,6 +28,7 @@ com\think\core\security\ThinkWebSecuritySigner.class
 com\think\common\util\security\DesensitizationUtil.class
 com\think\core\executor\ThinkAsyncExecutor$1.class
 com\think\core\security\ThinkTokenAttachment.class
+com\think\core\enums\StateEnum.class
 com\think\core\executor\ThinkThreadExecutor$1.class
 com\think\common\util\BinaryUtil.class
 com\think\core\executor\ThinkThreadExecutor$DefaultThinkThreadFactory.class
@@ -100,6 +101,7 @@ com\think\core\annotations\bean\ThinkMongoIndex.class
 com\think\core\executor\BackTaskHolder.class
 com\think\common\result\state\ThinkResultState.class
 com\think\core\bean\BaseVo.class
+com\think\core\bean\state\ThinkState.class
 com\think\common\data\mysql\ThinkFilterBean.class
 com\think\common\util\IdUtil.class
 com\think\common\util\L.class
@@ -125,12 +127,15 @@ com\think\core\security\token2\ITokenExtend.class
 com\think\structure\ThinkFastList$1.class
 com\think\common\data\mysql\TFlowStateUpdate.class
 com\think\structure\ThinkCacheMap$1.class
+com\think\common\util\CodeBuilder.class
 com\think\common\util\PasswordCheckInfo.class
 com\think\structure\table\ThinkGridModel.class
 com\think\core\annotations\bean\ThinkIgnore.class
 com\think\core\annotations\Remark.class
+com\think\common\data\IThinkQueryFilter.class
 com\think\core\executor\ThinkBackgroundTask.class
 com\think\structure\table\ThinkGridColumnModel.class
+com\think\core\enums\TStateEnum.class
 com\think\common\util\NumberCompareUtil.class
 com\think\core\security\ThinkSecurityKey.class
 com\think\common\util\ThinkPeakReduction.class
@@ -142,5 +147,6 @@ com\think\core\security\token2\ThinkTokenV2.class
 com\think\common\util\office\ThinkExcelUtil$1.class
 com\think\common\util\security\RSAUtil.class
 com\think\core\bean\SimpleRefEntity.class
+com\think\common\util\ThinkAssert.class
 com\think\core\bean\ThinkVersionEntity.class
 com\think\core\executor\ThinkExecuteThreadSharedTokenManager.class

@@ -9,6 +9,7 @@ import java.util.List;
 
 public class ThinkExecuteQuery {
 
+    private boolean mayByEmpty = false;
     private boolean select = false;
     private boolean update = false;
     private boolean insert = false;
@@ -20,9 +21,11 @@ public class ThinkExecuteQuery {
 
 
 
-    public ThinkExecuteQuery(String sql, Serializable[] values , List<IThinkResultFilter> resultFilters) {
+
+    public ThinkExecuteQuery(String sql, Serializable[] values , List<IThinkResultFilter> resultFilters ,boolean mayByEmpty ) {
         this.sql = sql;
         this.values = values;
+        this.mayByEmpty = mayByEmpty;
 
         for (int i = 0; i < values.length; i++) {
             if(values[i] instanceof Enum){
@@ -75,5 +78,9 @@ public class ThinkExecuteQuery {
     protected List<IThinkResultFilter> getResultFilters() {
 
         return resultFilters!=null?resultFilters: ThinkCollectionUtil.emptyList();
+    }
+
+    public boolean isMayByEmpty() {
+        return mayByEmpty;
     }
 }

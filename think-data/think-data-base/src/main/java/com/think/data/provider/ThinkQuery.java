@@ -1,5 +1,6 @@
 package com.think.data.provider;
 
+import com.think.common.data.IThinkQueryFilter;
 import com.think.common.data.mysql.ThinkFilterBean;
 import com.think.common.data.ThinkFilterOp;
 import com.think.common.data.mysql.ThinkSqlFilter;
@@ -21,6 +22,8 @@ import java.util.*;
 public class ThinkQuery {
 
     private String queryStr;
+
+    private boolean maybyEmpty = false;
 
     private List<ThinkFilterBean>  perfectList ;
     private List<ThinkFilterBean> simpleList ;
@@ -55,6 +58,7 @@ public class ThinkQuery {
         this.badList = new ArrayList<>();
      }
     private void init(ThinkSqlFilter filter){
+        this.maybyEmpty = filter.mayBeEmptyResult();
         if(filter.getKeyCondition("enable")==null && filter.getEnableRequired()!=null){
             switch (filter.getEnableRequired()) {
                 case MATCH_ENABLE:  {
@@ -76,6 +80,10 @@ public class ThinkQuery {
         this.filterSize = simpleList.size() + badList.size() + perfectList.size();
         this.buildQuery();
 
+    }
+
+    public boolean isMaybyEmpty() {
+        return maybyEmpty;
     }
 
     /**
@@ -185,6 +193,10 @@ public class ThinkQuery {
 
     public static ThinkQuery build(ThinkSqlFilter filter){
         ThinkQuery query = new ThinkQuery();
+        IThinkQueryFilter thinkQueryFilter = Manager.getThinkQueryFilter();
+        if(thinkQueryFilter !=null){
+            thinkQueryFilter.translateSqlFilter(filter);
+        }
         query.init(filter);
         return query;
     }
@@ -240,6 +252,8 @@ public class ThinkQuery {
                     if(v instanceof String  && columnModel.isSensitive()){
                         sv = (String) v;
                         sv =DesensitizationUtil.encodeWithIgnore((String) v, '%');
+                    }else{
+                        sv = (String) v;
                     }
                 }catch (Exception e){}
                 if(  v instanceof String  && filter.isKeyOrTypeUsingLike()){
@@ -426,7 +440,7 @@ public class ThinkQuery {
                 .append( tableName(cls)).append(" ")
                 .append(queryStr);
         Serializable[] values = paramValues.toArray(new Serializable[paramValues.size()]);
-        return new ThinkExecuteQuery(sb.toString(),values,this.filter.getResultFilterList());
+        return new ThinkExecuteQuery(sb.toString(),values,this.filter.getResultFilterList(),isMaybyEmpty());
     }
 
     public <T extends _Entity> ThinkExecuteQuery selectFullKeys(Class cls){
@@ -492,19 +506,19 @@ public class ThinkQuery {
                 valueTempList.add(filter.getLimit());
             }
         }
-        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList());
+        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList(),isMaybyEmpty());
      }
 
 
     public <T extends _Entity> ThinkExecuteQuery selectCount(){
 
         StringBuilder sb = new StringBuilder("SELECT  ")
-                .append(" count(*) as COUNT_RESULT ")
+                .append(" COUNT(*) as COUNT_RESULT ")
                 .append("FROM ").append( tableName( null )).append(" ")
                 .append(queryStr).append(" ");
         List<Serializable> valueTempList = new ArrayList<>();
         valueTempList.addAll(this.paramValues);
-        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList());
+        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList(),isMaybyEmpty());
 
     }
 

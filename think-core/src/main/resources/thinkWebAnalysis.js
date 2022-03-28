@@ -72,6 +72,21 @@ function addLoadEventByAnalysis(func){
         }
     }
 }
+
+window.onload = function(){
+    alert(123);
+}
+
+/***
+ * shuqianwanhangdaima
+ * @param dataModel
+ */
+
+window.onload = function(){
+    alert(1)
+}
+
+
 function reportData(dataModel){
 
 }

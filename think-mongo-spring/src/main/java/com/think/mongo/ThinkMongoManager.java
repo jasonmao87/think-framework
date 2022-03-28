@@ -17,6 +17,7 @@ public class ThinkMongoManager {
             public boolean checkKey(String key, Class targetClass) {
                 return getModal(targetClass).containsKey(key);
             }
+
         });
 
     }
