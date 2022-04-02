@@ -1,6 +1,7 @@
 package com.think.common.util;
 
 import com.think.core.annotations.Remark;
+import com.think.core.bean.ThinkSchedule;
 import com.think.core.executor.ThinkAsyncExecutor;
 import com.think.core.executor.ThinkThreadExecutor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,10 +89,19 @@ public class ThinkPeakReduction {
 
 
     private static void backTask(){
-        ThinkThreadExecutor.addBackgroundTask(()->{
-            callCheck();
-            ThinkPeakReduction.backTaskInit = false;
-        },5,1,15, TimeUnit.MINUTES);
+        ThinkThreadExecutor.addScheduledBackTaskWithToken("削峰检查",()->{
+            if(DateUtil.currentMinuteOfTime() % 6 == 0) {
+                // 每 6分钟执行1次
+                callCheck();
+            }
+        }, ThinkSchedule.buildEverMinuteSchedule(13),-1,null);
+
+
+
+//        ThinkThreadExecutor.addBackgroundTask(()->{
+//            callCheck();
+//            ThinkPeakReduction.backTaskInit = false;
+//        },5,1,15, TimeUnit.MINUTES);
     }
 
 

@@ -2,6 +2,7 @@ package com.think.structure;
 
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.annotations.Remark;
+import com.think.core.bean.ThinkSchedule;
 import com.think.core.executor.ThinkBackgroundTask;
 import com.think.core.executor.ThinkThreadExecutor;
 
@@ -24,12 +25,14 @@ public class ThinkCacheMap {
     private static TCacheBean[] cacheBeans = new TCacheBean[1024];
 
     static {
-        ThinkThreadExecutor.addBackgroundTask(new ThinkBackgroundTask() {
-            @Override
-            public void execute() {
-                check();
-            }
-        },29,-1);
+
+        ThinkThreadExecutor.addScheduledBackTaskWithToken("缓存检查任务",new ThinkBackgroundTask() {
+                    @Override
+                    public void execute() {
+                        check();
+                    }
+                }, ThinkSchedule.buildEverMinuteSchedule(30),-1,null );
+
     }
 
     /**
@@ -152,6 +155,7 @@ public class ThinkCacheMap {
      * 检查 缓存 ，移除 过期数据
      */
     private static final void check(){
+
         for (int i = 0; i < maxSize; i++) {
             if(cacheBeans[i] != null) {
                 if(cacheBeans[i].isExpire()){

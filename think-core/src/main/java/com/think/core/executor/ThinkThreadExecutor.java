@@ -5,6 +5,7 @@ import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.TimeUtil;
 import com.think.core.annotations.Remark;
+import com.think.core.bean.ThinkSchedule;
 import com.think.core.security.ThinkToken;
 import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class ThinkThreadExecutor {
     /**
      * 后台任务 队列，最大容量为128
      */
-    private static BlockingQueue<BackTaskHolder> taskHolderArrayBlockingQueue = new ArrayBlockingQueue<BackTaskHolder>(256);
+    private static BlockingQueue<BackgroundTaskHolder> taskHolderArrayBlockingQueue = new ArrayBlockingQueue<BackgroundTaskHolder>(256);
     /**
      * 核心线程数量，不会被回收
      */
@@ -76,7 +77,7 @@ public class ThinkThreadExecutor {
     /**
      * 运行状态
      */
-    private static boolean runState = false;
+    private static volatile boolean runState = false;
 
     /**
      * （阻塞的）安全的停止后台任务。我们调用此方法后  后台任务不会马上停止，会执行完正在执行的任务后，静默的停止。
@@ -133,15 +134,15 @@ public class ThinkThreadExecutor {
             long executeErrorCount = 0;
             while (startControlState){
                 if(taskHolderArrayBlockingQueue.peek()!=null){
-                    BackTaskHolder taskHolder = taskHolderArrayBlockingQueue.poll();
+                    BackgroundTaskHolder taskHolder = taskHolderArrayBlockingQueue.poll();
                     if(taskHolder != null){
-                        if(taskHolder.canRun()){
+                        if(taskHolder.canExecute()){
                             if (log.isTraceEnabled()) {
                                 log.trace("未来需删除调试期日志：-------------------------------------START-----------------------------------------------");
                                 log.trace("本次执行携带得TOKEN信息：{}" , ThinkExecuteThreadSharedTokenManager.get());
                                 log.trace("未来需删除调试期日志：-------------------------------------FINISH----------------------------------------------");
                             }
-                            taskHolder.setLastExecuteTime(ThinkMilliSecond.currentTimeMillis());
+//                            taskHolder.setLastExecuteTime(ThinkMilliSecond.currentTimeMillis());
                             ThinkToken token = taskHolder.getToken();
                             if(token!=null){
                                 //通知data服务更数据新分区信息
@@ -167,15 +168,19 @@ public class ThinkThreadExecutor {
                                 executeCount ++ ;
                             }
                         }
-                        if(taskHolder.canRemove() == false) {
-                            taskHolderArrayBlockingQueue.offer(taskHolder);
+                        //如果 还未 到 可以销毁的状态， 我们需要将 任务 重新放回 队列
+                        if(taskHolder.canDestroy() == false) {
+                            if (false == taskHolderArrayBlockingQueue.offer(taskHolder)) {
+                                log.warn("由于任务队列爆满，被迫丢弃当前最后执行的任务 : {}" ,taskHolder.getName());
+
+                            }
                         }
                     }
                 }else{
                     if (log.isTraceEnabled()) {
-                        log.trace("后台任务队列未有更多的任务需要执行，休眠2秒钟后检查");
+                        log.trace("后台任务队列未有更多的任务需要执行，休眠500毫秒后检查");
                     }
-                    TimeUtil.sleepForSeconds(2);
+                    TimeUtil.sleep(500,TimeUnit.MILLISECONDS);
                     if (log.isTraceEnabled()) {
                         log.trace("后台任务线程恢复");
                     }
@@ -191,67 +196,85 @@ public class ThinkThreadExecutor {
 
     }
 
-
-    /**
-     * 增加一个 任务到后台 轮询执行的任务。我们无需关心它合适启动
-     * @param backgroundTask
-     * @param intervalMinutes
-     * @param  maxLoop          轮询次数限制，如果小于0，则表示 永久执行下午。如果大于0，会在执行N次后停止执行
-     */
-    @Remark("启动永远不会退出得后台轮询任务！< 第一个参数为后台执行得任务，第二个参数为 执行间隔（分钟）,如果 intervalMinutes <=0 ,表示只执行1次  ,第三个参数表示轮询次数，如果小于0，表示永远不会停止>")
-    public final static void addBackgroundTask(ThinkBackgroundTask backgroundTask,int intervalMinutes ,int maxLoop){
-        addBackgroundTask(backgroundTask,intervalMinutes,maxLoop,0,TimeUnit.MILLISECONDS);
-    }
-
-    @Deprecated
-    @Remark("启动永远不会退出得后台轮询任务！< 第一个参数为后台执行得任务，第二个参数为 执行间隔（分钟）, 第三个参数表示轮询次数，如果小于0，表示永远不会停止,delayMinutes = 延迟delayMinutes分钟后执行")
-    public final static void addBackgroundTask(ThinkBackgroundTask backgroundTask,int intervalMinutes ,int maxLoop,int delayMinutes){
-        addBackgroundTask(backgroundTask,intervalMinutes,maxLoop,delayMinutes,TimeUnit.MINUTES);
-    }
-
-    @Remark("启动永远不会退出得后台轮询任务！< 第一个参数为后台执行得任务，第二个参数为 执行间隔（分钟）, 第三个参数表示轮询次数，如果小于0，表示永远不会停止,delay  = 时间数量，unit 时间单位")
-    public final static void addBackgroundTask(ThinkBackgroundTask backgroundTask,int intervalMinutes ,int maxLoop,int delay ,TimeUnit unit){
-
-        if(intervalMinutes<1){
-            throw new ThinkRuntimeException("intervalMinutes表示执行间隔分钟数，必须设置为>0");
-        }
-        if(maxLoop == 0){
-            throw new ThinkRuntimeException("maxLoop不能设置为0，maxLoop>0表示执行次数，maxLoop<0表示永远会轮询执行下去");
-        }
-        BackTaskHolder holder =null;
+    public static final void addScheduledBackTaskWithAutoToken(String name , ThinkBackgroundTask backgroundTask , ThinkSchedule schedule, long stopTimeMillis){
+        ThinkToken token = null;
         if(ThinkExecuteThreadSharedTokenManager.get()!=null){
-            ThinkToken token = ThinkExecuteThreadSharedTokenManager.get();
-            holder=new BackTaskHolder(backgroundTask, intervalMinutes, maxLoop ,token);
-        }else{
-            holder=new BackTaskHolder(backgroundTask, intervalMinutes, maxLoop ,null);
+            token = ThinkExecuteThreadSharedTokenManager.get();
         }
-
-        if(delay >0){
-            if (log.isDebugEnabled()) {
-                log.debug("添加后台执行任务,将在{} {} 后执行{}次..如果轮询执行间隔为{}分钟..",delay,unit.toString(),maxLoop,intervalMinutes);
-                log.debug("携带得tokenInfo：{}", ThinkExecuteThreadSharedTokenManager.get());
-            }
-            long delayMillis ;
-            switch (unit){
-                case SECONDS: delayMillis = delay * 1000; break;
-                case MINUTES: delayMillis = delay * 60L * 1000 ; break;
-                case HOURS  : delayMillis = delay * 60L * 1000 * 60 ; break;
-                case DAYS   : delayMillis = delay * 60L * 1000 * 60 * 24 ; break;
-                default: {
-                    delayMillis = delay; break;
-                }
-            }
-            holder.setDelayMillis( delayMillis);
-        }
-        taskHolderArrayBlockingQueue.add(holder);
-        if(startControlState == false){
-            /**
-             * 默认会调用开始执行方法
-             */
-            start();
-        }
-
+        addScheduledBackTaskWithToken(name,backgroundTask,schedule,stopTimeMillis,token);
     }
+
+    public static final synchronized void addScheduledBackTaskWithToken(String name , ThinkBackgroundTask backgroundTask , ThinkSchedule schedule, long stopTimeMillis ,ThinkToken token){
+        BackgroundTaskHolder holder =new BackgroundTaskHolder(name,ThinkMilliSecond.currentTimeMillis(),stopTimeMillis,token,backgroundTask,schedule);
+        if (taskHolderArrayBlockingQueue.offer(holder)) {
+            if(runState == false){
+                start();
+            }
+        }
+    }
+
+
+
+//    /**
+//     * 增加一个 任务到后台 轮询执行的任务。我们无需关心它合适启动
+//     * @param backgroundTask
+//     * @param intervalMinutes
+//     * @param  maxLoop          轮询次数限制，如果小于0，则表示 永久执行下午。如果大于0，会在执行N次后停止执行
+//     */
+//    @Remark("启动永远不会退出得后台轮询任务！< 第一个参数为后台执行得任务，第二个参数为 执行间隔（分钟）,如果 intervalMinutes <=0 ,表示只执行1次  ,第三个参数表示轮询次数，如果小于0，表示永远不会停止>")
+//    public final static void addBackgroundTask(ThinkBackgroundTask backgroundTask,int intervalMinutes ,int maxLoop){
+//        addBackgroundTask(backgroundTask,intervalMinutes,maxLoop,0,TimeUnit.MILLISECONDS);
+//    }
+//
+//    @Deprecated
+//    @Remark("启动永远不会退出得后台轮询任务！< 第一个参数为后台执行得任务，第二个参数为 执行间隔（分钟）, 第三个参数表示轮询次数，如果小于0，表示永远不会停止,delayMinutes = 延迟delayMinutes分钟后执行")
+//    public final static void addBackgroundTask(ThinkBackgroundTask backgroundTask,int intervalMinutes ,int maxLoop,int delayMinutes){
+//        addBackgroundTask(backgroundTask,intervalMinutes,maxLoop,delayMinutes,TimeUnit.MINUTES);
+//    }
+//
+//    @Remark("启动永远不会退出得后台轮询任务！< 第一个参数为后台执行得任务，第二个参数为 执行间隔（分钟）, 第三个参数表示轮询次数，如果小于0，表示永远不会停止,delay  = 时间数量，unit 时间单位")
+//    public final static void addBackgroundTask(ThinkBackgroundTask backgroundTask,int intervalMinutes ,int maxLoop,int delay ,TimeUnit unit){
+//
+//        if(intervalMinutes<1){
+//            throw new ThinkRuntimeException("intervalMinutes表示执行间隔分钟数，必须设置为>0");
+//        }
+//        if(maxLoop == 0){
+//            throw new ThinkRuntimeException("maxLoop不能设置为0，maxLoop>0表示执行次数，maxLoop<0表示永远会轮询执行下去");
+//        }
+//        BackTaskHolder holder =null;
+//        if(ThinkExecuteThreadSharedTokenManager.get()!=null){
+//            ThinkToken token = ThinkExecuteThreadSharedTokenManager.get();
+//            holder=new BackTaskHolder(backgroundTask, intervalMinutes, maxLoop ,token);
+//        }else{
+//            holder=new BackTaskHolder(backgroundTask, intervalMinutes, maxLoop ,null);
+//        }
+//
+//        if(delay >0){
+//            if (log.isDebugEnabled()) {
+//                log.debug("添加后台执行任务,将在{} {} 后执行{}次..如果轮询执行间隔为{}分钟..",delay,unit.toString(),maxLoop,intervalMinutes);
+//                log.debug("携带得tokenInfo：{}", ThinkExecuteThreadSharedTokenManager.get());
+//            }
+//            long delayMillis ;
+//            switch (unit){
+//                case SECONDS: delayMillis = delay * 1000; break;
+//                case MINUTES: delayMillis = delay * 60L * 1000 ; break;
+//                case HOURS  : delayMillis = delay * 60L * 1000 * 60 ; break;
+//                case DAYS   : delayMillis = delay * 60L * 1000 * 60 * 24 ; break;
+//                default: {
+//                    delayMillis = delay; break;
+//                }
+//            }
+//            holder.setDelayMillis( delayMillis);
+//        }
+//        taskHolderArrayBlockingQueue.add(holder);
+//        if(startControlState == false){
+//            /**
+//             * 默认会调用开始执行方法
+//             */
+//            start();
+//        }
+//
+//    }
 
 
 
@@ -339,86 +362,6 @@ public class ThinkThreadExecutor {
 
 
 
-
-
-}
-
-
-class BackTaskHolder{
-    private String id ;
-    private ThinkBackgroundTask task;
-    private long lastExecuteTime ;
-    private int interval;
-    private int maxLoop;
-
-    private ThinkToken token;
-
-    // @Remark("延迟时间")
-    private long delayMillis =0;
-    private long initTime ;
-
-    public BackTaskHolder(ThinkBackgroundTask task,int interval,int maxLoop ,ThinkToken token) {
-        this.id = StringUtil.uuid();
-        this.task = task;
-        this.lastExecuteTime = 0L;
-        this.interval = interval;
-        this.maxLoop =maxLoop;
-        this.initTime = ThinkMilliSecond.currentTimeMillis();
-        this.token= token;
-        if(maxLoop == 0){
-            throw new ThinkRuntimeException("后台任务的轮询次数不能设置为0，必须设置为大于0的数，需要永远轮询下去，请设置为-1");
-        }
-    }
-
-    public void setDelayMillis(long delayMillis) {
-        this.delayMillis = delayMillis;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public int getInterval() {
-        return interval;
-    }
-
-    public long getLastExecuteTime() {
-        return lastExecuteTime;
-    }
-
-    public ThinkBackgroundTask getTask() {
-        return task;
-    }
-
-    public ThinkToken getToken() {
-        return token;
-    }
-
-    public int getMaxLoop() {
-        return maxLoop;
-    }
-
-    /**
-     * 是否允许执行？
-     * @return
-     */
-    public boolean canRun(){
-        long time =ThinkMilliSecond.currentTimeMillis();
-        return time-initTime > delayMillis;
-    }
-
-
-    public boolean canRemove(){
-        return maxLoop == 0;
-    }
-
-
-    public void setLastExecuteTime(long lastExecuteTime) {
-        this.lastExecuteTime = lastExecuteTime;
-        if(maxLoop > 0) {
-            this.maxLoop--;
-        }
-    }
 
 
 }
