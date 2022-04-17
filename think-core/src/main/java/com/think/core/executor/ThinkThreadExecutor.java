@@ -1,18 +1,13 @@
 package com.think.core.executor;
 
-import com.think.common.result.ThinkResult;
-import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.TimeUtil;
-import com.think.core.annotations.Remark;
-import com.think.core.bean.ThinkSchedule;
+import com.think.core.bean.schedules.ThinkScheduleCronConfig;
+import com.think.core.executor.schedule.ThinkScheduledTaskHolder;
 import com.think.core.security.ThinkToken;
-import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashSet;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -196,22 +191,23 @@ public class ThinkThreadExecutor {
 
     }
 
-    public static final void addScheduledBackTaskWithAutoToken(String name , ThinkBackgroundTask backgroundTask , ThinkSchedule schedule, long stopTimeMillis){
+    public static final synchronized void startScheduledTask(ThinkAsyncTask task, ThinkScheduleCronConfig config ){
         ThinkToken token = null;
         if(ThinkExecuteThreadSharedTokenManager.get()!=null){
             token = ThinkExecuteThreadSharedTokenManager.get();
         }
-        addScheduledBackTaskWithToken(name,backgroundTask,schedule,stopTimeMillis,token);
+        startScheduledTaskWithToken(task,config,token);
     }
-
-    public static final synchronized void addScheduledBackTaskWithToken(String name , ThinkBackgroundTask backgroundTask , ThinkSchedule schedule, long stopTimeMillis ,ThinkToken token){
-        BackgroundTaskHolder holder =new BackgroundTaskHolder(name,ThinkMilliSecond.currentTimeMillis(),stopTimeMillis,token,backgroundTask,schedule);
-        if (taskHolderArrayBlockingQueue.offer(holder)) {
-            if(runState == false){
-                start();
-            }
+    public static final synchronized void startScheduledTaskWithToken(ThinkAsyncTask task, ThinkScheduleCronConfig config, ThinkToken token ){
+        ThinkScheduledTaskHolder.hold(task, config,token);
+        if(runState == false){
+            start();
         }
     }
+
+
+
+
 
 
 

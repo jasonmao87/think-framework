@@ -256,6 +256,12 @@ public class DateUtil extends TimeUtil{
         return d;
     }
 
+    public static final Date buildNewDate(int year,int month,int date,int hour,int minute,int second){
+        Calendar calendar = getCalendar();
+        calendar.set(year,month-1,date,hour,minute,second);
+        return calendar.getTime();
+    }
+
     /**
      * 是否当年
      * @param date

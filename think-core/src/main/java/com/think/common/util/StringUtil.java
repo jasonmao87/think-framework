@@ -473,6 +473,31 @@ public class StringUtil {
         return htmlStr.trim(); //返回文本字符串
     }
 
+    public static final String toHexString(Number v ){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("0x");
+        String hex = Long.toHexString(v.longValue());
+
+        int appendLength = 0 ;
+
+
+        if(hex.length() <2){
+            appendLength = 2 - hex.length();
+        }else if(hex.length() < 4){
+           appendLength = 4- hex.length();
+        }else if(hex.length()<8){
+            appendLength = 8 - hex.length();
+        }
+        while (appendLength  > 0){
+            appendLength --;
+            stringBuilder.append("0");
+        }
+
+        stringBuilder.append(hex);
+        return stringBuilder.toString();
+
+    }
+
 
     public static String fixStringIfNullAsEmpty(String str){
         return str!=null?str:getEmptyStr();

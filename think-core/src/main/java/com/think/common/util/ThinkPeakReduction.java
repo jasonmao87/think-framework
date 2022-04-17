@@ -1,15 +1,13 @@
 package com.think.common.util;
 
 import com.think.core.annotations.Remark;
-import com.think.core.bean.ThinkSchedule;
-import com.think.core.executor.ThinkAsyncExecutor;
+import com.think.core.bean.schedules.ThinkScheduleCronConfig;
 import com.think.core.executor.ThinkThreadExecutor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -89,12 +87,29 @@ public class ThinkPeakReduction {
 
 
     private static void backTask(){
-        ThinkThreadExecutor.addScheduledBackTaskWithToken("削峰检查",()->{
-            if(DateUtil.currentMinuteOfTime() % 6 == 0) {
-                // 每 6分钟执行1次
+        try {
+            ThinkScheduleCronConfig config = new ThinkScheduleCronConfig(
+                    "*",
+                    "*",
+                    "*",
+                    "0,5,10,15,20,25,30,35,40,45,50,55",
+                    3);
+            config.enable(Integer.MAX_VALUE);
+            ThinkThreadExecutor.startScheduledTask(()->{
                 callCheck();
-            }
-        }, ThinkSchedule.buildEverMinuteSchedule(13),-1,null);
+            },config);
+
+        }catch (Exception e){
+            log.error("削峰检查服务启动失败",e);
+
+        }
+//
+//        ThinkThreadExecutor.addScheduledBackTaskWithToken("削峰检查",()->{
+//            if(DateUtil.currentMinuteOfTime() % 6 == 0) {
+//                // 每 6分钟执行1次
+//                callCheck();
+//            }
+//        }, ThinkSchedule.buildEverMinuteSchedule(13),-1,null);
 
 
 

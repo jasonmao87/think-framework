@@ -1,13 +1,11 @@
 package com.think.structure;
 
+import com.think.common.util.DateUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.annotations.Remark;
-import com.think.core.bean.ThinkSchedule;
-import com.think.core.executor.ThinkBackgroundTask;
+import com.think.core.bean.schedules.ThinkScheduleCronConfig;
 import com.think.core.executor.ThinkThreadExecutor;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.BlockingDeque;
 
 /**
@@ -25,13 +23,30 @@ public class ThinkCacheMap {
     private static TCacheBean[] cacheBeans = new TCacheBean[1024];
 
     static {
+        try {
+            ThinkScheduleCronConfig config = new ThinkScheduleCronConfig(
+                    "*",
+                    "*",
+                    "*",
+                    "*",
+                    57);
+            config.enable(Integer.MAX_VALUE);
+            ThinkThreadExecutor.startScheduledTask(()->{
+                if (DateUtil.currentMinuteOfTime() % 2 == 0) {
+                    //每个两分钟运行一次
+                    check();
+                }
+            }, config);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-        ThinkThreadExecutor.addScheduledBackTaskWithToken("缓存检查任务",new ThinkBackgroundTask() {
-                    @Override
-                    public void execute() {
-                        check();
-                    }
-                }, ThinkSchedule.buildEverMinuteSchedule(30),-1,null );
+//        ThinkThreadExecutor.addScheduledBackTaskWithToken("缓存检查任务",new ThinkBackgroundTask() {
+//                    @Override
+//                    public void execute() {
+//                        check();
+//                    }
+//                }, ThinkSchedule.buildEverMinuteSchedule(30),-1,null );
 
     }
 
