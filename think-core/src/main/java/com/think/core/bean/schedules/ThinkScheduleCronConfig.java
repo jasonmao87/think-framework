@@ -2,6 +2,7 @@ package com.think.core.bean.schedules;
 
 import com.think.common.util.BinaryTool;
 import com.think.common.util.DateUtil;
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.TScheduleCron;
@@ -90,8 +91,7 @@ public class ThinkScheduleCronConfig implements Serializable {
         this.maxTriggerCount = maxTriggerCount;
     }
 
-    private void setMonthConfig(short monthConfig) {
-        this.monthConfig = monthConfig;
+    private void setMonthConfig(short monthConfig) {this.monthConfig = monthConfig;
     }
 
     private void setDateConfig(int dateConfig) {
@@ -118,7 +118,11 @@ public class ThinkScheduleCronConfig implements Serializable {
      * @param maxAllowValue
      * @return
      */
-    private int[] fromCronString(String s, int maxAllowValue) throws ThinkNotSupportException{
+    private int[] fromCronString(String s, int maxAllowValue,String allMatchDefaultCorn) throws ThinkNotSupportException{
+        s = s.trim().toLowerCase();
+        if(s.equals("*")){
+            s = allMatchDefaultCorn;
+        }
         int[] v = null;
         String[] sArray = null;
         if (s.matches("^\\d{1,2}$")) {
@@ -215,19 +219,19 @@ public class ThinkScheduleCronConfig implements Serializable {
     }
 
     private void init() throws ThinkNotSupportException{
-        int[] monthArray = this.fromCronString(this.monthCron, 12);
+        int[] monthArray = this.fromCronString(this.monthCron, 12,"1-12");
         for (int m : monthArray) {
             this.monthConfig |= 1L << m;
         }
-        int[] dayArray = this.fromCronString(this.dateCron, 31);
+        int[] dayArray = this.fromCronString(this.dateCron, 31,"1-31");
         for (int d : dayArray) {
             this.dateConfig |= 1L << d;
         }
-        int[] hourArray = this.fromCronString(this.hourCron, 59);
+        int[] hourArray = this.fromCronString(this.hourCron, 59,"0-59");
         for (int h : hourArray) {
             this.hourConfig |= 1L << h;
         }
-        int[] minuteArray = this.fromCronString(this.minuteCron, 59);
+        int[] minuteArray = this.fromCronString(this.minuteCron, 59,"0-59");
         for (int min : minuteArray) {
             this.minuteConfig |= 1L << min;
         }
@@ -306,7 +310,12 @@ public class ThinkScheduleCronConfig implements Serializable {
         boolean result = this.checkTrigger(DateUtil.year(),month,date,hour,minute,second);
         if(result){
             this.triggerCount ++ ;
+            this.lastTrigger = now;
         }
+        if(log.isTraceEnabled()){
+            log.trace("触发执行任务{} ，下次触发时间为{}" , StringUtil.fmtAsDate(DateUtil.now()), StringUtil.fmtAsDate(nextTriggerTime()));
+        }
+
         return result;
     }
 
@@ -384,7 +393,6 @@ public class ThinkScheduleCronConfig implements Serializable {
             return false;
         }
         if(second >= this.second){
-            this.triggerCount ++ ;
             return true;
         }
 

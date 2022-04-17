@@ -1,9 +1,11 @@
 package com.think.core.executor.schedule;
 
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.bean.schedules.ThinkScheduleCronConfig;
 import com.think.core.executor.ThinkAsyncTask;
 import com.think.core.security.ThinkToken;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
+@Slf4j
 public class ThinkScheduledTaskHolder {
 
     private static long lastCheck = 0L;
@@ -38,14 +41,18 @@ public class ThinkScheduledTaskHolder {
      * @return
      */
     public static final Optional<ScheduledTask> getTask(){
-        checkTask();
-        return Optional.ofNullable(currentTaskQueue.poll());
+        try {
+            return Optional.ofNullable(currentTaskQueue.poll());
+        }finally {
+            checkTask();
+        }
     }
 
 
     private static synchronized boolean allowCheck(){
+        int waitTime = 900 ;
         long now = ThinkMilliSecond.currentTimeMillis();
-        if(now - lastCheck >900) {
+        if(now - lastCheck > waitTime ) {
             lastCheck = now;
             return true;
         }
@@ -55,23 +62,29 @@ public class ThinkScheduledTaskHolder {
     private static void checkTask(){
         if(allowCheck()) {
             List<ScheduledTask> tempList = new ArrayList<>();
+//            log.info("执行任务检查，队列长度为 {}" ,scheduledTaskQueue.size());
             ScheduledTask t = scheduledTaskQueue.poll();
             while (t != null) {
+//                log.info("该任务将在{}触发" , StringUtil.fmtAsDatetime(t.getScheduledConfig().nextTriggerTime()) );
+
                 if (t.getScheduledConfig().tryTrigger()) {
+//                    log.info("添加到 即将执行的任务 ....{}" ,StringUtil.fmtAsDatetime(t.getScheduledConfig().nextTriggerTime()));
                     //如果触发 ，那么 则 加入到 执行队列
                     currentTaskQueue.add(t);
+//                    log.info(" finish ...add ");
                 }
-                if (t.canDestroy()) {
-                    continue;
-                } else {
-                    //如果尚未达到 销毁 要求，则放入 临时列表，准备 放回队列
+                if (!t.canDestroy()) {
                     tempList.add(t);
                 }
+                t = scheduledTaskQueue.poll();
             }
+            // end of run ...
             for (ScheduledTask scheduledTask : tempList) {
                 ThinkScheduledTaskHolder.scheduledTaskQueue.add(scheduledTask);
             }
             tempList.clear();
+//            log.info("检查完毕");
+
         }
     }
 

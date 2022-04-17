@@ -2,11 +2,16 @@ package com.think.core.executor;
 
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.TimeUtil;
+import com.think.core.annotations.Remark;
+import com.think.core.bean.schedules.ThinkScheduleBuilder;
 import com.think.core.bean.schedules.ThinkScheduleCronConfig;
+import com.think.core.executor.schedule.ScheduledTask;
 import com.think.core.executor.schedule.ThinkScheduledTaskHolder;
 import com.think.core.security.ThinkToken;
+import com.think.exception.ThinkNotSupportException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -128,60 +133,32 @@ public class ThinkThreadExecutor {
             long executeCount= 0;
             long executeErrorCount = 0;
             while (startControlState){
-                if(taskHolderArrayBlockingQueue.peek()!=null){
-                    BackgroundTaskHolder taskHolder = taskHolderArrayBlockingQueue.poll();
-                    if(taskHolder != null){
-                        if(taskHolder.canExecute()){
-                            if (log.isTraceEnabled()) {
-                                log.trace("未来需删除调试期日志：-------------------------------------START-----------------------------------------------");
-                                log.trace("本次执行携带得TOKEN信息：{}" , ThinkExecuteThreadSharedTokenManager.get());
-                                log.trace("未来需删除调试期日志：-------------------------------------FINISH----------------------------------------------");
-                            }
-//                            taskHolder.setLastExecuteTime(ThinkMilliSecond.currentTimeMillis());
-                            ThinkToken token = taskHolder.getToken();
-                            if(token!=null){
-                                //通知data服务更数据新分区信息
-                                String currentRegion = token.getCurrentRegion();
-                                log.debug("通过token 获取 新的 数据分区，并通知给 data模块！- 》{}",currentRegion);
-//                                dataParityRegionUpdateThreadLocal.set(currentRegion);
-                                noticeDataRegionChange(currentRegion);
-                            }else {
-//                                dataParityRegionUpdateThreadLocal.set("");
-                                noticeDataRegionChange("");
-                            }
+                //休息1毫秒
+                TimeUtil.sleep(1,TimeUnit.MILLISECONDS);
+                Optional<ScheduledTask> taskOptional = ThinkScheduledTaskHolder.getTask();
+                if (taskOptional.isPresent()) {
+                    log.info("取得 可执行的 定时任务");
 
-                            try {
-                                taskHolder.getTask().execute();
-                            }catch (Exception e){
-                                executeErrorCount ++ ;
-                                if (log.isErrorEnabled()) {
-                                    log.error("执行后台任务出现异常" ,e );
-                                }
-                            }finally {
-//                                dataParityRegionUpdateThreadLocal.remove();
-                                getChangedDataRagionAndRemove();
-                                executeCount ++ ;
-                            }
+                    try {
+                        log.info(" 提取任务 ");
+                        ScheduledTask scheduledTask = taskOptional.get();
+                        ThinkToken token = scheduledTask.getToken();
+                        log.info("提取token ");
+                        if (token != null) {
+                            noticeDataRegionChange(token.getCurrentRegion());
+                        } else {
+                            noticeDataRegionChange("");
                         }
-                        //如果 还未 到 可以销毁的状态， 我们需要将 任务 重新放回 队列
-                        if(taskHolder.canDestroy() == false) {
-                            if (false == taskHolderArrayBlockingQueue.offer(taskHolder)) {
-                                log.warn("由于任务队列爆满，被迫丢弃当前最后执行的任务 : {}" ,taskHolder.getName());
 
-                            }
-                        }
-                    }
-                }else{
-                    if (log.isTraceEnabled()) {
-                        log.trace("后台任务队列未有更多的任务需要执行，休眠500毫秒后检查");
-                    }
-                    TimeUtil.sleep(500,TimeUnit.MILLISECONDS);
-                    if (log.isTraceEnabled()) {
-                        log.trace("后台任务线程恢复");
+                        log.info("执行 定时任务 -----------");
+                        scheduledTask.getTask().execute();
+                    }catch (Exception e){
+                        log.error("定时任务执行异常 " ,e);
+
                     }
 
                 }
-                TimeUtil.sleep(1,TimeUnit.MILLISECONDS);
+
 
             }// end of while
             if (log.isWarnEnabled()) {
@@ -191,19 +168,30 @@ public class ThinkThreadExecutor {
 
     }
 
+    @Remark("定时任务")
     public static final synchronized void startScheduledTask(ThinkAsyncTask task, ThinkScheduleCronConfig config ){
         ThinkToken token = null;
         if(ThinkExecuteThreadSharedTokenManager.get()!=null){
             token = ThinkExecuteThreadSharedTokenManager.get();
         }
-        startScheduledTaskWithToken(task,config,token);
+        startScheduledTaskWithSpecialToken(task,config,token);
     }
-    public static final synchronized void startScheduledTaskWithToken(ThinkAsyncTask task, ThinkScheduleCronConfig config, ThinkToken token ){
+    @Remark("定制化token的 定时任务")
+    public static final synchronized void startScheduledTaskWithSpecialToken(ThinkAsyncTask task, ThinkScheduleCronConfig config, ThinkToken token ){
         ThinkScheduledTaskHolder.hold(task, config,token);
         if(runState == false){
             start();
         }
     }
+
+
+    @Remark("延迟N秒执行")
+    public static final synchronized void runDelay(ThinkAsyncTask task , @Remark("延迟秒数") int second ) throws ThinkNotSupportException {
+        log.info("添加延迟执行任务，将在{}}秒后执行" ,second);
+        ThinkScheduleCronConfig config = ThinkScheduleBuilder.buildDelayConfig(second, TimeUnit.SECONDS);
+        startScheduledTask(task,config);
+    }
+
 
 
 

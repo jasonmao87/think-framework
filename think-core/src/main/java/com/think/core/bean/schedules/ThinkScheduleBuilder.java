@@ -1,14 +1,17 @@
 package com.think.core.bean.schedules;
 
-import com.think.common.util.RandomUtil;
-import com.think.common.util.TimeUtil;
+import com.think.common.util.*;
 import com.think.core.annotations.Remark;
 import com.think.core.bean.ThinkSchedule;
 import com.think.exception.ThinkNotSupportException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author JasonMao
+ */
 @Slf4j
 public class ThinkScheduleBuilder {
 
@@ -23,19 +26,25 @@ public class ThinkScheduleBuilder {
         config.hourCron ="*";
         config.minuteCron ="*";
         config.second = RandomUtil.nextInt()%60;*/
-        config.setDateCron("*");
         config.setMonthCron("*");
+        config.setDateCron("*");
         config.setHourCron("*");
         config.setMinuteCron("*");
         try{
             config.setSecond(RandomUtil.nextInt()%60);
         }catch (Exception e){
 
+
         }
         this.maxTrigger = maxTrigger;
     }
-    public static ThinkScheduleBuilder builderWithMaxTrigger(int maxTrigger){
+    public static final ThinkScheduleBuilder builderWithMaxTrigger(int maxTrigger){
+        TVerification.valueOf(maxTrigger > 0).throwIfFalse("最大触发次数必须大于0");
         return new ThinkScheduleBuilder(maxTrigger);
+    }
+
+    public static final ThinkScheduleBuilder builderWithRunForever(){
+        return new ThinkScheduleBuilder(-1);
     }
 
     /**
@@ -45,10 +54,31 @@ public class ThinkScheduleBuilder {
      * @return
      */
     public static ThinkScheduleCronConfig buildDelayConfig(int delayTime , TimeUnit timeUnit) throws ThinkNotSupportException {
-
-        if(timeUnit == TimeUnit.MICROSECONDS){
-            throw new ThinkNotSupportException("最小时间单位必须为秒");
+//        if(timeUnit == TimeUnit.MICROSECONDS || timeUnit ==TimeUnit.NANOSECONDS || timeUnit == TimeUnit.MILLISECONDS ){
+//            throw new ThinkNotSupportException("最小时间单位必须为秒");
+//        }
+//        if(timeUnit == TimeUnit.DAYS){
+//            throw new ThinkNotSupportException("最大时间单位不能大于小时");
+//        }
+        final long maxSecond = 72L * 60L * 60L;
+        long delaySecond = timeUnit.toSeconds(delayTime);
+        if(delaySecond > maxSecond){
+            throw new ThinkNotSupportException("最大延迟不能超过23小时");
         }
+        if(delaySecond < 1){
+            throw new ThinkNotSupportException("最小延迟必须大于1秒");
+        }
+        final ThinkScheduleBuilder builder = builderWithMaxTrigger(1);
+        delaySecond += 1L ;
+        Date now = DateUtil.now();
+        final Date runDate = DateUtil.computeAddSeconds(now, Long.valueOf(delaySecond).intValue());
+        builder.configMonth( String.valueOf(DateUtil.month(runDate)))
+                .configDate( String.valueOf(DateUtil.date(runDate)))
+                .configHour(String.valueOf(DateUtil.hourOfTime(runDate)))
+                .configMinute(String.valueOf(DateUtil.minuteOfTime(runDate)));
+        builder.config.setSecond(DateUtil.secondOfTime(runDate));
+
+        return builder.getConfig();
     }
 
 
@@ -104,10 +134,12 @@ public class ThinkScheduleBuilder {
                 throw new RuntimeException("无法获取到合法的配置");
             }
         }catch (Exception e){
-            log.error("无法获取到合法的配置");
+            log.error("无法获取到合法的配置",e);
             throw new RuntimeException("无法获取到合法的配置",e);
         }
         return config;
     }
+
+
 
 }
