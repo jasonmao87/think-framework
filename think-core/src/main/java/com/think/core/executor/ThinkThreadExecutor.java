@@ -54,7 +54,7 @@ public class ThinkThreadExecutor {
     /**
      * 后台任务 队列，最大容量为128
      */
-    private static BlockingQueue<BackgroundTaskHolder> taskHolderArrayBlockingQueue = new ArrayBlockingQueue<BackgroundTaskHolder>(256);
+//    private static BlockingQueue<BackgroundTaskHolder> taskHolderArrayBlockingQueue = new ArrayBlockingQueue<BackgroundTaskHolder>(256);
     /**
      * 核心线程数量，不会被回收
      */
