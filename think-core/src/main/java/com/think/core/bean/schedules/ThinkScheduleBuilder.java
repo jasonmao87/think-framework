@@ -2,7 +2,6 @@ package com.think.core.bean.schedules;
 
 import com.think.common.util.*;
 import com.think.core.annotations.Remark;
-import com.think.core.bean.ThinkSchedule;
 import com.think.exception.ThinkNotSupportException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,6 +120,19 @@ public class ThinkScheduleBuilder {
     @Remark("构建每小时执行1次的 配置 ，指定分，秒数随机")
     public ThinkScheduleCronConfig buildEveryHourConfig(int minute){
         this.config.setMinuteCron(String.valueOf(minute));
+        return this.getConfig();
+    }
+
+    @Remark(value = "构建在指定多个分钟匹配时候的配置",description = "1,10,15 表示每小时的 1，10，15分钟执行，每小时执行三次")
+    public ThinkScheduleCronConfig buildWhileMinuteIsIn(int... minuteArray){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < minuteArray.length; i++) {
+            if(i > 0){
+                sb.append(",");
+            }
+            sb.append(minuteArray[i]);
+        }
+        this.config.setMinuteCron(sb.toString());
         return this.getConfig();
     }
 

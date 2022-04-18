@@ -18,6 +18,17 @@ public @interface TScheduleCron {
 
 //    @Remark(value = "匹配的年",description = "*表示任意，也可以年份用逗号分割")
 //    String year() ;
+    @Remark(value = "thinkCron表达式" ,description = "" +
+            "格式：$monthCron $dateCron $hourCron $minuteCron $second $maxTrigger \n" +
+            "表达式规则\n" +
+            "monthCron  范围：[1-12] Exp : * / 1-12 / 1,2,3 /;" +
+            "dateCron   范围：[1-31] Exp : * / 1-31 / 1,3,9 /;  " +
+            "hourCron   范围：[0-23] Exp : * / 0-24 / 1,3,9 /; " +
+            "minuteCorn 范围：[0-59] Exp : * / 0-24 / 1,3,9 /;" +
+            "second     范围：[0-59] Exp : 1    " +
+            "maxTrigger 范围：[-1-N] Exp : / 1 / 12 ; "
+    )
+    String cron();
 
     @Remark(value = "匹配的月",description = "*表示任意，也可以1-12用逗号分割")
     String month() ;

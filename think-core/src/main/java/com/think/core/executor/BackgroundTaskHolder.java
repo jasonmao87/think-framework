@@ -1,14 +1,10 @@
 package com.think.core.executor;
 
-import com.think.common.util.DateUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.annotations.Remark;
-import com.think.core.bean.ThinkSchedule;
 import com.think.core.security.ThinkToken;
-import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 后台待执行任务 托管对象
