@@ -3,6 +3,7 @@ package com.think.core.executor.schedule;
 import com.think.core.bean.schedules.ThinkScheduleCronConfig;
 import com.think.core.executor.ThinkAsyncTask;
 import com.think.core.security.ThinkToken;
+import com.think.core.security.token.ThinkSecurityToken;
 import com.think.exception.ThinkRuntimeException;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ public class ScheduledTask implements Serializable {
     private ThinkAsyncTask task;
     private ThinkScheduleCronConfig scheduledConfig;
 
-    private ThinkToken token;
+    private ThinkSecurityToken token;
 
 
     /**
@@ -33,9 +34,10 @@ public class ScheduledTask implements Serializable {
      * @param scheduledConfig
      * @param token
      */
-    public ScheduledTask(ThinkAsyncTask task, ThinkScheduleCronConfig scheduledConfig , ThinkToken token) {
+    public ScheduledTask(ThinkAsyncTask task, ThinkScheduleCronConfig scheduledConfig , ThinkSecurityToken token) {
         this.task = task;
         this.scheduledConfig = scheduledConfig;
+        this.token = token;
         if(!this.scheduledConfig.isEnable()){
             throw new ThinkRuntimeException("定时配置为完成，拒绝启动定时任务！");
         }
@@ -53,7 +55,7 @@ public class ScheduledTask implements Serializable {
         return getScheduledConfig().canDestroy();
     }
 
-    public ThinkToken getToken() {
+    public ThinkSecurityToken getToken() {
         return token;
     }
 

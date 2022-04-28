@@ -7,7 +7,8 @@ import com.think.core.bean.schedules.ThinkScheduleBuilder;
 import com.think.core.bean.schedules.ThinkScheduleCronConfig;
 import com.think.core.executor.schedule.ScheduledTask;
 import com.think.core.executor.schedule.ThinkScheduledTaskHolder;
-import com.think.core.security.ThinkToken;
+import com.think.core.security.token.ThinkSecurityToken;
+import com.think.core.security.token.ThinkSecurityTokenTransferManager;
 import com.think.exception.ThinkNotSupportException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,11 +63,18 @@ public class ThinkThreadExecutor {
     /**
      * 最大线程数量，超过核心数量当空闲时候会被回收
      */
-    private static final int maximumPoolSize = 12 ;
+    private static final int maximumPoolSize = 36 ;
     /**
      * 拒绝策略采用 thinkRunsPolicy ，尝试 加queue 三次，如果 失败，让生产线程 自己跑去 ！
      */
-    private static final Executor executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 0, TimeUnit.MINUTES, new ArrayBlockingQueue<Runnable>(queueCapacity), new DefaultThinkThreadFactory(),new ThinkRunsPolicy());
+    private static final Executor executor = new ThreadPoolExecutor(
+            corePoolSize,
+            maximumPoolSize,
+            0,
+            TimeUnit.MINUTES,
+            new ArrayBlockingQueue<Runnable>(queueCapacity),
+            new DefaultThinkThreadFactory(),
+            new ThinkRunsPolicy());
 
 
     /**
@@ -95,10 +103,8 @@ public class ThinkThreadExecutor {
             return false;
         }
         while (runState){
-            //正在执行，售后在检查。
-            try{
-                Thread.sleep(100);
-            }catch (Exception e){}
+            //正在执行，稍后在检查。
+            TimeUtil.sleep(300,TimeUnit.MILLISECONDS);
         }
         if (log.isInfoEnabled()) {
             log.info("后台任务成功关闭");
@@ -123,6 +129,7 @@ public class ThinkThreadExecutor {
             return;
         }
         ThinkAsyncExecutor.execute(()->{
+
             runState = true;
             if (log.isInfoEnabled()) {
                 log.info("____________________________________________________________________________________________________________________________");
@@ -136,22 +143,31 @@ public class ThinkThreadExecutor {
                 //休息1毫秒
                 TimeUtil.sleep(1,TimeUnit.MILLISECONDS);
                 Optional<ScheduledTask> taskOptional = ThinkScheduledTaskHolder.getTask();
+
+
                 if (taskOptional.isPresent()) {
-                    log.info("取得 可执行的 定时任务");
-
+                    log.info("成功渠道可执行的 定时任务");
                     try {
-                        log.info(" 提取任务 ");
-                        ScheduledTask scheduledTask = taskOptional.get();
-                        ThinkToken token = scheduledTask.getToken();
-                        log.info("提取token ");
-                        if (token != null) {
-                            noticeDataRegionChange(token.getCurrentRegion());
-                        } else {
-                            noticeDataRegionChange("");
-                        }
 
-                        log.info("执行 定时任务 -----------");
-                        scheduledTask.getTask().execute();
+
+
+                        log.info(" ----提取任务----- ");
+                        ScheduledTask scheduledTask = taskOptional.get();
+                        ThinkSecurityToken token = scheduledTask.getToken();
+
+                        ThinkAsyncExecutor.executeWithToken(taskOptional.get().getTask(),token);
+
+//
+//
+//                        log.info("------提取token--------");
+//                        if (token != null) {
+//                            noticeDataRegionChange(token.getCurrentRegion());
+//                        } else {
+//                            noticeDataRegionChange("");
+//                        }
+//
+//                        log.info("执行 定时任务 -----------");
+//                        scheduledTask.getTask().execute();
                     }catch (Exception e){
                         log.error("定时任务执行异常 " ,e);
 
@@ -170,14 +186,11 @@ public class ThinkThreadExecutor {
 
     @Remark("定时任务")
     public static final synchronized void startScheduledTask(ThinkAsyncTask task, ThinkScheduleCronConfig config ){
-        ThinkToken token = null;
-        if(ThinkExecuteThreadSharedTokenManager.get()!=null){
-            token = ThinkExecuteThreadSharedTokenManager.get();
-        }
+        ThinkSecurityToken token = ThinkSecurityTokenTransferManager.getToken();
         startScheduledTaskWithSpecialToken(task,config,token);
     }
     @Remark("定制化token的 定时任务")
-    public static final synchronized void startScheduledTaskWithSpecialToken(ThinkAsyncTask task, ThinkScheduleCronConfig config, ThinkToken token ){
+    public static final synchronized void startScheduledTaskWithSpecialToken(ThinkAsyncTask task, ThinkScheduleCronConfig config, ThinkSecurityToken token ){
         ThinkScheduledTaskHolder.hold(task, config,token);
         if(runState == false){
             start();

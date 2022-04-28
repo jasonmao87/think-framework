@@ -1,13 +1,10 @@
 package com.think.core.executor;
 
-import com.think.core.security.ThinkToken;
+import com.think.core.security.token.ThinkSecurityToken;
+import com.think.core.security.token.ThinkSecurityTokenTransferManager;
+import com.think.core.security.token.ThinkSecurityTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -19,9 +16,15 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class ThinkAsyncExecutor {
 
-    public static final ThinkToken getThreadLocalToken(){
-        return ThinkExecuteThreadSharedTokenManager.get();
+//    @Deprecated
+//    public static final ThinkToken getThreadLocalToken(){
+//        return ThinkExecuteThreadSharedTokenManager.get();
+//    }
+
+    public static final ThinkSecurityToken getSecurityToken(){
+        return ThinkSecurityTokenTransferManager.getToken() ;
     }
+
     private static String lastAcceptThreadName = "";
     /**
      * 携带线程共享信息的 异步执行
@@ -39,47 +42,80 @@ public class ThinkAsyncExecutor {
             }
         }
 //        ThinkExecuteThreadSharedTokenManager.trySet();
-        ThinkToken sharedToken = getThreadLocalToken();
+//        ThinkToken sharedToken = getThreadLocalToken();
 
+        ThinkSecurityToken securityToken = getSecurityToken();
+        return executeWithToken(task,securityToken);
+//        if(securityToken!=null){
+//        }else{
+//            return execute(task,null);
+//        }
 
-        if(sharedToken!=null) {
-            return execute(task, sharedToken.toTokenString());
-        }else{
-            return execute(task,null);
-        }
-
+//        //
+//        if(sharedToken!=null) {
+//            return execute(task, sharedToken.toTokenString());
+//        }else{
+//            return execute(task,null);
+//        }
+//
 
     }
 
 
-    public static final CompletableFuture<Void> execute(final ThinkAsyncTask task ,final String thinkTokenString){
+    public static final CompletableFuture<Void> executeWithToken(ThinkAsyncTask task,ThinkSecurityToken token){
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                /**
-                 * 初始化本地线程变量，一遍获取token
-                 */
-                ThinkToken token = ThinkToken.parseOfJsonString(thinkTokenString);
-                ThinkExecuteThreadSharedTokenManager.set(token);
-                try{
+                if(token!=null) {
+                    ThinkSecurityTokenTransferManager.setThreadLocal(token, false);
+                }
+                try {
                     if(token!=null) {
                         ThinkThreadExecutor.noticeDataRegionChange(token.getCurrentRegion());
                     }
                     task.execute();
-
                 }catch (Exception e){
                     if (log.isErrorEnabled()) {
                         log.error("",e );
                     }
                 }finally {
                     ThinkThreadExecutor.getChangedDataRagionAndRemove();
-                    ThinkExecuteThreadSharedTokenManager.remove();
+                    ThinkSecurityTokenTransferManager.removeTokenFromThreadLocal();
                 }
             }
         };
         return CompletableFuture.runAsync(runnable,ThinkThreadExecutor.getExecutor());
-
     }
+
+//
+//    public static final CompletableFuture<Void> execute(final ThinkAsyncTask task ,final String thinkTokenString){
+//        Runnable runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                /**
+//                 * 初始化本地线程变量，一遍获取token
+//                 */
+//                ThinkSecurityToken token = ThinkSecurityToken.
+//                ThinkExecuteThreadSharedTokenManager.set(token);
+//                try{
+//                    if(token!=null) {
+//                        ThinkThreadExecutor.noticeDataRegionChange(token.getCurrentRegion());
+//                    }
+//                    task.execute();
+//
+//                }catch (Exception e){
+//                    if (log.isErrorEnabled()) {
+//                        log.error("",e );
+//                    }
+//                }finally {
+//                    ThinkThreadExecutor.getChangedDataRagionAndRemove();
+//                    ThinkExecuteThreadSharedTokenManager.remove();
+//                }
+//            }
+//        };
+//        return CompletableFuture.runAsync(runnable,ThinkThreadExecutor.getExecutor());
+//
+//    }
 
 
 

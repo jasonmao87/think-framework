@@ -12,12 +12,9 @@ import java.util.concurrent.TimeUnit;
 public class TimeUtil {
 
 
+    public static final long MILLIS_OF_15_SECONDS   =15000L;
     /** 30 秒的 毫秒值 */
-    public static final long MILLIS_OF_30_SECONDS= 30000L;
-
-    public static final long MILLIS_OF_15_SECONDS = 15000L;
-
-    public static final long MILLIS_OF_5_MINUTES = 300000L;
+    public static final long MILLIS_OF_30_SECONDS   =30000L;
 
 
     public static final long MILLIS_OF_SECONDS(int seconds){

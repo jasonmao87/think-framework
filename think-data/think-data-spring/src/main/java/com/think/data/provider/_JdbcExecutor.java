@@ -1,17 +1,14 @@
 package com.think.data.provider;
 
-import com.sun.org.apache.regexp.internal.RE;
 import com.think.common.data.mysql.IThinkResultFilter;
 import com.think.common.result.ThinkResult;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean._Entity;
-import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.dev.ReSave;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -31,20 +28,19 @@ public abstract class _JdbcExecutor {
         return Optional.ofNullable(Manager.getDataSrvRuntimeInfo()) ;
     }
 
-    public <T extends _Entity> void tableInit(String tableName){
-
+    public <T extends _Entity> void executeTableInit(String tableName){
 
         this.checkTransactionAndLogPrint();
         if (Manager.isTableInitialized(tableName) == false) {
-            // TODO:  临时代码 ，协助系统自动完成 createUserName 和 updateUserName 字段的增加 ！  该代码应该在一定时间后予以删除 ！当然该代码有大概率执行不了，所以tryCatch掉
-            try{
-                String addCreateUserNameAndUpdateUserName  = "ALTER TABLE " + tableName + " " +
-                        "ADD COLUMN createUserName varchar(32) NOT NULL AFTER createUserId  ," +
-                        "ADD COLUMN updateUserName varchar(32) NOT NULL AFTER updateUserId " ;
-                getJdbcTemplate().update(addCreateUserNameAndUpdateUserName);
-            }catch (Exception e){
-
-            }
+//            // TODO:  临时代码 ，协助系统自动完成 createUserName 和 updateUserName 字段的增加 ！  该代码应该在一定时间后予以删除 ！当然该代码有大概率执行不了，所以tryCatch掉
+//            try{
+//                String addCreateUserNameAndUpdateUserName  = "ALTER TABLE " + tableName + " " +
+//                        "ADD COLUMN createUserName varchar(32) NOT NULL AFTER createUserId  ," +
+//                        "ADD COLUMN updateUserName varchar(32) NOT NULL AFTER updateUserId " ;
+//                getJdbcTemplate().update(addCreateUserNameAndUpdateUserName);
+//            }catch (Exception e){
+//
+//            }
 
 
 
@@ -180,6 +176,8 @@ public abstract class _JdbcExecutor {
 
 
     public Map<String,Object> executeOne( ThinkExecuteQuery executeQuery, String finalTableName){
+        this.executeTableInit(finalTableName);
+
         Map<String,Object> result = null;
         if(executeQuery.isMayByEmpty()){
             result= new HashMap<>();
@@ -189,7 +187,6 @@ public abstract class _JdbcExecutor {
             log.warn("SQL FILTER 存在 IN 空数据内容，不执行实际查询，直接返回 0 或者 空值 ");
             return result;
         }
-        this.tableInit(finalTableName);
 
         long duration = 0L;
         long start =0L;
@@ -237,7 +234,7 @@ public abstract class _JdbcExecutor {
             return new ArrayList<>();
         }
 
-        this.tableInit(finalTableName);
+        this.executeTableInit(finalTableName);
         List<Map<String,Object>> result = null;
         long duration = 0L;
         long start =0L;
@@ -278,7 +275,7 @@ public abstract class _JdbcExecutor {
     }
 
     public ThinkResult executeUpdate(ThinkExecuteQuery executeQuery, String finalTableName){
-        this.tableInit(finalTableName);
+        this.executeTableInit(finalTableName);
         long duration = 0 ;
         int result = 0;
         boolean success = false;

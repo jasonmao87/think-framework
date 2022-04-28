@@ -26,7 +26,7 @@
         <druid-version>1.1.12</druid-version>
         <mysql-driver-version>6.0.6</mysql-driver-version>
         <okhtt-version>3.12.0</okhtt-version>
-        <fastjson-version>1.2.54</fastjson-version>
+        <fastjson-version>1.2.68</fastjson-version>
         <mongodb-driver-version>3.8.2</mongodb-driver-version>
         <apache-common-codec-version>1.11</apache-common-codec-version>
         <apache-poi-version>4.0.1</apache-poi-version>

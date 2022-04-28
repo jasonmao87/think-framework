@@ -3,7 +3,11 @@ package com.think.web;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
 import com.think.common.result.state.ThinkResultState;
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
+import com.think.core.security.AccessKey;
+import com.think.core.security.WebSecurityUtil;
+import com.think.core.security.token.ThinkSecurityToken;
 import com.think.web.util.WebUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -47,10 +51,17 @@ public class R<T>  implements Serializable {
     @ApiModelProperty("服务Id")
     private String serviceId  ;
 
+    @ApiModelProperty("动态最新的ACCESS KEY，每隔一段会更新1次，ACCESS KEY更新后，原ACCESS KEY 依然可以使用15分钟左右")
+    private String nextAccessKey;
+
+
     private R(){
 
     }
 
+    public void setNextAccessKey(String nextAccessKey) {
+        this.nextAccessKey = nextAccessKey;
+    }
 
     private static R _init(ResultCode code){
         R webResult = new R();
@@ -216,6 +227,23 @@ public class R<T>  implements Serializable {
         return Collections.EMPTY_LIST;
     }
 
+    public String getNextAccessKey() {
+        if(StringUtil.isEmpty(this.nextAccessKey)){
+            AccessKey accessKey = WebUtil.getUserAccessKey();
+            if(accessKey == null){
+                if (WebUtil.getRequest()!=null) {
+                    final Optional<ThinkSecurityToken> token = WebUtil.getToken();
+                    if (token.isPresent()) {
+                        accessKey = WebSecurityUtil.getInstance().buildAccessKey(token.get().getId());
+                        this.setNextAccessKey(accessKey.getAccessKeyString());
+                    }
+                }
+
+            }
+
+        }
+        return nextAccessKey;
+    }
 
     public Map<String,Object> toMap(){
         Map map = new HashMap();
@@ -228,6 +256,7 @@ public class R<T>  implements Serializable {
         map.put("threadId",threadId);
         map.put("serviceName",serviceName);
         map.put("serviceId",serviceId);
+        map.put("nextAccessKey" ,getNextAccessKey());
         return map;
 
     }

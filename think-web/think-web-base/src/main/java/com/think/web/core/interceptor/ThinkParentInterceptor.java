@@ -1,7 +1,7 @@
 package com.think.web.core.interceptor;
 
 import com.think.common.util.StringUtil;
-import com.think.core.security.ThinkToken;
+import com.think.core.security.token.ThinkSecurityToken;
 import com.think.data.Manager;
 import com.think.web.util.WebUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,8 @@ public class ThinkParentInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         try {
-            ThinkToken token = null;
-            Optional<ThinkToken> thinkTokenOptional = WebUtil.getToken();
+            ThinkSecurityToken token = null;
+            Optional<ThinkSecurityToken> thinkTokenOptional = WebUtil.getToken();
             if (thinkTokenOptional.isPresent()) {
                 token = thinkTokenOptional.get();
             }
@@ -34,6 +34,9 @@ public class ThinkParentInterceptor implements HandlerInterceptor {
                 Manager.beginDataSrv();
             }
         }catch (Exception e){}
+
+
+
         return true;
     }
 

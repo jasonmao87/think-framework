@@ -1,9 +1,12 @@
 package com.think.web.util;
 
 import com.think.common.util.DateUtil;
+import com.think.common.util.StringUtil;
 import com.think.common.util.security.Base64Util;
 import com.think.common.util.security.SHAUtil;
-import com.think.core.security.ThinkToken;
+import com.think.core.security.AccessKey;
+import com.think.core.security.WebSecurityUtil;
+import com.think.core.security.token.ThinkSecurityToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -94,7 +97,10 @@ public class WebUtil {
      * @return
      */
     public static String headerValue(String k) {
-        return getRequest().getHeader(k);
+        try{
+            return getRequest().getHeader(k);
+        }catch (Exception e){}
+        return "";
     }
 
 
@@ -282,17 +288,27 @@ public class WebUtil {
     }
 
 
+    public static final AccessKey getUserAccessKey(){
+        try {
+            if(getToken()!=null){
+                return WebSecurityUtil.getInstance().getAccessKeyValueOfAkString(getRequest().getHeader("accessKey"));
+            }else{
+                return null;
+            }
+        }catch (Exception e){}
+        return null;
+    }
 
-    public static Optional<ThinkToken> getToken(){
-        ThinkToken token ;
+    public static Optional<ThinkSecurityToken> getToken(){
+        ThinkSecurityToken token ;
         String tokenString = WebUtil.headerValue("token");
-        if(tokenString == null){
+        if(StringUtil.isEmpty(tokenString)){
             return Optional.ofNullable(null);
         }
 
         try {
             tokenString = Base64Util.decodeToString(tokenString);
-            token = ThinkToken.parseOfJsonString(tokenString);
+            token = ThinkSecurityToken.valueOfJsonString(tokenString);
 
         }catch (Exception e){
             token = null;

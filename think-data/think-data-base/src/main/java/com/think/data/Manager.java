@@ -5,8 +5,8 @@ import com.think.common.data.IThinkQueryFilter;
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.core.annotations.Remark;
 import com.think.core.bean.SimplePrimaryEntity;
-import com.think.core.executor.ThinkExecuteThreadSharedTokenManager;
-import com.think.core.security.ThinkToken;
+import com.think.core.security.token.ThinkSecurityToken;
+import com.think.core.security.token.ThinkSecurityTokenTransferManager;
 import com.think.data.filter.DefaultThinkDataFilter;
 import com.think.data.filter.ThinkDataFilter;
 import com.think.data.model.DataModelBuilder;
@@ -148,7 +148,8 @@ public class Manager {
 
     public static final ThinkDataRuntime getDataSrvRuntimeInfo(){
         if(dataRuntimeThreadLocal.get() == null) {
-            ThinkToken token = ThinkExecuteThreadSharedTokenManager.get();
+            final ThinkSecurityToken token = ThinkSecurityTokenTransferManager.getToken();
+
             if( token!=null){
                 beginDataSrv(token.getCurrentRegion());
             }

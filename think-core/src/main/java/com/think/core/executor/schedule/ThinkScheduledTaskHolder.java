@@ -1,10 +1,9 @@
 package com.think.core.executor.schedule;
 
-import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.bean.schedules.ThinkScheduleCronConfig;
 import com.think.core.executor.ThinkAsyncTask;
-import com.think.core.security.ThinkToken;
+import com.think.core.security.token.ThinkSecurityToken;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class ThinkScheduledTaskHolder {
 
 
 
-    public static  void hold(ThinkAsyncTask task, ThinkScheduleCronConfig config, ThinkToken token){
+    public static  void hold(ThinkAsyncTask task, ThinkScheduleCronConfig config, ThinkSecurityToken token){
         scheduledTaskQueue.add(new ScheduledTask(task,config,token));
     }
 
