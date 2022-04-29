@@ -291,7 +291,7 @@ public class WebUtil {
     public static final AccessKey getUserAccessKey(){
         try {
             if(getToken()!=null){
-                return WebSecurityUtil.getInstance().getAccessKeyValueOfAkString(getRequest().getHeader("accessKey"));
+                return WebSecurityUtil.getInstance().getAccessKeyValueOfAkString(getRequest().getHeader("accessKey"),WebUtil.userAgent());
             }else{
                 return null;
             }

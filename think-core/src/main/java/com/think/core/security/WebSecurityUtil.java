@@ -1,17 +1,14 @@
 package com.think.core.security;
 
 import com.think.common.util.StringUtil;
-import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.security.AESUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.security.token.ThinkSecurityToken;
 import com.think.core.security.token.ThinkSecurityTokenUtil;
 import com.think.exception.ThinkRuntimeException;
 import com.think.moudles.auth.UserAccountModel;
-import com.think.web.util.WebUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author : JasonMao
@@ -46,8 +43,8 @@ public class WebSecurityUtil {
      * @param currentRegion
      * @return
      */
-    public ThinkSecurityToken buildNewCustomToken(long id, String nickName , String currentRegion) {
-        return ThinkSecurityTokenUtil.buildCustom(id,nickName,currentRegion);
+    public ThinkSecurityToken buildNewCustomToken(long id ,String userLoginId, String nickName , String currentRegion) {
+        return ThinkSecurityTokenUtil.buildCustom(id ,userLoginId,nickName,currentRegion);
     }
 
 
@@ -72,14 +69,14 @@ public class WebSecurityUtil {
         return customAESKEY;
     }
 
-    public AccessKey getAccessKeyValueOfAkString(String accessKeyString){
-        return AccessKey.valueOf(accessKeyString);
+    public AccessKey getAccessKeyValueOfAkString(String accessKeyString,String ua){
+        return AccessKey.valueOf(accessKeyString,ua);
     }
 
 
 
-    public  final AccessKey buildAccessKey(long systemAccountId){
-        return new AccessKey(systemAccountId);
+    public  final AccessKey buildAccessKey(long systemAccountId,String ua){
+        return new AccessKey(systemAccountId,ua);
     }
     //替换字符串中出现的空格
 

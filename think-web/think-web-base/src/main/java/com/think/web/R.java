@@ -21,6 +21,12 @@ import java.util.*;
 @Slf4j
 @Accessors(chain = true)
 public class R<T>  implements Serializable {
+    private static final long serialVersionUID = 2298131129668199468L;
+
+    private static IThinkWebResultInterceptor inteceptor = null;
+    public static final void bindWebResultInterceptor(IThinkWebResultInterceptor impl){
+        inteceptor = impl;
+    }
 
     private static String defaultServiceId = null ;
     private static String defaultServiceName = null;
@@ -54,13 +60,25 @@ public class R<T>  implements Serializable {
     @ApiModelProperty("动态最新的ACCESS KEY，每隔一段会更新1次，ACCESS KEY更新后，原ACCESS KEY 依然可以使用15分钟左右")
     private String nextAccessKey;
 
+    @ApiModelProperty("是否是新的AK")
+    private boolean newAk = true;
+
 
     private R(){
 
     }
 
-    public void setNextAccessKey(String nextAccessKey) {
+    public void setNextAccessKey(String nextAccessKey ) {
         this.nextAccessKey = nextAccessKey;
+    }
+
+    public void setNextAccessKey(boolean isNew ,String nextAccessKey){
+        this.setNextAccessKey(nextAccessKey);
+        this.newAk = true;
+    }
+
+    public boolean isNewAk() {
+        return newAk;
     }
 
     private static R _init(ResultCode code){
@@ -75,6 +93,9 @@ public class R<T>  implements Serializable {
                 .setThreadId(Thread.currentThread().getId())
                 .setState(ThinkResultState.get(code))
                 .setUri(WebUtil.uri());
+        if(R.inteceptor!=null){
+            inteceptor.afterInit(webResult);
+        }
         return webResult;
     }
 
@@ -234,7 +255,7 @@ public class R<T>  implements Serializable {
                 if (WebUtil.getRequest()!=null) {
                     final Optional<ThinkSecurityToken> token = WebUtil.getToken();
                     if (token.isPresent()) {
-                        accessKey = WebSecurityUtil.getInstance().buildAccessKey(token.get().getId());
+                        accessKey = WebSecurityUtil.getInstance().buildAccessKey(token.get().getId(),WebUtil.userAgent());
                         this.setNextAccessKey(accessKey.getAccessKeyString());
                     }
                 }
@@ -260,9 +281,4 @@ public class R<T>  implements Serializable {
         return map;
 
     }
-
-
-
-
-
 }

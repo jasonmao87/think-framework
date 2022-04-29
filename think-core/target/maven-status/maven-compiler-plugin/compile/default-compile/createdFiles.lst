@@ -46,6 +46,7 @@ com\think\common\data\IFilterChecker.class
 com\think\core\executor\schedule\ThinkScheduledTaskHolder.class
 com\think\common\data\mongo\ThinkMongoFilterBean.class
 com\think\core\annotations\bean\ThinkTable.class
+com\think\core\security\WebSecurityUtil.class
 com\think\common\data\mysql\ThinkFilterBean$1.class
 com\think\structure\ThinkFastList.class
 com\think\core\threadLocal\ThinkThreadLocal.class
@@ -75,6 +76,7 @@ com\think\core\data\ThinkLogLogo.class
 com\think\common\data\ThinkFilterOp.class
 com\think\common\data\ThinkMongoFilterOp.class
 com\think\common\util\TAssert.class
+com\think\core\security\AccessKey.class
 com\think\structure\ThinkRandomSet.class
 com\think\common\util\TimeUtil.class
 com\think\core\bean\TEnumExplain.class

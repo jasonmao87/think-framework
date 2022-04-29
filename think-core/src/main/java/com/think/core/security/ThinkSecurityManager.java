@@ -2,6 +2,7 @@ package com.think.core.security;
 
 import com.think.common.util.security.AESUtil;
 import com.think.common.util.security.SHAUtil;
+import com.think.core.security.token.ThinkSecurityToken;
 import com.think.exception.ThinkException;
 
 import java.util.List;
@@ -53,6 +54,13 @@ public class ThinkSecurityManager {
         String key = getInstance().getKey();
         String securityString = token.securityString();
         securityString = securityString+"&"+key;
+        return SHAUtil.sha256(securityString);
+    }
+
+
+    public static String buildSignPrimaryKey(ThinkSecurityToken token){
+        String key = getInstance().getKey();
+        String securityString = token.getTokenJsonString();
         return SHAUtil.sha256(securityString);
     }
 

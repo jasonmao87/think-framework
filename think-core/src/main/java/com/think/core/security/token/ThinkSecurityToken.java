@@ -18,8 +18,14 @@ import java.util.*;
  */
 public class ThinkSecurityToken implements Serializable {
     private static final long serialVersionUID = -1234567890987654321L;
+
+    @ApiModelProperty("用户的系统账户id(long类型)")
     @Remark( "账户的id" )
     private long id ;
+
+    @ApiModelProperty("用户的登录名(String 类型， 如 : administrator  )")
+    @Remark("用户的登录名")
+    private String userLoginId;
 
     @Remark(value="账户的用户姓名" )
     private String nickName;
@@ -56,8 +62,18 @@ public class ThinkSecurityToken implements Serializable {
         this.tokenData.put("tokenDataNick",new String[]{nickName});
     }
 
+    protected void setUserLoginId(String userLoginId) {
+        this.userLoginId = userLoginId;
+        this.tokenData.put("tokenUserLoginId",new String[]{userLoginId});
+    }
+
     public void setSysRole(String sysRole) {
         this.sysRole = sysRole;
+    }
+
+
+    public String getUserLoginId() {
+        return userLoginId;
     }
 
     public String getSysRole() {
@@ -93,8 +109,12 @@ public class ThinkSecurityToken implements Serializable {
      * 获取 fixed session data Map  ，补全 sessionData
      * @return
      */
-    protected Map<String, String> getFixedSessionData() {
+    public Map<String, String> getFixedSessionData() {
+        if(this.sessionData == null){
+            this.sessionData = new HashMap<>();
+        }
         this.sessionData.put("tokenDataId", String.valueOf(id));
+        this.sessionData.put("tokenUserLoginId",userLoginId);
         this.sessionData.put("tokenDataNick",nickName);
         this.sessionData.put("tokenDataRegion",currentRegion);
         return sessionData;
@@ -170,8 +190,11 @@ public class ThinkSecurityToken implements Serializable {
                 token.setNickName(strings[0]);
             }else if(k.equals("tokenDataRegion")){
                 token.setCurrentRegion(strings[0]);
+            }else if(k.equals("tokenUserLoginId")){
+                token.setUserLoginId(String.valueOf(strings[0]));
+            }else if(k.equals("sysRole")){
+                token.setSysRole(strings[0]);
             }
-
         });
         return token;
     }

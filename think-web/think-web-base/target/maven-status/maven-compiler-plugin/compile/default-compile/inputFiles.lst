@@ -1,9 +1,8 @@
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\core\security\WebTokenBuilder.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\http\ThinkXssServletRequest.java
-D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\core\security\WebSecurityUtil.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\ThinkWebMvcConfigurer.java
+D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\IThinkWebResultInterceptor.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\R.java
-D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\core\security\AccessKey.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\converter\ConvertAbleEnum.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\converter\EnumConverterFactory.java
 D:\projectFarm\gitee\think-famework\think-web\think-web-base\src\main\java\com\think\web\core\converter\IConverterFactory.java

@@ -23,7 +23,7 @@ public class ThinkSecurityTokenUtil {
      */
     public static final ThinkSecurityToken buildNewTokenByAccountModel(UserAccountModel model){
         ThinkSecurityToken token = new ThinkSecurityToken();
-        return buildCustom(model.getId(),model.getUserName(),model.getPartitionRegion());
+        return buildCustom(model.getId(), model.getUserId(), model.getUserName(),model.getPartitionRegion());
 
     }
 
@@ -34,9 +34,10 @@ public class ThinkSecurityTokenUtil {
      * @param currentRegion
      * @return
      */
-    public static final ThinkSecurityToken buildCustom(long id, String nickName , String currentRegion) {
+    public static final ThinkSecurityToken buildCustom(long id ,String userLoginId, String nickName , String currentRegion ) {
         ThinkSecurityToken token = new ThinkSecurityToken();
         token.setId(id);
+        token.setUserLoginId(userLoginId);
         token.setNickName(nickName);
         token.setCurrentRegion(currentRegion);
         return token;
