@@ -98,7 +98,11 @@ public class WebUtil {
      */
     public static String headerValue(String k) {
         try{
-            return getRequest().getHeader(k);
+            String value = getRequest().getHeader(k);
+            if(StringUtil.isEmpty(value)){
+                value = getRequest().getHeader(k.toLowerCase());
+            }
+            return value;
         }catch (Exception e){}
         return "";
     }
@@ -120,7 +124,8 @@ public class WebUtil {
      * @return
      */
     public static String userAgent(){
-        return getRequest().getHeader("User-Agent");
+        return headerValue("User-Agent");
+//        return getRequest().getHeader("User-Agent");
     }
 
     /**

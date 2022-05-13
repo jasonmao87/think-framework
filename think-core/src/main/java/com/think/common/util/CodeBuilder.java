@@ -138,7 +138,7 @@ public class CodeBuilder {
 //    private static void mainTEST(String[] args) {
 //
 //        final Set<String> set =new HashSet<>();
-//        for (int x = 0; x < 200; x++) {
+//        for (int x.log = 0; x.log < 200; x.log++) {
 //            new Thread(()->{
 //                for (int i = 0; i < 2048; i++) {
 //                    try {

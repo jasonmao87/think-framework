@@ -217,29 +217,29 @@ public class DateUtil extends TimeUtil{
 //
 //    static void t1(int max ){
 //        long start = System.currentTimeMillis();
-//        int x = 0;
+//        int x.log = 0;
 //        for(int i =0 ; i< max; i++){
 //            Date now = DateUtil.now();
 //            if (now.getTime() >10000) {
-//                x ++ ;
+//                x.log ++ ;
 //            }
 //        }
 //        long end = System.currentTimeMillis();
-//        System.out.println( x +" of now ----" + (end -start));
+//        System.out.println( x.log +" of now ----" + (end -start));
 //    }
 //
 //
 //    static void t2(int max ){
 //        long start = System.currentTimeMillis();
-//        int x = 0;
+//        int x.log = 0;
 //        for(int i =0 ; i< max; i++){
 //            Date now = DateUtil.nowTime();
 //            if (now.getTime() >10000) {
-//                x ++ ;
+//                x.log ++ ;
 //            }
 //        }
 //        long end = System.currentTimeMillis();
-//        System.out.println( x +" of nowtime  ----" + (end -start));
+//        System.out.println( x.log +" of nowtime  ----" + (end -start));
 //
 //    }
     /**

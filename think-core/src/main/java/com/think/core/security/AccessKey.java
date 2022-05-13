@@ -49,18 +49,21 @@ public class AccessKey implements Serializable {
     }
 
     protected static final AccessKey valueOf(String accessKey,String ua) throws RuntimeException {
+        int uaHashCode =0 ;
         try {
             final String decrypt = AESUtil.decrypt(accessKey, WebSecurityUtil.getInstance().getKey());
             final String[] split = decrypt.split("@");
             long expire = Long.valueOf(split[0]).longValue();
             long id = Long.valueOf(split[1]);
-            int uaHashCode = Integer.valueOf(split[2]);
+            uaHashCode = Integer.valueOf(split[2]);
             AccessKey ak = new AccessKey(id, ua,expire);
             ak.setUaHashCode(uaHashCode);
             return ak;
         } catch (Exception e) {
-            throw new RuntimeException("非法的ACCESS KEY ");
+            log.error("接收到的ACCESS KEY信息\n\t ACCESS KEY = {} ,\n\tUser-Agent = {} ,\n\t UA-HASH = {}" , accessKey ,ua, uaHashCode);
+            //throw new RuntimeException("[此异常输出不会中断程序]非法的ACCESS KEY ");
         }
+        return null;
     }
 
     public long getId() {

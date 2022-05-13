@@ -8,19 +8,19 @@ import com.think.tcp2.model.TcpMessage;
  * @date : 2022/3/9 16:35
  * @description : TODO
  */
-public interface IThinkTcpListener {
+public interface IThinkTcpConnectionListener {
 
     /**
      * 发送失败通知
      * @param message
      */
-    void onFail(TcpMessage message);
+    void onMessageFail(TcpMessage message);
 
     /**
      * 发送成功事件
      * @param message
      */
-    void onSuccess(TcpMessage message);
+    void onMessageSuccess(TcpMessage message);
 
 
     /**

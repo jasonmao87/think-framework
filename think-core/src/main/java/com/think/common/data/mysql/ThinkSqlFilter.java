@@ -650,7 +650,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
      *
      */
 
-    public ThinkSqlFilter<T> in(String k , long... v){
+    public ThinkSqlFilter<T> in(String k , long[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -663,7 +663,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
-    public ThinkSqlFilter<T> in(String k , int... v){
+    public ThinkSqlFilter<T> in(String k , int[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -675,7 +675,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> in(String k , float... v){
+    public ThinkSqlFilter<T> in(String k , float[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -687,7 +687,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> in(String k , double... v){
+    public ThinkSqlFilter<T> in(String k , double[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -700,7 +700,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
-    public ThinkSqlFilter<T> in(String k , short... v){
+    public ThinkSqlFilter<T> in(String k , short[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -712,7 +712,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> in(String k , boolean... v){
+    public ThinkSqlFilter<T> in(String k , boolean[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -727,7 +727,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
     /** --------------------------OR --------------------------------------*/
 
-    public ThinkSqlFilter<T> or(String k , long... v){
+    public ThinkSqlFilter<T> or(String k , long[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -740,7 +740,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
-    public ThinkSqlFilter<T> or(String k , int... v){
+    public ThinkSqlFilter<T> or(String k , int[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -752,7 +752,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> or(String k , float... v){
+    public ThinkSqlFilter<T> or(String k , float[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -764,7 +764,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> or(String k , double... v){
+    public ThinkSqlFilter<T> or(String k , double[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -777,7 +777,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
-    public ThinkSqlFilter<T> or(String k , short... v){
+    public ThinkSqlFilter<T> or(String k , short[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -789,7 +789,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> or(String k , boolean... v){
+    public ThinkSqlFilter<T> or(String k , boolean[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
