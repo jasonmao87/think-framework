@@ -1,5 +1,6 @@
 package com.think.tcp2.server;
 
+import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.server.handler.ThinkTcpServerHandler;
 import com.think.tcp2.server.handler.ThinkDefaultServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
@@ -76,7 +77,11 @@ public class ThinkTcp2Server {
                 ThinkDefaultServerHandler handler2 = new ThinkDefaultServerHandler();
 //                ThinkHeartBeatHandler heartBeatHandler = new ThinkHeartBeatHandler();
                 ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new IdleStateHandler(30,0,0, TimeUnit.SECONDS))
+                int readIdleTime = Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(ThinkTcpConfig.getIdleTimeoutMillis()) *2 - 5).intValue();
+                if(readIdleTime < 30 ){
+                    readIdleTime = 30 ;
+                }
+                pipeline.addLast(new IdleStateHandler(readIdleTime,0,0, TimeUnit.SECONDS))
                         .addLast(new ObjectEncoder())
                         .addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)))
                         .addLast(handler)
