@@ -3,11 +3,15 @@ package com.think.core.security.token;
 
 import com.alibaba.fastjson.JSONObject;
 import com.think.common.util.FastJsonUtil;
+import com.think.common.util.StringUtil;
 import com.think.core.security.token.filter.IThinkSecurityAsyncTokenFilter;
 import com.think.core.threadLocal.ThinkThreadLocal;
+import com.think.core.threadLocal.ThreadLocalBean;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
+@Slf4j
 /**
  * @author : JasonMao
  * @version : 1.0
@@ -15,6 +19,8 @@ import java.util.*;
  * @description : token 传递管理器
  */
 public class ThinkSecurityTokenTransferManager {
+
+    private static final ThreadLocal<ThreadLocalBean<String>> tokenThreadLocal = new ThreadLocal<>();
 
     private static final List<IThinkSecurityAsyncTokenFilter> filterList = new ArrayList<>();
 
@@ -34,15 +40,26 @@ public class ThinkSecurityTokenTransferManager {
         return jsonObject.toJSONString();
     }
 
-    public static final ThinkSecurityToken buildTokenByTransferString(String transferString){
+    private static final ThinkSecurityToken buildTokenByTransferString(String transferString){
         JSONObject jsonObject = JSONObject.parseObject(transferString);
+        if(jsonObject == null){
+            if (log.isTraceEnabled()) {
+                log.trace("transferString is null,无法反序列出TOKEN");
+            }
+            return null;
+        }
         ThinkSecurityToken token ;
-        Map<String, Object> sessionDataMap = jsonObject.getJSONObject("sessionData").getInnerMap();
+        Map<String, Object> sessionDataMap ;
+        Map<String, String> sessionData = new HashMap<>();
         final boolean containsKey = jsonObject.containsKey("tokenData");
-        Map<String,String> sessionData = new HashMap<>();
-        sessionDataMap.forEach((k,v)->{
-            sessionData.put(k, (String) v);
-        });
+        if(jsonObject.containsKey("sessionData")) {
+            sessionDataMap = jsonObject.getJSONObject("sessionData").getInnerMap();
+            sessionDataMap.forEach((k, v) -> {
+                sessionData.put(k, (String) v);
+            });
+        }else{
+            sessionDataMap = new HashMap<>();
+        }
         if(containsKey){
             token = ThinkSecurityToken.valueOfJsonString(jsonObject.getJSONObject("tokenData").toJSONString());
         }else{
@@ -73,13 +90,27 @@ public class ThinkSecurityTokenTransferManager {
      * @param usingTokenOnlyTransferSessionData
      */
     public static final void setThreadLocal(ThinkSecurityToken token, boolean usingTokenOnlyTransferSessionData){
-        String transferJson = usingTokenOnlyTransferSessionData?buildSimpleTransferStringByToken(token):buildFullTransferStringByToken(token);
-        ThinkThreadLocal.set(transferJson);
+
+        final String transferJson = usingTokenOnlyTransferSessionData?buildSimpleTransferStringByToken(token):buildFullTransferStringByToken(token);
+        log.info("{} --本地线程注入 token 信息 >>>>>{}" ,tinfo() ,transferJson);
+        tokenThreadLocal.set(new ThreadLocalBean(transferJson));
+
+//        ThinkThreadLocal.set(transferJson);
     }
 
-    public static final ThinkSecurityToken getTokenFromThreadLocal(){
-        final String transferTokenString = ThinkThreadLocal.getString();
-        if(transferTokenString == null){
+    private static final ThinkSecurityToken getTokenFromThreadLocal(){
+        final ThreadLocalBean<String> threadLocalBean = tokenThreadLocal.get();
+        if(threadLocalBean==null){
+            return null;
+        }
+//        if(threadLocalBean.isExpire()){
+//            log.warn("本地缓存的线程TOKEN时间过长，主动销毁");
+//            removeTokenFromThreadLocal();
+//        }
+
+        String transferTokenString = threadLocalBean.getValue();
+        log.info("{} --本地线程读取 token >>>>> {}" ,tinfo(),transferTokenString);
+        if (StringUtil.isEmpty(transferTokenString)) {
             return null;
         }
         ThinkSecurityToken token = buildTokenByTransferString(transferTokenString);
@@ -92,9 +123,9 @@ public class ThinkSecurityTokenTransferManager {
         if(t != null){
             return t;
         }
-
         for (IThinkSecurityAsyncTokenFilter tokenFilter : filterList) {
-            final ThinkSecurityToken asyncToken = tokenFilter.getAsyncToken();
+            log.info("from filter to getTOKEN  : {}" ,tokenFilter.getClass().getName());
+            final ThinkSecurityToken asyncToken = tokenFilter.getAsyncTokenFromWebRequestInfo();
             if(asyncToken!=null){
                 return asyncToken;
             }
@@ -103,8 +134,15 @@ public class ThinkSecurityTokenTransferManager {
     }
 
     public static final void removeTokenFromThreadLocal(){
-        ThinkThreadLocal.remove();
+
+//        log.info(" {} 本地线程移除 token -----",tinfo());
+        tokenThreadLocal.remove();
     }
 
+
+
+    public static final String  tinfo(){
+        return Thread.currentThread().getId() + "@" + Thread.currentThread().getName();
+    }
 
 }

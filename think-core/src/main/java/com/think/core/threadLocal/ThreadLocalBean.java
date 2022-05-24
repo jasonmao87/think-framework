@@ -10,13 +10,13 @@ import java.io.Serializable;
  * @date : 2022/4/25 20:15
  * @description : TODO
  */
-public class ThreadLocalBean implements Serializable {
-    private Object value ;
+public class ThreadLocalBean<T> implements Serializable {
+    private T value ;
 
     private long expireTime ;
 
 
-    public ThreadLocalBean(Object o) {
+    public ThreadLocalBean(T o) {
         this.value = o;
         this.expireTime = ThinkMilliSecond.currentTimeMillis() + 3000L;
     }
@@ -25,7 +25,7 @@ public class ThreadLocalBean implements Serializable {
         this.expireTime = expireTime;
     }
 
-    public void setValue(Object value) {
+    public void setValue(T value) {
         this.value = value;
     }
 
@@ -33,11 +33,12 @@ public class ThreadLocalBean implements Serializable {
         return expireTime;
     }
 
-    public Object getValue() {
+    public T getValue() {
+        this.expireTime += 1000;
         return value;
     }
 
-    boolean isExpire(){
+    public boolean isExpire(){
         return ThinkMilliSecond.currentTimeMillis() > expireTime;
     }
 

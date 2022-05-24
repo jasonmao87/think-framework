@@ -16,4 +16,13 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.think</groupId>
+            <artifactId>think-tcp2-common</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

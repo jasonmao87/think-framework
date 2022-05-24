@@ -16,6 +16,7 @@
         <module>think-tcp</module>
         <module>think-simple-redis</module>
         <module>think-tcp2</module>
+        <module>think-service-bus</module>
     </modules>
 
     <properties>
@@ -109,6 +110,22 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-server</artifactId>
+                <version>1.0.4-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-tcp2-common</artifactId>
+                <version>1.0.4-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-tcp2-client</artifactId>
+                <version>1.0.4-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-tcp2-server</artifactId>
                 <version>1.0.4-SNAPSHOT</version>
             </dependency>
 

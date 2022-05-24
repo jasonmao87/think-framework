@@ -15,8 +15,8 @@ public interface IThinkSecurityAsyncTokenFilter {
      * 异步线程 获取token
      * @return
      */
-    @Remark("异步线程获取token")
-    ThinkSecurityToken getAsyncToken();
+    @Remark("异步线程获取WEB token")
+    ThinkSecurityToken getAsyncTokenFromWebRequestInfo();
 
 
     /**

@@ -10,6 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>think-tcp2-client</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.think</groupId>
+            <artifactId>think-tcp2-common</artifactId>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

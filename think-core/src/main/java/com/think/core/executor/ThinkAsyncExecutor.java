@@ -1,11 +1,14 @@
 package com.think.core.executor;
 
+import com.think.common.util.FastJsonUtil;
+import com.think.common.util.TimeUtil;
 import com.think.core.security.token.ThinkSecurityToken;
 import com.think.core.security.token.ThinkSecurityTokenTransferManager;
 import com.think.core.security.token.ThinkSecurityTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Date :2021/3/24
@@ -35,15 +38,8 @@ public class ThinkAsyncExecutor {
     public static final CompletableFuture<Void> execute(final ThinkAsyncTask task ){
         String threadName =Thread.currentThread().getName();
         if (threadName.equals(lastAcceptThreadName)) {
-            try{
-                Thread.sleep(1);
-            }catch (Exception e){
-
-            }
+            TimeUtil.sleep(1, TimeUnit.MILLISECONDS);
         }
-//        ThinkExecuteThreadSharedTokenManager.trySet();
-//        ThinkToken sharedToken = getThreadLocalToken();
-
         ThinkSecurityToken securityToken = getSecurityToken();
         return executeWithToken(task,securityToken);
 //        if(securityToken!=null){
@@ -62,11 +58,14 @@ public class ThinkAsyncExecutor {
     }
 
 
-    public static final CompletableFuture<Void> executeWithToken(ThinkAsyncTask task,ThinkSecurityToken token){
+    public static final CompletableFuture<Void> executeWithToken(final ThinkAsyncTask task,final ThinkSecurityToken token){
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 if(token!=null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("异步的TOKEN 信息 === {}" , FastJsonUtil.parseToJSON(token));
+                    }
                     ThinkSecurityTokenTransferManager.setThreadLocal(token, false);
                 }
                 try {

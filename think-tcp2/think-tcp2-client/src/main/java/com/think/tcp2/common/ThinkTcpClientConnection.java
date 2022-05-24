@@ -1,4 +1,4 @@
-package com.think.tcp2.model;
+package com.think.tcp2.common;
 
 import com.think.core.annotations.Remark;
 

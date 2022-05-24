@@ -3,6 +3,7 @@ package com.think.common.data.mysql;
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.common.util.TVerification;
+import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
 import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.TFlowBuilder;
@@ -25,6 +26,15 @@ public class ThinkUpdateMapper<T extends _Entity> {
     private Map<String,Object> incMapper ;
     private Map<String,String> setKeyMapper ;
 
+    @Remark("key 除法")
+    private Map<String,Map<String,Double>> divMapper ;
+    @Remark("key乘法")
+    private Map<String,Map<String,Double>> multiplyMapper ;
+
+    private Map<String,Map<String,String>> keyMultiplyKeyMapper ;
+    private Map<String,Map<String,String>> keyDivKeyMapper ;
+
+
     private Set<String> keySet = new HashSet<>();
 
     private  ThinkUpdateMapper(Class<T> targetClass) {
@@ -33,10 +43,13 @@ public class ThinkUpdateMapper<T extends _Entity> {
         this.incMapper = new HashMap<>();
         this.setMapper = new HashMap<>();
         this.setKeyMapper = new HashMap<>();
+        this.multiplyMapper = new HashMap<>();
+        this.divMapper = new HashMap<>();
+        this.keyDivKeyMapper = new HashMap<>();
+        this.keyMultiplyKeyMapper = new HashMap<>();
     }
 
     public static <T extends _Entity> ThinkUpdateMapper<T> build(Class<T> tClass){
-
         List<String > emn =Collections.EMPTY_LIST;
 
         return (ThinkUpdateMapper<T>)new ThinkUpdateMapper<T>(tClass);
@@ -94,6 +107,52 @@ public class ThinkUpdateMapper<T extends _Entity> {
         }
         return this;
     }
+
+
+    @Remark("执行 除法")
+    public ThinkUpdateMapper<T> updateKeyDivValue(@Remark("需要修改的key") String targetKey ,@Remark("源数据的key") String sourceKey,@Remark("sourceKey 要除的值") double div){
+        if(this.checkKey(targetKey,false) && this.checkKey(sourceKey,true)){
+            this.ambiguityErrorCheck(targetKey);
+            Map<String,Double> map = new HashMap<>();
+            map.put(sourceKey,div);
+            this.divMapper.put(targetKey, map);
+        }
+        return this;
+    }
+
+
+    public ThinkUpdateMapper<T> updateKeyDivKey(@Remark("需要修改的key") String targetKey ,@Remark("源数据的key") String sourceKey1,@Remark(" 要除的值的sourceKey") String sourcekey2){
+        if(this.checkKey(targetKey,false) && this.checkKey(sourceKey1,true)){
+            this.ambiguityErrorCheck(targetKey);
+            Map<String,String> map = new HashMap<>();
+            map.put(sourceKey1,sourcekey2);
+            this.keyDivKeyMapper.put(targetKey, map);
+        }
+        return this;
+    }
+
+
+    @Remark("执行 key  * value 的乘法")
+    public ThinkUpdateMapper<T> updateKeyMultiplyValue(@Remark("需要修改的key") String targetKey ,@Remark("源数据的key") String sourceKey,@Remark("sourceKey 要乘的值") double multiply){
+        if(this.checkKey(targetKey,false) && this.checkKey(sourceKey,true)){
+            this.ambiguityErrorCheck(targetKey);
+            Map<String,Double> map = new HashMap<>();
+            map.put("sourceKey",multiply);
+            this.multiplyMapper.put(targetKey, map);
+        }
+        return this;
+    }
+
+    public ThinkUpdateMapper<T> updateKeyMultiplyKey(@Remark("需要修改的key") String targetKey ,@Remark("源数据的key") String sourceKey,@Remark(" 要乘的值的sourceKey") String sourceKey2){
+        if(this.checkKey(targetKey,false) && this.checkKey(sourceKey,true)){
+            this.ambiguityErrorCheck(targetKey);
+            Map<String,String> map = new HashMap<>();
+            map.put(sourceKey,sourceKey2);
+            this.keyMultiplyKeyMapper.put(targetKey, map);
+        }
+        return this;
+    }
+
 
     public ThinkUpdateMapper<T> updateDateAsNow(String key){
         if (this.checkKeyIsDateType(key) ) {
@@ -256,6 +315,22 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public Map<String, String> getSetKeyMapper() {
         return setKeyMapper;
+    }
+
+    public Map<String, Map<String, Double>> getDivMapper() {
+        return divMapper;
+    }
+
+    public Map<String, Map<String, Double>> getMultiplyMapper() {
+        return multiplyMapper;
+    }
+
+    public Map<String, Map<String, String>> getKeyDivKeyMapper() {
+        return keyDivKeyMapper;
+    }
+
+    public Map<String, Map<String, String>> getKeyMultiplyKeyMapper() {
+        return keyMultiplyKeyMapper;
     }
 
     /**

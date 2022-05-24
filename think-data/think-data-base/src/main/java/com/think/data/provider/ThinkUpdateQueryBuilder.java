@@ -420,16 +420,18 @@ public class ThinkUpdateQueryBuilder {
 
         ThinkTableModel tableModal = Manager.getModelBuilder().get(updaterMapper.getTargetClass());
         int setIndex = 0 ;
-        Map<String, Object> incMap = updaterMapper.getIncMapper();
-        Map<String, Object> setMapper = updaterMapper.getSetMapper();
-        Map<String, String> setKeyMapper = updaterMapper.getSetKeyMapper();
+        final Map<String, Object> incMap = updaterMapper.getIncMapper();
+        final Map<String, Object> setMapper = updaterMapper.getSetMapper();
+        final Map<String, String> setKeyMapper = updaterMapper.getSetKeyMapper();
+        final Map<String, Map<String, Double>> divMapper = updaterMapper.getDivMapper();
+        final Map<String, Map<String, Double>> multiplyMapper = updaterMapper.getMultiplyMapper();
+        final Map<String, Map<String, String>> keyDivKeyMapper = updaterMapper.getKeyDivKeyMapper();
+        final Map<String, Map<String, String>> keyMultiplyKeyMapper = updaterMapper.getKeyMultiplyKeyMapper();
         for(String k : incMap.keySet() ){
             ThinkColumnModel columnModal = tableModal.getKey(k);
             if(columnModal== null || columnModal.isEditAble()==false ){
                 continue;
             }
-
-
             if(setIndex >0){
                 sql.append(", ");
             }
@@ -497,6 +499,71 @@ public class ThinkUpdateQueryBuilder {
             sql.append( k).append(" = ").append(setKeyMapper.get(k)).append(" ");
             setIndex ++ ;
         }
+
+
+        for (String k :divMapper.keySet()) {
+            ThinkColumnModel columnModal = tableModal.getKey(k);
+            if(columnModal== null || columnModal.isEditAble()==false ){
+                continue;
+            }
+            if(setIndex >0){
+                sql.append(", ");
+            }
+            final Map<String, Double> stringDoubleMap = divMapper.get(k);
+            for (Map.Entry<String, Double> entry : stringDoubleMap.entrySet()) {
+                sql.append(k).append("=").append(entry.getKey()).append(" / ").append(entry.getValue()).append(" ");
+                break;
+            }
+        }
+        for (String k :multiplyMapper.keySet()) {
+            ThinkColumnModel columnModal = tableModal.getKey(k);
+            if(columnModal== null || columnModal.isEditAble()==false ){
+                continue;
+            }
+            if(setIndex >0){
+                sql.append(", ");
+            }
+            final Map<String, Double> stringDoubleMap = multiplyMapper.get(k);
+            for (Map.Entry<String, Double> entry : stringDoubleMap.entrySet()) {
+                sql.append(k).append("=").append(entry.getKey()).append(" * ").append(entry.getValue()).append(" ");
+                break;
+            }
+        }
+
+        for (String k :keyDivKeyMapper.keySet()) {
+            ThinkColumnModel columnModal = tableModal.getKey(k);
+            if(columnModal== null || columnModal.isEditAble()==false ){
+                continue;
+            }
+            if(setIndex >0){
+                sql.append(", ");
+            }
+            final Map<String, String> stringDoubleMap = keyDivKeyMapper.get(k);
+            for (Map.Entry<String, String> entry : stringDoubleMap.entrySet()) {
+                sql.append(k).append("=").append(entry.getKey()).append(" / ").append(entry.getValue()).append(" ");
+                break;
+            }
+
+        }
+
+        for (String k :keyMultiplyKeyMapper.keySet()) {
+            ThinkColumnModel columnModal = tableModal.getKey(k);
+            if(columnModal== null || columnModal.isEditAble()==false ){
+                continue;
+            }
+            if(setIndex >0){
+                sql.append(", ");
+            }
+            final Map<String, String> stringDoubleMap = keyDivKeyMapper.get(k);
+            for (Map.Entry<String, String> entry : stringDoubleMap.entrySet()) {
+                sql.append(k).append("=").append(entry.getKey()).append(" * ").append(entry.getValue()).append(" ");
+                break;
+            }
+
+        }
+
+
+
         ThinkQuery query = ThinkQuery.build(updaterMapper.sqlFilter());
         sql.append(" ")
                 .append(query.filterQuery());
