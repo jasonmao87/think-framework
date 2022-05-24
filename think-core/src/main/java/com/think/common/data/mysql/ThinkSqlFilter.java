@@ -334,6 +334,8 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     public ThinkSqlFilter<T> notIn(String k , Serializable... v){
         if(v == null){
             return this;
+        }else if(v.length == 0){
+            return this;
         }else if( v.length == 1){
             return notEq(k,v[0]);
         }else{

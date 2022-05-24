@@ -138,7 +138,6 @@ com\think\core\security\ThinkKey.class
 com\think\structure\ThinkFastList$1.class
 com\think\common\data\mysql\TFlowStateUpdate.class
 com\think\common\util\CodeBuilder.class
-com\think\core\executor\ThinkTaskClient.class
 com\think\common\util\PasswordCheckInfo.class
 com\think\structure\table\ThinkGridModel.class
 com\think\core\annotations\bean\ThinkIgnore.class
