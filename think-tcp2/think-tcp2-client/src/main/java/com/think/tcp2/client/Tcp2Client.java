@@ -3,6 +3,7 @@ package com.think.tcp2.client;
 import com.think.core.executor.ThinkAsyncExecutor;
 import com.think.core.executor.ThinkThreadExecutor;
 import com.think.tcp2.IThinkTcpConsumer;
+import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
 import com.think.tcp2.listener.ThinkTcpEventListener;
 import io.netty.bootstrap.Bootstrap;
@@ -77,7 +78,7 @@ public class Tcp2Client {
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline().addLast(new ObjectEncoder());
                 ch.pipeline().addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)));
-                ch.pipeline().addLast((new IdleStateHandler(2, 3, 0, TimeUnit.SECONDS)));
+                ch.pipeline().addLast((new IdleStateHandler(0, ThinkTcpConfig.getIdleActiveSequenceTime(), 0, TimeUnit.SECONDS)));
                 ch.pipeline().addLast(new TcpClientHandler());
             }
         });
