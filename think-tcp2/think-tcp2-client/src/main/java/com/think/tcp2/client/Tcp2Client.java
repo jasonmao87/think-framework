@@ -78,7 +78,7 @@ public class Tcp2Client {
             protected void initChannel(Channel ch) throws Exception {
                 ch.pipeline().addLast(new ObjectEncoder());
                 ch.pipeline().addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)));
-                ch.pipeline().addLast((new IdleStateHandler(0, ThinkTcpConfig.getIdleActiveSequenceTime(), 0, TimeUnit.SECONDS)));
+                ch.pipeline().addLast((new IdleStateHandler(0, ThinkTcpConfig.getIdleActiveSequenceTimeSeconds(), 0, TimeUnit.SECONDS)));
                 ch.pipeline().addLast(new TcpClientHandler());
             }
         });
