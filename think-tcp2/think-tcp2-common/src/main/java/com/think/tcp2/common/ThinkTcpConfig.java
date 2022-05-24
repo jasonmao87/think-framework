@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ThinkTcpConfig {
 
+    private static int port =5740 ;
+
     private static final long defaultIdleTimeout =TimeUnit.SECONDS.toMillis(30L);
 
     private static long idleTimeout = TimeUnit.SECONDS.toMillis(30L);
@@ -43,6 +45,13 @@ public class ThinkTcpConfig {
     public static int getIdleTimeoutSeconds(){
         long idleTimeoutMillis = getIdleTimeoutMillis();
         return Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(idleTimeoutMillis)).intValue();
+    }
 
+    public static void setPort(int port) {
+        ThinkTcpConfig.port = port;
+    }
+
+    public static int getPort() {
+        return port;
     }
 }

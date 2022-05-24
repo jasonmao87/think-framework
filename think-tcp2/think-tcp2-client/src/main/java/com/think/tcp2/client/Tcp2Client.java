@@ -5,6 +5,7 @@ import com.think.core.executor.ThinkThreadExecutor;
 import com.think.tcp2.IThinkTcpConsumer;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
+import com.think.tcp2.listener.DefaultTcpEventListener;
 import com.think.tcp2.listener.ThinkTcpEventListener;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -46,6 +47,8 @@ public class Tcp2Client {
     private IThinkTcpConsumer consumer;
 
     private ThinkTcpEventListener listener;
+
+    private ThinkTcpEventListener defaultListener  = new DefaultTcpEventListener();
 
 
     private Tcp2Client() {
@@ -113,11 +116,8 @@ public class Tcp2Client {
     }
 
     public boolean sendPayLoad(TcpPayload payload) throws InterruptedException{
-        final boolean success = this.channel.writeAndFlush(payload).sync().isSuccess();
-        if(!success){
-            getListener().onMessageFail(payload);
-        }
-        return success;
+        this.channel.writeAndFlush(payload);
+        return true;
     }
 
 
@@ -134,6 +134,23 @@ public class Tcp2Client {
     }
 
     public ThinkTcpEventListener getListener() {
-        return listener;
+        return listener!=null?listener:defaultListener;
+    }
+
+
+    public static void main(String[] args) throws InterruptedException {
+        Tcp2Client.getInstance().setListener(new DefaultTcpEventListener());
+        Tcp2Client.getInstance().connect("127.0.0.1",5740);
+        Scanner scanner= new Scanner(System.in);
+        while (scanner.hasNext()){
+            String text = scanner.nextLine();
+
+            getInstance().sendMessage("MESSAGE : " + text);
+            System.out.println("SEND ===");
+
+
+
+        }
+
     }
 }

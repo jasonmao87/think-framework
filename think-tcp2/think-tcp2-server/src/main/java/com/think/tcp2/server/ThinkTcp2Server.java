@@ -1,8 +1,10 @@
 package com.think.tcp2.server;
 
 import com.think.tcp2.common.ThinkTcpConfig;
-import com.think.tcp2.server.handler.ThinkTcpServerHandler;
+import com.think.tcp2.server.consumer.ThinkTcp2ServerConsumer;
+import com.think.tcp2.server.handler.TcpPayloadHandler;
 import com.think.tcp2.server.handler.ThinkDefaultServerHandler;
+import com.think.tcp2.server.handler.ThinkHeartbeatHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -35,7 +37,7 @@ public class ThinkTcp2Server {
     /**
      * 默认端口号
      */
-    private int port = 5740;
+    private int port = ThinkTcpConfig.getPort();
 
     /*server 启动状态*/
     private boolean startState = false;
@@ -66,27 +68,27 @@ public class ThinkTcp2Server {
     public ThinkTcp2Server() {}
 
 
+    public void start() throws InterruptedException{
+        start(port);
+    }
     public void start(int port ) throws InterruptedException{
+        this.port = port;
         serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup,workerGroup);
         serverBootstrap.channel(NioServerSocketChannel.class);
         serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>(){
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
-                ThinkTcpServerHandler handler = new ThinkTcpServerHandler();
-                ThinkDefaultServerHandler handler2 = new ThinkDefaultServerHandler();
-//                ThinkHeartBeatHandler heartBeatHandler = new ThinkHeartBeatHandler();
+                ThinkDefaultServerHandler defaultServerHandler = new ThinkDefaultServerHandler();
+                ThinkHeartbeatHandler heartBeatHandler = new ThinkHeartbeatHandler();
+                TcpPayloadHandler payloadHandler = new TcpPayloadHandler();
                 ChannelPipeline pipeline = ch.pipeline();
-                int readIdleTime = Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(ThinkTcpConfig.getIdleTimeoutMillis()) *2 - 5).intValue();
-                if(readIdleTime < 30 ){
-                    readIdleTime = 30 ;
-                }
-                pipeline.addLast(new IdleStateHandler(readIdleTime,0,0, TimeUnit.SECONDS))
+                pipeline.addLast(new IdleStateHandler(ThinkTcpConfig.getIdleTimeoutSeconds(),0,0, TimeUnit.SECONDS))
                         .addLast(new ObjectEncoder())
                         .addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)))
-                        .addLast(handler)
-                        .addLast(handler2);
-//                        .addLast(heartBeatHandler);
+                        .addLast(payloadHandler)
+                        .addLast(heartBeatHandler)
+                        .addLast(defaultServerHandler);
             }
         });
         serverBootstrap.option(ChannelOption.SO_BACKLOG,1024);
@@ -124,4 +126,15 @@ public class ThinkTcp2Server {
     public long getIdleTimeout() {
         return idleTimeout;
     }
+
+
+    public <T> void registerConsumer(Class<T> tClass ,ThinkTcp2ServerConsumer<T> t){
+        ThinkTcp2ServerConsumerManager.registerConsumer(tClass,t);
+    }
+
+
+//    public static void main(String[] args) throws InterruptedException {
+//        ThinkTcp2Server s =new ThinkTcp2Server();
+//        s.start(5740);
+//    }
 }

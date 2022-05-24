@@ -15,6 +15,6 @@ public interface IThinkTcpConsumer {
      * 处理收到的消息
      * @param payload
      */
-    @Remark("处理收到的消息")
+    @Remark("处理收到来自TCP服务的消息")
     void acceptMessage(TcpPayload payload);
 }

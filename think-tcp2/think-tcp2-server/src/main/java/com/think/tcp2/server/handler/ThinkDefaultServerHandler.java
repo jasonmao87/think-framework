@@ -1,8 +1,7 @@
 package com.think.tcp2.server.handler;
 
 
-import com.think.tcp2.common.model.ClientModel;
-import com.think.tcp2.common.model.TcpPayload;
+import com.think.tcp2.server.TcpClient;
 import com.think.tcp2.server.ClientManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -19,8 +18,9 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object tcpPayload) throws Exception {
-        final ClientModel clientModel = ClientManager.getInstance().get(channelHandlerContext.channel().id().asShortText());
+        final TcpClient clientModel = ClientManager.getInstance().get(channelHandlerContext.channel());
         clientModel.active();
+
     }
 
 
@@ -33,8 +33,8 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        if (ClientManager.getInstance().isHold(ctx.channel().id().asShortText())) {
-            ClientManager.getInstance().unHold(ctx.channel().id().asShortText());
+        if (ClientManager.getInstance().isHold(ctx.channel())) {
+            ClientManager.getInstance().unHold(ctx.channel());
         }
         super.channelUnregistered(ctx);
     }
@@ -48,7 +48,7 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
             log.debug("caught Exception , exception is {} " ,cause);
         }
         if (!ctx.channel().isActive()) {
-            ClientManager.getInstance().unHold(ctx.channel().id().asShortText());
+            ClientManager.getInstance().unHold(ctx.channel());
         }
 
         super.exceptionCaught(ctx, cause);

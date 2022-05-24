@@ -1,6 +1,5 @@
 package com.think.tcp2.server;
 
-import com.think.tcp2.common.model.ClientModel;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ClientManager {
 
     private static ClientManager instance ;
-    private final Map<String, ClientModel> clientHolder ;
+    private final Map<String, TcpClient> clientHolder ;
 
 
     private ClientManager() {
@@ -36,10 +35,10 @@ public class ClientManager {
     }
 
     public void hold(Channel channel){
-        this.hold(new ClientModel(channel));
+        this.hold(new TcpClient(channel));
     }
 
-    public void hold(ClientModel client){
+    private void hold(TcpClient client){
         if (log.isDebugEnabled()) {
             log.debug("注册新的客户端---- {}" ,client.getId());
         }
@@ -55,7 +54,13 @@ public class ClientManager {
         return this.clientHolder.containsKey(id) && this.clientHolder.get(id)!=null;
     }
 
+    public boolean isHold(Channel channel){
+        return this.isHold(channel.id().asShortText());
+    }
 
+    public void unHold(Channel channel){
+        this.unHold(channel.id().asShortText());
+    }
     public void unHold(String id){
         if (log.isDebugEnabled()) {
             log.debug("客户端离线或长时间未相应取消托管，从托管列表移除客户端----- {}" ,id);
@@ -81,17 +86,20 @@ public class ClientManager {
      * @param id
      * @return
      */
-    public ClientModel get(String id){
+    public TcpClient get(String id){
         return this.clientHolder.get(id);
     }
 
+    public TcpClient get(Channel channel){
+        return this.get(channel.id().asShortText());
+    }
 
     public int count(){
         return this.clientHolder.size();
     }
 
-    public List<ClientModel> list(final int start, final int limit){
-        final List<ClientModel> list = new ArrayList<>();
+    public List<TcpClient> list(final int start, final int limit){
+        final List<TcpClient> list = new ArrayList<>();
         final int finalLimit = limit >0?limit:Integer.MAX_VALUE;
         final int finalStart = start>0? start:0 ;
         AtomicInteger integer =new AtomicInteger(0);

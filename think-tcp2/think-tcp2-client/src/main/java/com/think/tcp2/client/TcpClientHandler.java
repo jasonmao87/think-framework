@@ -2,6 +2,7 @@ package com.think.tcp2.client;
 
 import com.think.core.executor.ThinkThreadExecutor;
 import com.think.tcp2.IThinkTcpConsumer;
+import com.think.tcp2.common.model.Tcp2Heartbeat;
 import com.think.tcp2.common.model.TcpPayload;
 import com.think.tcp2.listener.IThinkTcpConnectionListener;
 import com.think.tcp2.listener.ThinkTcpEventListener;
@@ -35,6 +36,7 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         //发送心跳包
+        ctx.channel().writeAndFlush(Tcp2Heartbeat.get());
         super.userEventTriggered(ctx, evt);
     }
 
@@ -47,7 +49,6 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         getListener().onDisConnected();
-
         ThinkThreadExecutor.runDelay(()->{
             Tcp2Client.getInstance().reConnect();
         },10);
