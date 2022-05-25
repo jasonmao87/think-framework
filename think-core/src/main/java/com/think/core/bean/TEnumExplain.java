@@ -1,10 +1,12 @@
 package com.think.core.bean;
 
+import com.think.core.enums.TEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +17,17 @@ import java.util.Map;
  */
 public class TEnumExplain implements Serializable {
     private static final long serialVersionUID = 1010101010101010010L;
+//
+//    private static final Map<Class,TEnumExplain> cache = new HashMap<>();
+//
+//
+//    private void cache(Class t, TEnumExplain explain){
+//        if (!cache.containsKey(t)) {
+//            cache.put(t,explain);
+//        }
+//    }
+
+
 
     @ApiModelProperty(hidden = true)
     private String keyName ;
@@ -26,14 +39,28 @@ public class TEnumExplain implements Serializable {
     private String remark ;
 
     @ApiModelProperty(hidden = true)
-    List<Map<String,String>> explain;
+    Map<String,String> explain;
 
+    public TEnumExplain(String keyName ,String typeName, String remark ,Map<String,String> explain) {
+        this.keyName = keyName;
+        this.typeName = typeName;
+        this.remark = remark;
+        this.explain = explain;
+    }
+
+    @Deprecated
     public TEnumExplain(String keyName ,String typeName, String remark ,List<Map<String,String>> explainList) {
         this.keyName = keyName;
         this.typeName = typeName;
         this.remark = remark;
-        this.explain = explainList;
+        Map<String,String> map = new HashMap<>();
+        for (Map<String, String> stringStringMap : explainList) {
+            map.putAll(stringStringMap);
+        }
+        this.explain = map;
     }
+
+
 
     public String getKeyName() {
         return keyName;
@@ -47,9 +74,10 @@ public class TEnumExplain implements Serializable {
         return remark;
     }
 
-    public List<Map<String, String>> getExplain() {
+    public Map<String, String> getExplain() {
         return explain;
     }
+
 
 
 

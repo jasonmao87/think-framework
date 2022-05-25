@@ -26,22 +26,19 @@ public enum TEnableRequired implements TEnum {
         return null;
     }
 
-    public static List<Map<String,String>> list(){
+    public static Map<String,String> explainMap(){
         List<Map<String,String>> list = new ArrayList<>();
+        Map<String,String> map =new HashMap<>();
         for(TEnableRequired enableRequiredEnum : TEnableRequired.values()){
-            Map<String,String> map =new HashMap<>();
             map.put(enableRequiredEnum.name(),toCN(enableRequiredEnum));
-            list.add(map);
         }
 
-
-
-        return list;
+        return map;
     }
 
     @Override
     public TEnumExplain explain(String keyName) {
-        return new TEnumExplain(keyName,getClass().getTypeName(),"启禁用匹配要求",list());
+        return new TEnumExplain(keyName,getClass().getTypeName(),"启禁用匹配要求",explainMap());
     }
 
 
