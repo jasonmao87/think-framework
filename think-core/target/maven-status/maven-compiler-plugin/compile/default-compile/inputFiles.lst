@@ -5,6 +5,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\da
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\SimpleHttpUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\StringUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\SimplePrimaryEntity.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\IEnumInterpreter.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkSecurityManager.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkIndex.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\ThinkExplainList.java
@@ -54,6 +55,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\exec
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\TVerification.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\token\ThinkSecurityToken.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\AccessKey.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\EnumExplainMapper.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\TimeUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\FileUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mysql\TFlowStateUpdate.java
@@ -82,7 +84,6 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\secu
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\exception\ThinkRuntimeException.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\TScheduleCron.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\ThinkCollectionUtil.java
-D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\StateEnum.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\rt\ThinkMachineUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\rt\ThinkDefaultTargetTypeUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\threadLocal\ThreadLocalBean.java
@@ -138,6 +139,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\ut
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mysql\IThinkResultFilter.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mysql\permission\SqlFilterPermissionRule.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\security\Base64Util.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\ThinkEnum.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\ThinkExecuteThreadSharedTokenManager.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\PasswordUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\TEnumExplain.java

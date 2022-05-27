@@ -7,6 +7,7 @@ com\think\common\data\mysql\permission\SqlFilterPermissionRule.class
 com\think\common\util\ThinkIdGenerator.class
 com\think\core\annotations\bean\ThinkClollection.class
 com\think\core\bean\schedules\ThinkScheduleCronConfig.class
+com\think\core\enums\IEnumInterpreter.class
 com\think\core\executor\schedule\ScheduledTask.class
 com\think\core\enums\ResultDataType.class
 com\think\core\security\ThinkSecurityKeyBuilder.class
@@ -30,7 +31,6 @@ com\think\core\security\ThinkWebSecuritySigner.class
 com\think\common\util\security\DesensitizationUtil.class
 com\think\core\executor\ThinkAsyncExecutor$1.class
 com\think\core\security\ThinkTokenAttachment.class
-com\think\core\enums\StateEnum.class
 com\think\common\util\BinaryUtil.class
 com\think\core\executor\ThinkThreadExecutor$DefaultThinkThreadFactory.class
 com\think\core\annotations\bean\ThinkMongoPartitionAble.class
@@ -63,6 +63,7 @@ com\think\common\util\SimpleHttpUtil.class
 com\think\common\util\office\ThinkExcelUtil.class
 com\think\common\util\security\AESUtil.class
 com\think\moudles\auth\ThinkAuthModel.class
+com\think\core\enums\EnumExplainMapper.class
 com\think\common\data\ThinkFilterOp$1.class
 com\think\core\bean\schedules\ThinkScheduleBuilder.class
 com\think\core\enums\DataHistoryType.class
@@ -93,6 +94,7 @@ com\think\core\bean\TFlowBuilder$AbleChecker.class
 com\think\core\security\ThinkTokenExtendEntry.class
 com\think\core\threadLocal\ThreadLocalBean.class
 com\think\common\util\ThinkCollectionUtil.class
+com\think\core\enums\ThinkEnum.class
 com\think\structure\ThinkExplainList.class
 com\think\structure\ThinkSimpleHolder.class
 com\think\core\supports\ClasspathPackageScaner.class

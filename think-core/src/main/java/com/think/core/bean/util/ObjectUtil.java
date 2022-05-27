@@ -159,7 +159,7 @@ public class ObjectUtil  {
 //                field.getType()
                     TEnum tEnum = (TEnum) ClassUtil.getProperty(t,field.getName());
 //                    tEnum.explain(field.getName());
-                    thinkExplainList.add(tEnum.explain(field.getName()));
+                    thinkExplainList.add(tEnum.explain());
                 }
             }
         }

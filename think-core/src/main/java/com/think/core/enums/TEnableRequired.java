@@ -1,5 +1,6 @@
 package com.think.core.enums;
 
+import com.think.common.util.FastJsonUtil;
 import com.think.core.bean.TEnumExplain;
 
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ public enum TEnableRequired implements TEnum {
     }
 
     public static Map<String,String> explainMap(){
-        List<Map<String,String>> list = new ArrayList<>();
         Map<String,String> map =new HashMap<>();
         for(TEnableRequired enableRequiredEnum : TEnableRequired.values()){
             map.put(enableRequiredEnum.name(),toCN(enableRequiredEnum));
@@ -36,10 +36,34 @@ public enum TEnableRequired implements TEnum {
         return map;
     }
 
+
+
+
+
     @Override
-    public TEnumExplain explain(String keyName) {
-        return new TEnumExplain(keyName,getClass().getTypeName(),"启禁用匹配要求",explainMap());
+    public TEnumExplain explain() {
+        return TEnumExplain.build(this,"启禁用配置要求",(mapper)->{
+            for (TEnableRequired value : TEnableRequired.values()) {
+                switch (value){
+                    case MATCH_ALL: mapper.mapping(value,"匹配全部");
+                    case MATCH_DISABLE:mapper.mapping(value,"匹配禁用");
+                    case MATCH_ENABLE:mapper.mapping(value,"匹配启用");
+                }
+            }
+        });
     }
 
 
+
+    public static final List<Map<String,String>> list(){
+        final TEnableRequired value = values()[0];
+
+        return value.explain().getExplain();
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println(FastJsonUtil.parseToJSON(MATCH_ENABLE.explain().getExplain()));
+        System.out.println(FastJsonUtil.parseToJSON(list()));
+    }
 }
