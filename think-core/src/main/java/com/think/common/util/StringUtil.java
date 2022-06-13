@@ -495,6 +495,13 @@ public class StringUtil {
 
         stringBuilder.append(hex);
         return stringBuilder.toString();
+    }
+
+
+    public String format(String template,Object... params){
+        final String s = template.replaceAll("\\{}", "%s");
+
+        return String.format(s, params);
 
     }
 

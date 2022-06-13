@@ -2,8 +2,7 @@ package com.think.tcp2.server.handler;
 
 import com.think.tcp2.common.model.TcpPayload;
 import com.think.tcp2.server.ClientManager;
-import com.think.tcp2.server.consumer.ThinkTcp2ServerConsumer;
-import com.think.tcp2.server.ThinkTcp2ServerConsumerManager;
+import com.think.tcp2.server.TcpClient;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -15,12 +14,19 @@ import io.netty.channel.SimpleChannelInboundHandler;
  */
 public class TcpPayloadHandler  extends SimpleChannelInboundHandler<TcpPayload> {
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TcpPayload o) throws Exception {
-        try {
-            final ThinkTcp2ServerConsumer consumer = ThinkTcp2ServerConsumerManager.getConsumer(o.getData().getClass());
-            consumer.consume(ClientManager.getInstance().get(channelHandlerContext.channel()), o.getData());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TcpPayload payload) throws Exception {
+            final TcpClient client = ClientManager.getInstance().get(channelHandlerContext.channel());
+            if(client!=null){
+                //初始化 payLoad 的clientId
+                payload.setClientId(client.getId());
+                try {
+                    ThinkPayloadProcessor.processPayload(payload);
+//                    final ThinkTcp2ServerConsumer consumer = ThinkTcp2ServerConsumerManager.getConsumer(payload.getData().getClass());
+//                    consumer.consume(ClientManager.getInstance().get(channelHandlerContext.channel()), payload.getData());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
     }
 }

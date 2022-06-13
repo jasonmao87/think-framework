@@ -16,6 +16,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\anno
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkKey.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\exception\ThinkException.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\Remark.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\cache\ThinkCacheStorage.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\TFlowState.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\schedules\ThinkScheduleBuilder.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\token\filter\IThinkTokenWebFilter.java
@@ -72,7 +73,9 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\secu
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\_Entity.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\moudles\event\EventActionParam.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkColumn.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\cache\ThinkCache.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\ThinkThreadExecutor.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\cache\ThinkCacheManager.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mongo\ThinkMongoQueryFilter.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\BinaryTool.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\CodeBuilder.java
@@ -129,7 +132,9 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\thre
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\TStateEnum.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\table\ThinkGridColumnModel.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\ThinkFastList.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\cache\ThinkSimpleCacheStorage.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\rt\models\MemeryInfoModel.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\cache\CacheStorageMonitor.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\result\state\ThinkResultState.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\L.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\ThinkReadOnlyList.java

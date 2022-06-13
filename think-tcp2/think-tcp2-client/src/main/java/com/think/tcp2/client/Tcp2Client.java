@@ -1,7 +1,5 @@
 package com.think.tcp2.client;
 
-import com.think.core.executor.ThinkAsyncExecutor;
-import com.think.core.executor.ThinkThreadExecutor;
 import com.think.tcp2.IThinkTcpConsumer;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
@@ -20,9 +18,9 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -64,12 +62,18 @@ public class Tcp2Client {
     public void reConnect(){
         if(this.channel !=null) {
             try {
-                connect(serverAddr, port);
+                connect(serverAddr, port,null);
             } catch (Exception e) {
             }
         }
     }
-    public final void connect(String serverAddr,int port) throws InterruptedException {
+    public final void connect(String serverAddr,int port ,IThinkTcpConsumer consumer) throws InterruptedException {
+        if(consumer!=null ){
+            this.consumer = consumer;
+        }
+        if(this.consumer == null){
+            throw new InterruptedException("未设置消息处理的Consumer");
+        }
         this.port = port;
         this.serverAddr = serverAddr;
         bootstrap= new Bootstrap();
@@ -110,7 +114,7 @@ public class Tcp2Client {
      * @return
      * @throws InterruptedException
      */
-    public boolean sendMessage(Object message) throws InterruptedException {
+    public <T extends Serializable>  boolean sendMessage(T message) throws InterruptedException {
         TcpPayload payload = new TcpPayload(message);
         return sendPayLoad(payload);
     }
@@ -140,12 +144,18 @@ public class Tcp2Client {
 
     public static void main(String[] args) throws InterruptedException {
         Tcp2Client.getInstance().setListener(new DefaultTcpEventListener());
-        Tcp2Client.getInstance().connect("127.0.0.1",5740);
+        Tcp2Client.getInstance().connect("127.0.0.1", 5740, new IThinkTcpConsumer() {
+            @Override
+            public void acceptMessage(TcpPayload payload) {
+                System.out.println(payload.getData());
+            }
+        });
         Scanner scanner= new Scanner(System.in);
         while (scanner.hasNext()){
             String text = scanner.nextLine();
 
-            getInstance().sendMessage("MESSAGE : " + text);
+
+            getInstance().sendMessage(text);
             System.out.println("SEND ===");
 
 

@@ -1,8 +1,12 @@
 package com.think.tcp2.server;
 
+import com.think.core.annotations.Remark;
+import com.think.core.executor.ThinkAsyncExecutor;
+import com.think.core.executor.ThinkThreadExecutor;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -113,4 +117,24 @@ public class ClientManager {
     }
 
 
+    /**
+     * 发送广播消息
+     */
+    @Remark("发送广播消息，异步的 ")
+    public <T extends Serializable> void broadcastMessage(T message ,IClientSelector selector){
+        final CompletableFuture<Void> future = ThinkAsyncExecutor.execute(() -> {
+            //异步多线程执行
+            clientHolder.entrySet().parallelStream().forEach(t -> {
+                if (t != null && selector.test(t.getValue())) {
+                    t.getValue().sendMessage(message);
+                }
+            });
+        });
+
+    }
+
+}
+
+interface IClientSelector{
+    boolean test(TcpClient client);
 }

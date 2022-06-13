@@ -1,9 +1,0 @@
-# think frame work 可选配置项目模板
-think:
-  config:
-    privateKey:    #总通信密钥任意长度字符串，建议32位以上，字母 + 数字 都行
-    devMods : false   # 是否是开发者模式
-    devLogLevel : ERROR # 调试日志，控制台日志， 默认是TRACE ，不是 我们常用的日志，这个仅仅是开发者控制台输出的，
-    serverId    :    #  服务id  0 - 1024 不要重复，虽然重复也能运行起来，集群环境下，建议不要重复
-    serverName  :     #如果不填写，那么就是 机器名称+ mac地址 可以为空，也可以自定义区别
-

@@ -3,6 +3,7 @@ com\think\moudles\auth\RoleModel.class
 com\think\core\bean\TFlowBuilder.class
 com\think\common\result\state\ThinkResultState$1.class
 com\think\exception\ThinkDataVerificationException.class
+com\think\core\data\cache\ThinkCacheManager$1.class
 com\think\common\data\mysql\permission\SqlFilterPermissionRule.class
 com\think\common\util\ThinkIdGenerator.class
 com\think\core\annotations\bean\ThinkClollection.class
@@ -51,11 +52,13 @@ com\think\common\data\mysql\ThinkFilterBean$1.class
 com\think\structure\ThinkFastList.class
 com\think\core\threadLocal\ThinkThreadLocal.class
 com\think\core\bean\util\ProtostuffUtil.class
+com\think\core\data\cache\ThinkCacheManager$Monitor.class
 com\think\common\util\PasswordUtil.class
 com\think\common\util\security\ThinkHashUtil.class
 com\think\core\bean\util\ClassUtil$1.class
 com\think\common\result\state\ResultCode.class
 com\think\common\util\StringUtil.class
+com\think\core\data\cache\CacheStorageMonitor.class
 com\think\core\security\ThinkSecurityManager.class
 com\think\core\security\ThinkToken.class
 com\think\common\util\rt\models\MemeryInfoModel.class
@@ -107,6 +110,7 @@ com\think\core\security\token\filter\IThinkSecurityAsyncTokenFilter.class
 com\think\moudles\event\EventActionParam.class
 com\think\common\util\ClasspathPackageScanner.class
 com\think\common\util\ThinkConsoleLogger.class
+com\think\core\data\cache\ThinkSimpleCacheStorage.class
 com\think\common\util\MathUtil.class
 com\think\core\annotations\bean\ThinkMongoIndex.class
 com\think\common\result\state\ThinkResultState.class
@@ -119,12 +123,16 @@ com\think\core\executor\ThinkThreadExecutor$ThinkRunsPolicy.class
 com\think\core\executor\ThinkAsyncTask.class
 com\think\core\security\ThinkWebToken.class
 com\think\core\annotations\bean\ThinkIndexes.class
+com\think\core\data\cache\ThinkCacheManager.class
 com\think\core\executor\ThinkThreadExecutor.class
 com\think\common\data\mongo\ThinkMongoQueryFilter.class
 com\think\common\util\ByteUtil.class
 com\think\common\util\office\ThinkDocUtil.class
 com\think\core\executor\token\TaskTokenCache.class
+com\think\core\data\cache\ThinkCacheManager$singletonHolder.class
+com\think\core\data\cache\ThinkCache.class
 com\think\common\util\RandomUtil.class
+com\think\core\data\cache\ThinkCacheStorage.class
 com\think\core\security\token\ThinkSecurityToken.class
 com\think\common\result\ResultInfo.class
 com\think\core\security\ThinkTokenExtends.class
@@ -163,5 +171,6 @@ com\think\common\util\office\ThinkExcelUtil$1.class
 com\think\common\util\security\RSAUtil.class
 com\think\core\bean\SimpleRefEntity.class
 com\think\common\util\ThinkAssert.class
+com\think\core\data\cache\ThinkCacheManager$Builder.class
 com\think\core\bean\ThinkVersionEntity.class
 com\think\core\executor\ThinkExecuteThreadSharedTokenManager.class

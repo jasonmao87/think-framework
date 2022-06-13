@@ -1,7 +1,6 @@
 package com.think.tcp2.server;
 
 import com.think.tcp2.common.ThinkTcpConfig;
-import com.think.tcp2.server.consumer.ThinkTcp2ServerConsumer;
 import com.think.tcp2.server.handler.TcpPayloadHandler;
 import com.think.tcp2.server.handler.ThinkDefaultServerHandler;
 import com.think.tcp2.server.handler.ThinkHeartbeatHandler;
@@ -128,13 +127,11 @@ public class ThinkTcp2Server {
     }
 
 
-    public <T> void registerConsumer(Class<T> tClass ,ThinkTcp2ServerConsumer<T> t){
-        ThinkTcp2ServerConsumerManager.registerConsumer(tClass,t);
+
+
+    public static void main(String[] args) throws InterruptedException {
+        ThinkTcp2Server s =new ThinkTcp2Server();
+        s.start(5740);
+
     }
-
-
-//    public static void main(String[] args) throws InterruptedException {
-//        ThinkTcp2Server s =new ThinkTcp2Server();
-//        s.start(5740);
-//    }
 }

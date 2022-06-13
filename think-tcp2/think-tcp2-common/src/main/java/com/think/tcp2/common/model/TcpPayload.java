@@ -10,13 +10,13 @@ import java.io.Serializable;
  * @date : 2022/5/23 15:56
  * @description : TODO
  */
-public class TcpPayload implements Serializable {
+public class TcpPayload<T extends Serializable> implements Serializable {
     private static final long serialVersionUID = -2773780527532750730L;
 
     /**
      * 传输内容
      */
-    private Object data ;
+    private T data ;
 
     /**
      * 构建时间
@@ -29,8 +29,13 @@ public class TcpPayload implements Serializable {
      */
     private int tryCount = 0 ;
 
+    /**
+     * 发送 或者 接收消息的 clientId
+     */
+    private String clientId ;
 
-    public TcpPayload(Object data) {
+
+    public TcpPayload(T data) {
         this.data = data;
         this.initTime = ThinkMilliSecond.currentTimeMillis();
     }
@@ -41,7 +46,11 @@ public class TcpPayload implements Serializable {
     }
 
 
-    public Object getData() {
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public T getData() {
         return data;
     }
 
@@ -53,4 +62,7 @@ public class TcpPayload implements Serializable {
         return tryCount;
     }
 
+    public String getClientId() {
+        return clientId;
+    }
 }

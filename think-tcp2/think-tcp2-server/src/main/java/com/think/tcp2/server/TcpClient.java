@@ -70,8 +70,9 @@ public class TcpClient implements Serializable {
         return channel;
     }
 
-    public void sendMessage(Object message){
+    public <T extends Serializable> void sendMessage(T message){
         TcpPayload payload = new TcpPayload(message);
+        payload.setClientId( this.getId());
         channel.writeAndFlush(payload);
     }
 
