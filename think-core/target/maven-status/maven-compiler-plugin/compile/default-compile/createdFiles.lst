@@ -13,8 +13,11 @@ com\think\core\executor\schedule\ScheduledTask.class
 com\think\core\enums\ResultDataType.class
 com\think\core\security\ThinkSecurityKeyBuilder.class
 com\think\core\enums\ThinkResultLevel.class
+com\think\core\data\holder\ThinkHolderEntry.class
 com\think\core\enums\TEnum.class
+com\think\core\data\ParentDynamicArray.class
 com\think\common\data\mysql\ThinkSqlCheckResult.class
+com\think\core\data\holder\SimpleThinkHolder.class
 com\think\core\executor\IAsyncTokenFilter.class
 com\think\common\util\ThinkMilliSecond$1.class
 com\think\common\util\TimeUtil$1.class
@@ -121,6 +124,7 @@ com\think\common\util\IdUtil.class
 com\think\common\util\L.class
 com\think\core\executor\ThinkThreadExecutor$ThinkRunsPolicy.class
 com\think\core\executor\ThinkAsyncTask.class
+com\think\core\data\holder\ThinkHolder.class
 com\think\core\security\ThinkWebToken.class
 com\think\core\annotations\bean\ThinkIndexes.class
 com\think\core\data\cache\ThinkCacheManager.class
@@ -145,6 +149,7 @@ com\think\structure\TCacheBean.class
 com\think\common\util\FastJsonUtil.class
 com\think\common\util\ThinkTimer$1.class
 com\think\core\security\ThinkKey.class
+com\think\core\data\DynamicArray.class
 com\think\structure\ThinkFastList$1.class
 com\think\common\data\mysql\TFlowStateUpdate.class
 com\think\common\util\CodeBuilder.class

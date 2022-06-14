@@ -2,7 +2,8 @@ package com.think.tcp2.server;
 
 import com.think.core.annotations.Remark;
 import com.think.core.executor.ThinkAsyncExecutor;
-import com.think.core.executor.ThinkThreadExecutor;
+import com.think.tcp2.common.model.TcpPayload;
+import com.think.tcp2.server.listener.IThinkTcpClientTrigger;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 /**
  * @author : JasonMao
@@ -31,12 +33,54 @@ public class ClientManager {
         clientHolder = new ConcurrentHashMap<>();
     }
 
+    private IThinkTcpClientTrigger tcpClientTrigger;
+
+
+    public void setTcpClientTrigger(IThinkTcpClientTrigger tcpClientTrigger) {
+        this.tcpClientTrigger = tcpClientTrigger;
+    }
+
+
+    public IThinkTcpClientTrigger getTcpClientTrigger() {
+        if(tcpClientTrigger == null){
+            log.info(" TCP SERVER 未指定客户端事件监听器[IThinkTcpClientTrigger]，默认构造DoNothing实现");
+            log.info("锁定对象实例资源，以防止线程安全问题");
+            synchronized (this) {
+                tcpClientTrigger = new IThinkTcpClientTrigger() {
+                    @Override
+                    public void onHold(String clientId) {}
+                    @Override
+                    public void onUnHold(String clientId) {}
+
+                    @Override
+                    public void onMessageSuccess(String clientId, TcpPayload payload) {}
+
+                    @Override
+                    public void onMessageFail(String clientId, TcpPayload payload) {}
+                };
+            }
+            log.info("释放对象实例资源");
+            log.info("TCP SERVER 构建默认客户端事件监听器[IThinkTcpClientTrigger]完成。");
+        }
+        return tcpClientTrigger;
+    }
+
     public static final ClientManager getInstance() {
         if(instance == null){
-            instance = new ClientManager();
+            return doInstance();
         }
         return instance;
     }
+
+    private synchronized static ClientManager doInstance(){
+        log.info("TCP SERVER 初始化客户端管理器");
+        if(instance == null){
+            instance = new ClientManager();
+            log.info("TCP SERVER 构建客户端管理器完成");
+        }
+        return instance;
+    }
+
 
     public void hold(Channel channel){
         this.hold(new TcpClient(channel));
@@ -47,6 +91,7 @@ public class ClientManager {
             log.debug("注册新的客户端---- {}" ,client.getId());
         }
         clientHolder.put(client.getId(),client);
+        getTcpClientTrigger().onHold(client.getId());
     }
 
     /**
@@ -77,6 +122,8 @@ public class ClientManager {
                     channel.close();
                 }catch (Exception e){}
             });
+            getTcpClientTrigger().onUnHold(id);
+
         }else{
             if (log.isDebugEnabled()) {
                 log.debug("未找到托管的客户端{}，放弃移除",id);
@@ -121,11 +168,11 @@ public class ClientManager {
      * 发送广播消息
      */
     @Remark("发送广播消息，异步的 ")
-    public <T extends Serializable> void broadcastMessage(T message ,IClientSelector selector){
+    public <T extends Serializable> void broadcastMessage(T message , Predicate<TcpClient> predicate){
         final CompletableFuture<Void> future = ThinkAsyncExecutor.execute(() -> {
             //异步多线程执行
             clientHolder.entrySet().parallelStream().forEach(t -> {
-                if (t != null && selector.test(t.getValue())) {
+                if (t != null && predicate.test(t.getValue())) {
                     t.getValue().sendMessage(message);
                 }
             });
@@ -133,8 +180,4 @@ public class ClientManager {
 
     }
 
-}
-
-interface IClientSelector{
-    boolean test(TcpClient client);
 }

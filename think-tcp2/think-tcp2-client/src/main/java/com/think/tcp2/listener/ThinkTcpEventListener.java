@@ -1,7 +1,6 @@
 package com.think.tcp2.listener;
 
 import com.think.core.annotations.Remark;
-import com.think.core.executor.ThinkAsyncTask;
 import com.think.tcp2.common.model.TcpPayload;
 
 /**

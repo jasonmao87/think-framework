@@ -20,12 +20,15 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\TFlowState.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\schedules\ThinkScheduleBuilder.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\token\filter\IThinkTokenWebFilter.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\holder\ThinkHolder.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\result\ResultInfo.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\moudles\auth\ThinkAuthModel.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\IFilterChecker.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\ThinkRandomSet.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\schedule\ThinkScheduledTaskHolder.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\DynamicArray.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\IdUtil.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\ParentDynamicArray.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\result\ThinkResultBuilder.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\SimpleRefEntity.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\ThinkSimpleHolder.java
@@ -107,6 +110,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\ut
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\moudles\auth\UserAccountModel.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkTokenExtends.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mysql\ThinkSqlFilter.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\holder\SimpleThinkHolder.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\token\TaskTokenCache.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkWebSecuritySigner.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\WebSecurityUtil.java
@@ -148,5 +152,6 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enum
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\ThinkExecuteThreadSharedTokenManager.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\PasswordUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\TEnumExplain.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\holder\ThinkHolderEntry.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\ThinkFilterOp.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\FastJsonUtil.java
