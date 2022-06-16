@@ -11,11 +11,14 @@ import com.think.common.util.ThinkMilliSecond;
 public class ThinkHolderEntry<T> {
     private T value ;
 
-    private int orderValue ;
+    private int orderValue =3;
 
     private int resultOrderValue ;
 
     private long lastHit = 0L;
+
+    public ThinkHolderEntry() {
+    }
 
     public ThinkHolderEntry(T value, int orderValue) {
         this.value = value;

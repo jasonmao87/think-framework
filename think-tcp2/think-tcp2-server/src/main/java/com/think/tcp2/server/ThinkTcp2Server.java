@@ -85,8 +85,8 @@ public class ThinkTcp2Server {
                 pipeline.addLast(new IdleStateHandler(ThinkTcpConfig.getIdleTimeoutSeconds(),0,0, TimeUnit.SECONDS))
                         .addLast(new ObjectEncoder())
                         .addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)))
-                        .addLast(payloadHandler)
                         .addLast(heartBeatHandler)
+                        .addLast(payloadHandler)
                         .addLast(defaultServerHandler);
             }
         });

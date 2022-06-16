@@ -1,6 +1,7 @@
 package com.think.tcp2.server.handler;
 
 
+import com.think.tcp2.common.model.WelMessage;
 import com.think.tcp2.server.TcpClient;
 import com.think.tcp2.server.ClientManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,6 +19,8 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object tcpPayload) throws Exception {
+        log.info("默认handler 收到消息 {} ",tcpPayload);
+
         final TcpClient clientModel = ClientManager.getInstance().get(channelHandlerContext.channel());
         clientModel.active();
 
@@ -28,6 +31,8 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         ClientManager.getInstance().hold(ctx.channel());
         super.channelRegistered(ctx);
+        log.info("发送欢饮消息");
+        ctx.channel().writeAndFlush(WelMessage.welcome());
     }
 
 

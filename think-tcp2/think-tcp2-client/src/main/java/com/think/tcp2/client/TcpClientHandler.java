@@ -7,6 +7,7 @@ import com.think.tcp2.common.model.TcpPayload;
 import com.think.tcp2.listener.ThinkTcpEventListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author : JasonMao
@@ -14,6 +15,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @date : 2022/5/23 20:01
  * @description : TODO
  */
+@Slf4j
 public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
 
     private IThinkTcpConsumer getConsumer() {
@@ -41,13 +43,16 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        getListener().onConnected();
+        //getListener().onConnected();
         super.channelRegistered(ctx);
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        Tcp2Client.getInstance().connected =false;
+
         getListener().onDisConnected();
+
         ThinkThreadExecutor.runDelay(()->{
             Tcp2Client.getInstance().reConnect();
         },10);

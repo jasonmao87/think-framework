@@ -1,6 +1,8 @@
 package com.think.tcp2.server.consumer.provider;
 
 import com.think.tcp2.server.consumer.IServerMessageConsumer;
+import io.netty.channel.Channel;
+
 
 /**
  * @author : JasonMao
@@ -11,8 +13,8 @@ import com.think.tcp2.server.consumer.IServerMessageConsumer;
 public class StringMessagePrintConsumer implements IServerMessageConsumer<String> {
 
     @Override
-    public void consume(String data) {
-        System.out.println(data);
+    public void consume(String data, Channel channel) {
+        System.out.println( " : "+data);
 
     }
 }

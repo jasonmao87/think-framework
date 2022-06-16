@@ -13,6 +13,7 @@ public interface IThinkTcpClientTrigger {
 
     void onHold(String clientId);
 
+    void beforeUnHold(String clientId);
 
     void onUnHold(String clientId );
 

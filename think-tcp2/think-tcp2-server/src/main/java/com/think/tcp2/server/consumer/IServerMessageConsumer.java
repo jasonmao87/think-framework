@@ -1,5 +1,7 @@
 package com.think.tcp2.server.consumer;
 
+import io.netty.channel.Channel;
+
 import java.io.Serializable;
 
 /**
@@ -13,7 +15,8 @@ public interface IServerMessageConsumer<T extends Serializable> {
     /**
      * 处理payload内 对象
      * @param data
+     * @param channel
      */
-    void consume(T data);
+    void consume(T data, Channel channel);
 
 }

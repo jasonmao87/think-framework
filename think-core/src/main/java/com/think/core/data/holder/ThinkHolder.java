@@ -33,7 +33,7 @@ public interface ThinkHolder<T> {
      * @param predicate
      * @return
      */
-    boolean removeDataByPredicate(String key , Predicate<ThinkHolderEntry> predicate);
+    boolean removeDataByPredicate(String key , Predicate<ThinkHolderEntry<T>> predicate);
 
 
     int size();

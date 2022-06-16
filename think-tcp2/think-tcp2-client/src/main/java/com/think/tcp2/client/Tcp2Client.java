@@ -1,8 +1,11 @@
 package com.think.tcp2.client;
 
+import com.think.common.util.TimeUtil;
 import com.think.tcp2.IThinkTcpConsumer;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
+import com.think.tcp2.core.listener.PayloadListenerManager;
+import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import com.think.tcp2.listener.DefaultTcpEventListener;
 import com.think.tcp2.listener.ThinkTcpEventListener;
 import io.netty.bootstrap.Bootstrap;
@@ -19,6 +22,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +52,12 @@ public class Tcp2Client {
 
     private ThinkTcpEventListener defaultListener  = new DefaultTcpEventListener();
 
+    protected boolean connected = false;
+
+
+    public boolean isConnected() {
+        return connected;
+    }
 
     private Tcp2Client() {
     }
@@ -86,12 +96,13 @@ public class Tcp2Client {
                 ch.pipeline().addLast(new ObjectEncoder());
                 ch.pipeline().addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)));
                 ch.pipeline().addLast((new IdleStateHandler(0, ThinkTcpConfig.getIdleActiveSequenceTimeSeconds(), 0, TimeUnit.SECONDS)));
+                ch.pipeline().addLast(new TcpWelMessageHandler());
                 ch.pipeline().addLast(new TcpClientHandler());
             }
         });
         ChannelFuture channelFuture = bootstrap.connect(serverAddr, port).sync();
-
-        channel = channelFuture.channel();
+        log.info("正在建立到{} : {} 的连接" ,serverAddr ,port);
+        this.channel = channelFuture.channel();
 
         CompletableFuture.runAsync(()->{
             try{
@@ -119,8 +130,24 @@ public class Tcp2Client {
         return sendPayLoad(payload);
     }
 
-    public boolean sendPayLoad(TcpPayload payload) throws InterruptedException{
+    public boolean sendPayLoad(TcpPayload payload){
+        Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
+        while (executeIterator.hasNext()) {
+            try{
+                executeIterator.next().beforeSend(payload);
+            }catch (Exception e){
+                log.error("执行TcpPayloadListener[beforeSend]出现的异常（该异常不会影响消息的发送）" ,e );
+            }
+        }
         this.channel.writeAndFlush(payload);
+        Iterator<TcpPayloadEventListener>  iteratorAfter = PayloadListenerManager.getExecuteIterator();
+        while (iteratorAfter.hasNext()) {
+            try {
+                iteratorAfter.next().afterSend(payload);
+            }catch (Exception e){
+                log.error("执行TcpPayloadListener[afterSend]出现的异常（该异常发送在消息发送后，不会影响正常程序）" ,e );
+            }
+        }
         return true;
     }
 

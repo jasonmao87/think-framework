@@ -48,6 +48,9 @@ public class ClientManager {
             synchronized (this) {
                 tcpClientTrigger = new IThinkTcpClientTrigger() {
                     @Override
+                    public void beforeUnHold(String clientId) {}
+
+                    @Override
                     public void onHold(String clientId) {}
                     @Override
                     public void onUnHold(String clientId) {}
@@ -111,6 +114,7 @@ public class ClientManager {
         this.unHold(channel.id().asShortText());
     }
     public void unHold(String id){
+        getTcpClientTrigger().beforeUnHold(id);
         if (log.isDebugEnabled()) {
             log.debug("客户端离线或长时间未相应取消托管，从托管列表移除客户端----- {}" ,id);
         }
@@ -180,4 +184,14 @@ public class ClientManager {
 
     }
 
+
+    public void printClients(){
+        int index =0;
+        for (String key : this.clientHolder.keySet()) {
+            final TcpClient tcpClient = get(key);
+            index++;
+            log.info("{} : {}  --最后活跃：{}" ,index,tcpClient.getId(),tcpClient.getLastActiveTime());
+        }
+
+    }
 }

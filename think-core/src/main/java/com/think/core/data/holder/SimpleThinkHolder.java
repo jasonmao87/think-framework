@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class SimpleThinkHolder<T> implements ThinkHolder<T>{
 
 
-    private Map<String,DynamicArray<ThinkHolderEntry>> holderMap ;
+    private Map<String,DynamicArray<ThinkHolderEntry<T>>> holderMap ;
 
     public SimpleThinkHolder() {
        holderMap = new HashMap<>();
@@ -36,7 +36,7 @@ public class SimpleThinkHolder<T> implements ThinkHolder<T>{
     @Override
     public boolean hold(String key, T v, int orderValue) {
         if(!contains(key)){
-            this.holderMap.put(key,new DynamicArray<ThinkHolderEntry>(ThinkHolderEntry.class));
+            this.holderMap.put(key,new DynamicArray(ThinkHolderEntry.class) );
         }
         return this.holderMap.get(key).add(new ThinkHolderEntry(v,orderValue));    }
 
@@ -53,7 +53,7 @@ public class SimpleThinkHolder<T> implements ThinkHolder<T>{
 
     @Override
     public T get(String key) {
-        final DynamicArray<ThinkHolderEntry> array = this.holderMap.get(key);
+        final DynamicArray<ThinkHolderEntry<T>> array = this.holderMap.get(key);
         if(array.size() ==0){
             return null;
         }
@@ -105,7 +105,7 @@ public class SimpleThinkHolder<T> implements ThinkHolder<T>{
     }
 
     @Override
-    public boolean removeDataByPredicate(String key, Predicate<ThinkHolderEntry> predicate) {
+    public boolean removeDataByPredicate(String key, Predicate<ThinkHolderEntry<T>> predicate) {
         return this.holderMap.get(key).remove( predicate) > 0;
     }
 

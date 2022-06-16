@@ -70,6 +70,7 @@ com\think\common\util\office\ThinkExcelUtil.class
 com\think\common\util\security\AESUtil.class
 com\think\moudles\auth\ThinkAuthModel.class
 com\think\core\enums\EnumExplainMapper.class
+com\think\structure\ThinkTimeoutList.class
 com\think\common\data\ThinkFilterOp$1.class
 com\think\core\bean\schedules\ThinkScheduleBuilder.class
 com\think\core\enums\DataHistoryType.class
@@ -134,6 +135,7 @@ com\think\common\util\ByteUtil.class
 com\think\common\util\office\ThinkDocUtil.class
 com\think\core\executor\token\TaskTokenCache.class
 com\think\core\data\cache\ThinkCacheManager$singletonHolder.class
+com\think\structure\TimeoutEntry.class
 com\think\core\data\cache\ThinkCache.class
 com\think\common\util\RandomUtil.class
 com\think\core\data\cache\ThinkCacheStorage.class
