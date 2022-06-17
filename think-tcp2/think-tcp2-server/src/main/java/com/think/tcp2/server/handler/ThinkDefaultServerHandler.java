@@ -55,6 +55,9 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
         if (!ctx.channel().isActive()) {
             ClientManager.getInstance().unHold(ctx.channel());
         }
+        try{
+            ctx.channel().close();
+        }catch (Exception e){}
 
         super.exceptionCaught(ctx, cause);
     }

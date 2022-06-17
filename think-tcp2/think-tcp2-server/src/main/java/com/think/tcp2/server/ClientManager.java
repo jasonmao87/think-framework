@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -114,7 +115,11 @@ public class ClientManager {
         this.unHold(channel.id().asShortText());
     }
     public void unHold(String id){
-        getTcpClientTrigger().beforeUnHold(id);
+        try{
+            getTcpClientTrigger().beforeUnHold(id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         if (log.isDebugEnabled()) {
             log.debug("客户端离线或长时间未相应取消托管，从托管列表移除客户端----- {}" ,id);
         }
