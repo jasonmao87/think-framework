@@ -4,7 +4,7 @@ import com.think.core.executor.ThinkThreadExecutor;
 import com.think.tcp2.IThinkTcpConsumer;
 import com.think.tcp2.common.model.Tcp2Heartbeat;
 import com.think.tcp2.common.model.TcpPayload;
-import com.think.tcp2.listener.ThinkTcpEventListener;
+import com.think.tcp2.listener.ThinkTcpClientEventListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
         return Tcp2Client.getInstance().getConsumer();
     }
 
-    private ThinkTcpEventListener getListener(){
+    private ThinkTcpClientEventListener getListener(){
         return Tcp2Client.getInstance().getListener();
     }
 

@@ -2,7 +2,6 @@ package com.think.tcp2.listener;
 
 import com.think.tcp2.client.Tcp2Client;
 import com.think.tcp2.common.model.TcpPayload;
-import com.think.tcp2.listener.ThinkTcpEventListener;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -12,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  * @description : 默认的事件 监听器
  */
 @Slf4j
-public class DefaultTcpEventListener implements ThinkTcpEventListener {
+public class DefaultTcpEventListener implements ThinkTcpClientEventListener {
 
     @Override
     public void onConnected() {

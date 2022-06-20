@@ -165,6 +165,11 @@ public class DateUtil extends TimeUtil{
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
+
+    public static final int day(Date date){
+        return date(date);
+    }
+
     /**
      * 当前日
      * @return

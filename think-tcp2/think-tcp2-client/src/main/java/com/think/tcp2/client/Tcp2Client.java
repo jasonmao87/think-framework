@@ -1,13 +1,12 @@
 package com.think.tcp2.client;
 
-import com.think.common.util.TimeUtil;
 import com.think.tcp2.IThinkTcpConsumer;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
 import com.think.tcp2.core.listener.PayloadListenerManager;
 import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import com.think.tcp2.listener.DefaultTcpEventListener;
-import com.think.tcp2.listener.ThinkTcpEventListener;
+import com.think.tcp2.listener.ThinkTcpClientEventListener;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -48,9 +47,9 @@ public class Tcp2Client {
 
     private IThinkTcpConsumer consumer;
 
-    private ThinkTcpEventListener listener;
+    private ThinkTcpClientEventListener listener;
 
-    private ThinkTcpEventListener defaultListener  = new DefaultTcpEventListener();
+    private ThinkTcpClientEventListener defaultListener  = new DefaultTcpEventListener();
 
     protected boolean connected = false;
 
@@ -156,7 +155,7 @@ public class Tcp2Client {
         this.consumer = consumer;
     }
 
-    public void setListener(ThinkTcpEventListener listener) {
+    public void setListener(ThinkTcpClientEventListener listener) {
         this.listener = listener;
     }
 
@@ -164,7 +163,7 @@ public class Tcp2Client {
         return consumer;
     }
 
-    public ThinkTcpEventListener getListener() {
+    public ThinkTcpClientEventListener getListener() {
         return listener!=null?listener:defaultListener;
     }
 

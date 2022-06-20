@@ -9,7 +9,7 @@ import com.think.tcp2.common.model.TcpPayload;
  * @date : 2022/5/23 23:09
  * @description :  tcp 事件 listener
  */
-public interface ThinkTcpEventListener {
+public interface ThinkTcpClientEventListener {
 
     /**
      * 连接事件

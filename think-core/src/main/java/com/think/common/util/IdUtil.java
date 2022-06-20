@@ -42,7 +42,7 @@ IdUtil {
 
 
     public static final synchronized void instance(int machineId) throws Exception{
-        if(idGenerator == null) {
+        if(isInstance()==false) {
              try{
                 idGenerator =   ThinkIdGenerator.getInstance(machineBitLen,machineId);
             }catch (Exception e){
@@ -56,6 +56,9 @@ IdUtil {
 //            if(log.isWarnEnabled()){
 //                log.info("已经构建了Id生成器，无法再次构建");
 //            }
+            if (log.isDebugEnabled()) {
+                log.debug("ID生成器即将被重构，当前机器索引为 {} ,新构建的ID生成器将调整机器索引为 {}", idGenerator.getMachineId(),machineId);
+            }
             try{
                 idGenerator =   ThinkIdGenerator.getInstance(machineBitLen,machineId);
             }catch (Exception e){
@@ -75,7 +78,7 @@ IdUtil {
      * @return
      */
     public static long nextId(){
-        if(idGenerator == null){
+        if( isInstance() ==false){
             throw new RuntimeException("IdGenerator尚未初始化，请调用 IdUtil.instance 初始化");
         }else {
             long id = idGenerator.nextId();
@@ -99,7 +102,7 @@ IdUtil {
      * @return
      */
     public static long idByDate(long datetime){
-        if(idGenerator == null){
+        if(isInstance() ==false){
             throw new RuntimeException("IdGenerator尚未初始化，请调用 IdUtil.instance 初始化");
         }else {
             return idGenerator.nextIdByTime(datetime);
@@ -122,7 +125,7 @@ IdUtil {
      * @return
      */
     public static Date idToDate(long id){
-        if(idGenerator == null){
+        if(isInstance() == false){
             throw new RuntimeException("IdGenerator尚未初始化，请调用 IdUtil.instance 初始化");
         }else {
             return idGenerator.getDateById(id);
@@ -130,7 +133,7 @@ IdUtil {
     }
 
     public static long idToMillis(long id){
-        if(idGenerator == null){
+        if(isInstance() == false){
             throw new RuntimeException("IdGenerator尚未初始化，请调用 IdUtil.instance 初始化");
         }else {
             return idGenerator.getTimeMillisById(id);
