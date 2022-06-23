@@ -4,10 +4,14 @@ import com.think.core.executor.ThinkThreadExecutor;
 import com.think.tcp2.IThinkTcpConsumer;
 import com.think.tcp2.common.model.Tcp2Heartbeat;
 import com.think.tcp2.common.model.TcpPayload;
+import com.think.tcp2.core.listener.PayloadListenerManager;
+import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import com.think.tcp2.listener.ThinkTcpClientEventListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Iterator;
 
 /**
  * @author : JasonMao
@@ -28,9 +32,21 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TcpPayload o) throws Exception {
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TcpPayload payload) throws Exception {
+
+
         if (getConsumer()!=null) {
-            getConsumer().acceptMessage(o);
+            final Iterator<TcpPayloadEventListener> iterator = PayloadListenerManager.getExecuteIterator();
+            while (iterator.hasNext()){
+                TcpPayloadEventListener listener = iterator.next();
+                if (listener!=null) {
+                    listener.onAccept(payload);
+                }
+            }
+            getConsumer().acceptMessage(payload);
+        }else{
+            log.warn("未指定IThinkTcpConsumer ，无法处理消息 :: {}" ,payload.toString());
+
         }
     }
 

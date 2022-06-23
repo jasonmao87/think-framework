@@ -35,6 +35,7 @@ com\think\core\security\ThinkWebSecuritySigner.class
 com\think\common\util\security\DesensitizationUtil.class
 com\think\core\executor\ThinkAsyncExecutor$1.class
 com\think\core\security\ThinkTokenAttachment.class
+com\think\structure\ByteBean.class
 com\think\common\util\BinaryUtil.class
 com\think\core\executor\ThinkThreadExecutor$DefaultThinkThreadFactory.class
 com\think\core\annotations\bean\ThinkMongoPartitionAble.class

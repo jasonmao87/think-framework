@@ -1,7 +1,8 @@
 package com.think.tcp2.common.model;
 
 import com.think.common.util.ThinkMilliSecond;
-import com.think.core.annotations.Remark;
+import com.think.exception.ThinkException;
+import com.think.structure.ByteBean;
 import com.think.tcp2.core.listener.PayloadListenerManager;
 import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +17,13 @@ import java.util.Iterator;
  * @description : TODO
  */
 @Slf4j
-public class TcpPayload<T extends Serializable> implements Serializable {
+public class TcpPayload implements Serializable {
     private static final long serialVersionUID = -2773780527532750730L;
 
     /**
      * 传输内容
      */
-    private T data ;
+    private ByteBean data ;
 
     /**
      * 构建时间
@@ -42,8 +43,8 @@ public class TcpPayload<T extends Serializable> implements Serializable {
 
     private String session;
 
-    public TcpPayload(T data) {
-        this.data = data;
+    public TcpPayload(Serializable data) {
+        this.data = ByteBean.valueOf(data);
         this.initTime = ThinkMilliSecond.currentTimeMillis();
         Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
         while (executeIterator.hasNext()) {
@@ -53,8 +54,6 @@ public class TcpPayload<T extends Serializable> implements Serializable {
                 log.error("执行TcpPayloadListener出现的异常 " ,e );
             }
         }
-
-
     }
 
     public TcpPayload retry(){
@@ -75,8 +74,8 @@ public class TcpPayload<T extends Serializable> implements Serializable {
         this.clientId = clientId;
     }
 
-    public T getData() {
-        return data;
+    public Serializable getData() throws ClassNotFoundException, ThinkException {
+        return data.value();
     }
 
     public long getInitTime() {
@@ -97,5 +96,16 @@ public class TcpPayload<T extends Serializable> implements Serializable {
 
     public void setSession(String session) {
         this.session = session;
+    }
+
+    @Override
+    public String toString() {
+        return "TcpPayload{" +
+                "data=" + data +
+                ", initTime=" + initTime +
+                ", tryCount=" + tryCount +
+                ", clientId='" + clientId + '\'' +
+                ", session='" + session + '\'' +
+                '}';
     }
 }

@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Accessors(chain = true)
@@ -224,6 +225,21 @@ public abstract class _Entity<T extends _Entity> implements IThinkFilterAndUpdat
     @ApiModelProperty(hidden = true)
     public <T extends _Entity> Class<T> getSelfClass(){
         return (Class<T>) this.getClass();
+    }
+
+
+
+    public static final Class currentClassForStatic() {
+        String s =null;
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            s =element.getClassName();
+            System.out.println(s );
+        }
+        try{
+            return Class.forName(s );
+        }catch (Exception e){
+            return  null;
+        }
     }
 
 }

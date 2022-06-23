@@ -1,5 +1,6 @@
 package com.think.tcp2.core.listener;
 
+import com.think.core.annotations.Remark;
 import com.think.tcp2.common.model.TcpPayload;
 
 /**
@@ -41,5 +42,13 @@ public interface TcpPayloadEventListener {
     void beforeSend(TcpPayload payload) ;
 
     void afterSend(TcpPayload payload);
+//
+//    void onRead(TcpPayload payload);
 
+    /**
+     * 接受消息事件，发生在 消息处理前
+     * @param payload
+     */
+    @Remark(value = "接受消息事件",description = "接受消息事件，发生在 消息处理前")
+    void onAccept(TcpPayload payload);
 }

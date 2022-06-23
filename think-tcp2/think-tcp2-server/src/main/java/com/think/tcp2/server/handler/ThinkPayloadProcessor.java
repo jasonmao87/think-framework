@@ -24,8 +24,16 @@ public class ThinkPayloadProcessor {
     private static final Map<String, IServerMessageConsumer> consumerMap =new HashMap<>();
 
 
+
+
     public static final void processPayload(TcpPayload payload, Channel channel){
-        Serializable data = (Serializable) payload.getData();
+
+        Serializable data =null;
+        try{
+            data = (Serializable) payload.getData();
+        }catch (Exception e){
+            log.error("无法解析Payload内传递对象 : " ,e );
+        }
         IServerMessageConsumer consumer =null;
         if (log.isDebugEnabled()) {
             log.debug("message type {}",data.getClass());

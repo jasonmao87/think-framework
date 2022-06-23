@@ -106,4 +106,12 @@ public abstract class SimpleRefEntity<T extends SimplePrimaryEntity> extends _En
         tThinkUpdateMapper.getFilter().eq("id",this.getId());
         return tThinkUpdateMapper;
     }
+
+//    public static void main(String[] args)  {
+//
+//        try {
+//            final Class aClass = currentClassForStatic();
+//            System.out.println(aClass);
+//        }catch (Exception e){}
+//    }
 }

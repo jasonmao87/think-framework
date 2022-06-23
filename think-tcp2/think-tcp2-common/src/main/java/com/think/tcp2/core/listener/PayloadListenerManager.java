@@ -20,11 +20,15 @@ public class PayloadListenerManager {
 
 
     public static final void  addFirst(TcpPayloadEventListener listener){
-        listeners.add(0,listener);
+        if(listener!=null) {
+            listeners.add(0, listener);
+        }
     }
 
     public static final void addLast(TcpPayloadEventListener listener){
-        listeners.add(listener);
+        if(listener!=null){
+            listeners.add(listener);
+        }
     }
 
     public static final void clearListeners(){
@@ -39,12 +43,14 @@ public class PayloadListenerManager {
     }
 
     public static final void removeLast(){
-        if(listeners.isEmpty() == false ){
-            int index = listeners.size() -1 ;
-            listeners.remove(index);
+        synchronized (listeners) {
+            if(listeners.isEmpty() == false ){
+                int index = listeners.size() -1 ;
+                listeners.remove(index);
+            }
         }
-    }
 
+    }
 
 
 }

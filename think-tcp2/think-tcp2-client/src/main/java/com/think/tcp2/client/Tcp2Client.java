@@ -173,7 +173,7 @@ public class Tcp2Client {
         Tcp2Client.getInstance().connect("127.0.0.1", 5740, new IThinkTcpConsumer() {
             @Override
             public void acceptMessage(TcpPayload payload) {
-                System.out.println(payload.getData());
+//                System.out.println(payload.getData());
             }
         });
         Scanner scanner= new Scanner(System.in);

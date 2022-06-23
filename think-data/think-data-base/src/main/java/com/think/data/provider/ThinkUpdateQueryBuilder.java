@@ -17,6 +17,7 @@ import com.think.data.model.ThinkTableModel;
 import com.think.data.verification.ThinkDataValidator;
 
 import java.io.Serializable;
+import java.sql.SQLData;
 import java.util.*;
 
 public class ThinkUpdateQueryBuilder {
@@ -570,8 +571,16 @@ public class ThinkUpdateQueryBuilder {
         values.addAll(query.filterParamValues());
         if(query.filterParamValues().size() ==0){
             throw new ThinkDataRuntimeException("update 语句未指定任何条件，拒绝构建执行Query");
+        }
+        if( updaterMapper.getUpdateLimit() >0){
+
+            sql.append(" ORDER BY ").append(updaterMapper.sqlFilter().getSortKey()).append( updaterMapper.sqlFilter().isDesc()?" DESC" :" ASC");
+            sql.append( " LIMIT ?") ;//.append( updaterMapper.getUpdateLimit());
+            values.add(updaterMapper.getUpdateLimit());
 
         }
+
+
         return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null, query.isMaybyEmpty());
     }
 

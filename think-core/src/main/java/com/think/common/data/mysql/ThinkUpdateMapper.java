@@ -11,6 +11,7 @@ import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.exception.ThinkDataVerificationException;
 import com.think.exception.ThinkRuntimeException;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -34,6 +35,8 @@ public class ThinkUpdateMapper<T extends _Entity> {
     private Map<String,Map<String,String>> keyMultiplyKeyMapper ;
     private Map<String,Map<String,String>> keyDivKeyMapper ;
 
+    @Remark("更新条数限制 ")
+    private int updateLimit ;
 
     private Set<String> keySet = new HashSet<>();
 
@@ -226,10 +229,21 @@ public class ThinkUpdateMapper<T extends _Entity> {
         this.filter = sqlFilter;
         return this;
 
-
     }
 
-//    /**
+
+    @Remark("限制匹配的更新条目数")
+    public ThinkUpdateMapper<T> updateLimitSet(int limit){
+        this.updateLimit = limit;
+        return this;
+    }
+
+    public int getUpdateLimit() {
+        return updateLimit;
+    }
+
+
+    //    /**
 //     * 检查字段是否允许被设置
 //     * @param keys
 //     * @param allowNegative  允许 key前面出现负号

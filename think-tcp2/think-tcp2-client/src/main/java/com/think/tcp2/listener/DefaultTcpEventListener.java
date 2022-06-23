@@ -42,8 +42,8 @@ public class DefaultTcpEventListener implements ThinkTcpClientEventListener {
     public void onMessageFail(TcpPayload payload) {
         payload.retry();
         if (log.isDebugEnabled() && payload.getTryCount()>3) {
-            log.debug("消息发送失败 {} " ,payload.getData());
-            log.debug("会尝试重发消息.... {} / 3 ",payload.getTryCount());
+//            log.debug("消息发送失败 {} " ,payload.getData());
+//            log.debug("会尝试重发消息.... {} / 3 ",payload.getTryCount());
         }
 
         if(payload.getTryCount()<3){
