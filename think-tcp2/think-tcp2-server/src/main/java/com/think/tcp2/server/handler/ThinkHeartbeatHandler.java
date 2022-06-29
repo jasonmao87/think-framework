@@ -19,7 +19,9 @@ public class ThinkHeartbeatHandler extends SimpleChannelInboundHandler<Tcp2Heart
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Tcp2Heartbeat tcp2Heartbeat) throws Exception {
-        log.info("ThinkHeartbeatHandler 收到消息 {} " ,tcp2Heartbeat);
+        if (log.isTraceEnabled()) {
+            log.trace("ThinkHeartbeatHandler 收到消息 {} " ,tcp2Heartbeat);
+        }
         final String id = channelHandlerContext.channel().id().asShortText();
         if (ClientManager.getInstance().isHold(id)) {
             ClientManager.getInstance().get(id).idleState();

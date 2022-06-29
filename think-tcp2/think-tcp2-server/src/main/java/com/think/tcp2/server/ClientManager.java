@@ -204,7 +204,11 @@ public class ClientManager {
         for (String key : this.clientHolder.keySet()) {
             final TcpClient tcpClient = get(key);
             index++;
-            log.info("{} : {}  --最后活跃：{}" ,index,tcpClient.getId(),tcpClient.getLastActiveTime());
+            if(log.isInfoEnabled()) {
+                log.info("{} : {}  --最后活跃：{}", index, tcpClient.getId(), tcpClient.getLastActiveTime());
+            }else{
+                System.out.println(index + ":" + tcpClient.getId() +" --最后活跃 ： "+ tcpClient.getLastActiveTime());
+            }
         }
 
     }

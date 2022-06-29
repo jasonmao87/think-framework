@@ -58,8 +58,10 @@ public class ThinkPayloadProcessor {
         if(consumer!=null) {
             consumer.handle(data,channel);
         }else{
-            log.info("未找到何时的 消息处理器 {} -->> {} " ,data.getClass().getTypeName(),data);
-            log.info("当前注册的消息处理器" ,consumerMap);
+            if (log.isDebugEnabled()) {
+                log.debug("未找到何时的 消息处理器 {} -->> {} " ,data.getClass().getTypeName(),data);
+                log.debug("当前注册的消息处理器" ,consumerMap);
+            }
         }
     }
 

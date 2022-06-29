@@ -19,8 +19,9 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object tcpPayload) throws Exception {
-        log.info("默认handler 收到消息 {} ",tcpPayload);
-
+        if (log.isTraceEnabled()) {
+            log.trace("默认handler 收到消息 {} ",tcpPayload);
+        }
         final TcpClient clientModel = ClientManager.getInstance().get(channelHandlerContext.channel());
         clientModel.active();
 

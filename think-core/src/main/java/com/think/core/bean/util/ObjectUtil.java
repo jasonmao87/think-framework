@@ -58,7 +58,7 @@ public class ObjectUtil  {
     public static final <T> void mapSetValueToBean(Map<String, Object> map,T t ,Field field,String key){
 //        Field field = ClassUtil.getField(t.getClass(),key);
         if( (t instanceof _Entity || t instanceof BaseVo ) && field.getType() == TFlowState.class){
-            log.info("状态类的逻辑  TFlowState 。。。");
+//            log.info("状态类的逻辑  TFlowState 。。。");
             //处理 状态类的逻辑 。。。。
             String stateKeyName  =null;
             String comment = "";
@@ -76,7 +76,7 @@ public class ObjectUtil  {
             TFlowState state = TFlowBuilder.build(stateKeyName,comment,value,startTime,completeTime,cancelTime,tryCount,resultMessage);
             field.setAccessible(true);
             ClassUtil.setValue(field,t,state);
-            log.info("设置值 {}" ,state);
+//            log.info("设置值 {}" ,state);
         }else{
 //            Field field = ClassUtil.getField(t.getClass(), key);
             if(field.getType().getSuperclass()!=null && field.getType().getSuperclass().equals(Enum.class)){
