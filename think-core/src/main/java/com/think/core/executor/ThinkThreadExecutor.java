@@ -114,6 +114,7 @@ public class ThinkThreadExecutor {
 
 
     private synchronized static boolean setStartState(){
+
         if(startControlState){
             return false;
         }
@@ -296,6 +297,7 @@ public class ThinkThreadExecutor {
             namePrefix = "think-thread-";
         }
 
+        @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(group, r,
                     namePrefix + threadNumber.getAndIncrement(),
@@ -356,6 +358,8 @@ public class ThinkThreadExecutor {
             return queue.offer(r);
         }
     }
+
+
 
 
 

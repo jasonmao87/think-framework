@@ -9,7 +9,7 @@ import com.think.tcp2.common.model.TcpPayload;
  * @date : 2022/5/23 23:19
  * @description : TODO
  */
-public interface IThinkTcpConsumer {
+public interface IThinkTcpPayloadHandler {
 
     /**
      * 处理收到的消息

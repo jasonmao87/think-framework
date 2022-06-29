@@ -2,8 +2,7 @@ package com.think.tcp2.server.handler;
 
 import com.think.exception.ThinkRuntimeException;
 import com.think.tcp2.common.model.TcpPayload;
-import com.think.tcp2.server.consumer.IServerMessageConsumer;
-import com.think.tcp2.server.consumer.provider.*;
+import com.think.tcp2.server.handler.provider.StringMessagePrintConsumer;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +20,7 @@ import java.util.Map;
 public class ThinkPayloadProcessor {
 
 
-    private static final Map<String, IServerMessageConsumer> consumerMap =new HashMap<>();
+    private static final Map<String, IServerMessageHandler> consumerMap =new HashMap<>();
 
 
 
@@ -34,12 +33,12 @@ public class ThinkPayloadProcessor {
         }catch (Exception e){
             log.error("无法解析Payload内传递对象 : " ,e );
         }
-        IServerMessageConsumer consumer =null;
-        if (log.isDebugEnabled()) {
-            log.debug("message type {}",data.getClass());
-        }
+        IServerMessageHandler consumer =null;
+//        if (log.isDebugEnabled()) {
+//            log.debug("message type {}",data.getClass());
+//        }
         String dataType = data.getClass().getTypeName();
-        log.info("消息数据类型：{}" ,data.getClass().getTypeName() );
+//        log.info("消息数据类型：{}" ,data.getClass().getTypeName() );
 
         if(consumerMap.containsKey(dataType)){
             consumer = consumerMap.get(data.getClass().getTypeName());
@@ -57,7 +56,7 @@ public class ThinkPayloadProcessor {
         }
         //最终的执行环节
         if(consumer!=null) {
-            consumer.consume(data,channel);
+            consumer.handle(data,channel);
         }else{
             log.info("未找到何时的 消息处理器 {} -->> {} " ,data.getClass().getTypeName(),data);
             log.info("当前注册的消息处理器" ,consumerMap);
@@ -66,7 +65,7 @@ public class ThinkPayloadProcessor {
 
 
 
-    public static final <T extends Serializable> void bindC2SMessageConsumer(String messageType , IServerMessageConsumer<T> messageConsumer ) throws ThinkRuntimeException {
+    public static final <T extends Serializable> void bindC2SMessageHandler(String messageType , IServerMessageHandler<T> messageConsumer ) throws ThinkRuntimeException {
         try {
             log.info("服务绑定消息处理器 类型 {} ，实例 {}" ,messageType,messageConsumer.getClass().getTypeName());
             final Class<?> aClass = Class.forName(messageType);
@@ -79,8 +78,8 @@ public class ThinkPayloadProcessor {
     }
 
 
-    public static final <T extends Serializable> void bindC2SMessageConsumer(Class messageType , IServerMessageConsumer<T> messageConsumer ){
-        bindC2SMessageConsumer(messageType.getTypeName(),messageConsumer);
+    public static final <T extends Serializable> void bindC2SMessageHandler(Class messageType , IServerMessageHandler<T> messageConsumer ){
+        bindC2SMessageHandler(messageType.getTypeName(),messageConsumer);
     }
 
 

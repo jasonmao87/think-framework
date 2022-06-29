@@ -1,6 +1,7 @@
 package com.think.tcp2.common.model;
 
 import com.think.common.util.ThinkMilliSecond;
+import com.think.core.bean.util.ObjectUtil;
 import com.think.exception.ThinkException;
 import com.think.structure.ByteBean;
 import com.think.tcp2.core.listener.PayloadListenerManager;
@@ -23,7 +24,10 @@ public class TcpPayload implements Serializable {
     /**
      * 传输内容
      */
-    private ByteBean data ;
+    private byte[] data ;
+
+
+    private String dataType ;
 
     /**
      * 构建时间
@@ -44,7 +48,8 @@ public class TcpPayload implements Serializable {
     private String session;
 
     public TcpPayload(Serializable data) {
-        this.data = ByteBean.valueOf(data);
+        this.data = ObjectUtil.serializeObject(data);
+        this.dataType = data.getClass().getName();
         this.initTime = ThinkMilliSecond.currentTimeMillis();
         Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
         while (executeIterator.hasNext()) {
@@ -75,7 +80,14 @@ public class TcpPayload implements Serializable {
     }
 
     public Serializable getData() throws ClassNotFoundException, ThinkException {
-        return data.value();
+        return (Serializable) ObjectUtil.deserialization(data, dataType());
+    }
+
+    public Class dataType() throws ClassNotFoundException,ThinkException{
+        if(this.dataType!=null) {
+            return Class.forName(this.dataType);
+        }
+        throw new ThinkException("尚未被正确的初始化构造");
     }
 
     public long getInitTime() {

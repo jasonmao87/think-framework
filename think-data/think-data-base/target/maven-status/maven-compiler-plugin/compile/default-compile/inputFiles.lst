@@ -7,6 +7,8 @@ D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\filter\DefaultThinkDataFilter.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\provider\ThinkExecuteQuery.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\exception\ThinkDataException.java
+D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\bean\api\ThinkBinaryApi.java
+D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\dao\IThinkBlobDao.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\bean\api\ThinkApiUpdateMethodFilter.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\bean\api\ThinkSplitBeanApi.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\Manager.java

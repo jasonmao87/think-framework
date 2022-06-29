@@ -1,6 +1,7 @@
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\TEnum.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\security\MD5Util.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\security\RSAUtil.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\BlobEntity.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mysql\ThinkSqlCheckResult.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\SimpleHttpUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\StringUtil.java
@@ -13,6 +14,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\da
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkIgnore.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\schedules\ThinkScheduleCronConfig.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkClollection.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\ThinkBinaryFilter.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkKey.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\exception\ThinkException.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\Remark.java
@@ -119,6 +121,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\secu
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkMongoPartitionAble.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\security\ThinkWebToken.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\result\state\ResultCode.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\TbBinaryEntity.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkMongoIndexes.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\LongBinaryUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkMongoIndex.java

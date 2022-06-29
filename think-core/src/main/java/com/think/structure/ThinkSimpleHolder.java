@@ -86,7 +86,7 @@ public class ThinkSimpleHolder<T> {
     }
 
 
-    private boolean addOneIfNotContains(T t){
+    private synchronized boolean addOneIfNotContains(T t){
         for (int i = 0; i < maxSize; i++) {
             if(array[i] == null){
                 continue;

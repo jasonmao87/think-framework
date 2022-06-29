@@ -17,6 +17,7 @@ public class TcpWelMessageHandler extends SimpleChannelInboundHandler<WelMessage
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, WelMessage welMessage) throws Exception {
         log.info("收到服务器的欢饮消息： {}" ,welMessage.getMessage());
         Tcp2Client.getInstance().connected = true;
+        Tcp2Client.getInstance().setId(welMessage.getClientId());
         Tcp2Client.getInstance().getListener().onConnected();
     }
 }

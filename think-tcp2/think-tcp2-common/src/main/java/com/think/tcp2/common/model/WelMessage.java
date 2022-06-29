@@ -13,7 +13,16 @@ import java.io.Serializable;
 public class WelMessage implements Serializable {
 
     private String message ;
+    private String clientId ;
     public WelMessage() {
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 
     public WelMessage(String message) {

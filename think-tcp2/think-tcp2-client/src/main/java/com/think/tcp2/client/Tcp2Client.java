@@ -1,6 +1,6 @@
 package com.think.tcp2.client;
 
-import com.think.tcp2.IThinkTcpConsumer;
+import com.think.tcp2.IThinkTcpPayloadHandler;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
 import com.think.tcp2.core.listener.PayloadListenerManager;
@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Tcp2Client {
 
+    private String id ;
+
     private static Tcp2Client instance ;
     private int port;
 
@@ -45,7 +46,7 @@ public class Tcp2Client {
     private EventLoopGroup worker = null;
 
 
-    private IThinkTcpConsumer consumer;
+    private IThinkTcpPayloadHandler consumer;
 
     private ThinkTcpClientEventListener listener;
 
@@ -76,7 +77,7 @@ public class Tcp2Client {
             }
         }
     }
-    public final void connect(String serverAddr,int port ,IThinkTcpConsumer consumer) throws InterruptedException {
+    public final void connect(String serverAddr, int port , IThinkTcpPayloadHandler consumer) throws InterruptedException {
         if(consumer!=null ){
             this.consumer = consumer;
         }
@@ -151,7 +152,7 @@ public class Tcp2Client {
     }
 
 
-    public void setConsumer(IThinkTcpConsumer consumer) {
+    public void setConsumer(IThinkTcpPayloadHandler consumer) {
         this.consumer = consumer;
     }
 
@@ -159,7 +160,7 @@ public class Tcp2Client {
         this.listener = listener;
     }
 
-    public IThinkTcpConsumer getConsumer() {
+    public IThinkTcpPayloadHandler getConsumer() {
         return consumer;
     }
 
@@ -167,26 +168,36 @@ public class Tcp2Client {
         return listener!=null?listener:defaultListener;
     }
 
-
-    public static void main(String[] args) throws InterruptedException {
-        Tcp2Client.getInstance().setListener(new DefaultTcpEventListener());
-        Tcp2Client.getInstance().connect("127.0.0.1", 5740, new IThinkTcpConsumer() {
-            @Override
-            public void acceptMessage(TcpPayload payload) {
-//                System.out.println(payload.getData());
-            }
-        });
-        Scanner scanner= new Scanner(System.in);
-        while (scanner.hasNext()){
-            String text = scanner.nextLine();
-
-
-            getInstance().sendMessage(text);
-            System.out.println("SEND ===");
-
-
-
-        }
-
+    public String getId() {
+        return id;
     }
+
+    protected void setId(String id) {
+        log.info("当前客户端Id = {}" ,id  );
+        this.id = id;
+    }
+
+
+
+    //    public static void main(String[] args) throws InterruptedException {
+//        Tcp2Client.getInstance().setListener(new DefaultTcpEventListener());
+//        Tcp2Client.getInstance().connect("127.0.0.1", 5740, new IThinkTcpConsumer() {
+//            @Override
+//            public void acceptMessage(TcpPayload payload) {
+////                System.out.println(payload.getData());
+//            }
+//        });
+//        Scanner scanner= new Scanner(System.in);
+//        while (scanner.hasNext()){
+//            String text = scanner.nextLine();
+//
+//
+//            getInstance().sendMessage(text);
+//            System.out.println("SEND ===");
+//
+//
+//
+//        }
+//
+//    }
 }

@@ -1,7 +1,7 @@
 package com.think.tcp2.client;
 
 import com.think.core.executor.ThinkThreadExecutor;
-import com.think.tcp2.IThinkTcpConsumer;
+import com.think.tcp2.IThinkTcpPayloadHandler;
 import com.think.tcp2.common.model.Tcp2Heartbeat;
 import com.think.tcp2.common.model.TcpPayload;
 import com.think.tcp2.core.listener.PayloadListenerManager;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 @Slf4j
 public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
 
-    private IThinkTcpConsumer getConsumer() {
+    private IThinkTcpPayloadHandler getConsumer() {
         return Tcp2Client.getInstance().getConsumer();
     }
 

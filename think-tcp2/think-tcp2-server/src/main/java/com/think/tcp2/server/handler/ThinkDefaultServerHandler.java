@@ -31,8 +31,10 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         ClientManager.getInstance().hold(ctx.channel());
         super.channelRegistered(ctx);
-        log.info("发送欢饮消息");
-        ctx.channel().writeAndFlush(WelMessage.welcome());
+//        log.info("发送欢饮消息");
+        final WelMessage welcome = WelMessage.welcome();
+        welcome.setClientId(ClientManager.getInstance().get(ctx.channel()).getId());
+        ctx.channel().writeAndFlush(welcome);
     }
 
 

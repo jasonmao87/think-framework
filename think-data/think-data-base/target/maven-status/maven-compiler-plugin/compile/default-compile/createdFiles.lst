@@ -1,6 +1,7 @@
 com\think\data\bean\api\ThinkApiUpdateMethodFilter.class
 com\think\data\verification\SimpleAbstractDataValidator.class
 com\think\data\config\DataSourceConfig.class
+com\think\data\dao\IThinkBlobDao.class
 com\think\data\provider\ThinkUpdateQueryBuilder.class
 com\think\data\dao\ThinkDao.class
 com\think\data\provider\ThinkQuery.class
@@ -34,6 +35,7 @@ com\think\data\filter\ThinkVersionRecorder.class
 com\think\data\model\ThinkJdbcTypeConverter$1.class
 com\think\data\model\ThinkIndexModel.class
 com\think\data\model\ThinkJdbcTypeConverter.class
+com\think\data\bean\api\ThinkBinaryApi.class
 com\think\data\dao\ThinkSelector.class
 com\think\data\model\ThinkTableModel$1.class
 com\think\data\bean\api\ThinkSplitRefBeanApi.class

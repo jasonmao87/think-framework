@@ -8,10 +8,7 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -156,6 +153,18 @@ public class ClientManager {
 
     public int count(){
         return this.clientHolder.size();
+    }
+
+    public List<String> holdClientIds(Predicate<String> predicate){
+        List<String> idList =new ArrayList<>();
+        final Iterator<String> iterator = this.clientHolder.keySet().iterator();
+        while (iterator.hasNext()) {
+            final String next = iterator.next();
+            if (predicate.test(next)) {
+                idList.add(next);
+            }
+        }
+        return idList;
     }
 
     public List<TcpClient> list(final int start, final int limit){

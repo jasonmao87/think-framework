@@ -3,10 +3,8 @@ package com.think.common.util;
 import com.think.structure.ThinkReadOnlyList;
 import org.springframework.lang.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @Date :2021/6/9
@@ -45,4 +43,30 @@ public class ThinkCollectionUtil {
     }
 
 
+    /**
+     * 由于 再少量数据，和 非 多线程 stram 提供的 findAny方法，随机性 太弱 ，故 提供该方法
+     * @param collection
+     * @param <T>
+     * @return
+     */
+    public static <T> Optional<T> findAny(@Nullable Collection<T> collection){
+//        for (T t : collection) {
+//            if (RandomUtil.nextBoolean()) {
+//                return Optional.ofNullable(t);
+//            }
+//        }
+//        return collection.stream().findAny();
+        return findAny(collection,t->true);
+    }
+
+    public static <T> Optional<T> findAny(@Nullable Collection<T> collection, Predicate<T> predicate){
+        for (T t : collection) {
+            if (predicate.test(t)) {
+                if (RandomUtil.nextBoolean()) {
+                    return Optional.ofNullable(t);
+                }
+            }
+        }
+        return collection.stream().filter(predicate).findAny();
+    }
 }
