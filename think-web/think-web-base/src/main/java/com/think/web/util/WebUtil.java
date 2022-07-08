@@ -1,6 +1,8 @@
 package com.think.web.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.think.common.util.DateUtil;
+import com.think.common.util.FastJsonUtil;
 import com.think.common.util.StringUtil;
 import com.think.common.util.security.Base64Util;
 import com.think.common.util.security.SHAUtil;
@@ -133,13 +135,17 @@ public class WebUtil {
      * @return
      */
     public static String ip(){
+
         HttpServletRequest request = getRequest();
-        /**
-         * 使用了  RemoteIpFilter 直接使用即可
-         */
-        String ip = request.getRemoteAddr();
-        if(ip.contains("localhost") || ip.contains("0:0:0:0:0:0")){
-            ip = "127.0.0.1";
+        String ip = WebIpUtil.getIpAddr(request);
+        if(StringUtil.isEmpty(ip)) {
+            /**
+             * 使用了  RemoteIpFilter 直接使用即可
+             */
+            ip = request.getRemoteAddr();
+            if (ip.contains("localhost") || ip.contains("0:0:0:0:0:0")) {
+                ip = "127.0.0.1";
+            }
         }
         return ip;
     }
@@ -308,14 +314,27 @@ public class WebUtil {
         ThinkSecurityToken token ;
         String tokenString = WebUtil.headerValue("token");
         if(StringUtil.isEmpty(tokenString)){
+//            log.info("未找到token string ，返回EMPTY ");
             return Optional.ofNullable(null);
         }
 
         try {
+//            log.info("构建token -----------");
             tokenString = Base64Util.decodeToString(tokenString);
             token = ThinkSecurityToken.valueOfJsonString(tokenString);
+//            log.info("构建token成功 {}" ,token);
+            if(token!=null) {
+                final Map<String, String> sessionData = getSessionDataMapFromWebRequest();
+//                log.info("SESSION Data = {}" ,sessionData);
+                if(sessionData!=null ){
+                    for (Map.Entry<String, String> entry : sessionData.entrySet()) {
+                        token.getSessionData().put(entry.getKey(),entry.getValue());
+                    }
+                }
+            }
 
         }catch (Exception e){
+//            e.printStackTrace();
             token = null;
             if(log.isTraceEnabled()){
                 log.debug("source token string is : {} ",tokenString);
@@ -323,6 +342,22 @@ public class WebUtil {
             }
         }
         return Optional.ofNullable(token);
+    }
+
+    private static final Map<String,String> getSessionDataMapFromWebRequest(){
+        String sessionData = WebUtil.headerValue("sessionData");
+        String jsonString = null;
+        try{
+            jsonString =Base64Util.decodeToString(sessionData);
+
+            final JSONObject jsonObject = FastJsonUtil.parseToJson(jsonString);
+            Map<String,String> sessionDataMap= new HashMap<>();
+            jsonObject.forEach((k,v)->{
+                sessionDataMap.put(k, (String) v);
+            });
+            return sessionDataMap;
+        }catch (Exception e){}
+        return new HashMap<>();
     }
 
 

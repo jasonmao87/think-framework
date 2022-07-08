@@ -14,9 +14,14 @@ public class PayloadListenerManager {
 
     private static List<TcpPayloadEventListener> listeners = new ArrayList<>();
 
-    public static Iterator<TcpPayloadEventListener> getExecuteIterator(){
-        return listeners.iterator();
+
+    public static List<TcpPayloadEventListener> getListeners() {
+        return listeners;
     }
+
+//    public static Iterator<TcpPayloadEventListener> getExecuteIterator(){
+//        return listeners.iterator();
+//    }
 
 
     public static final void  addFirst(TcpPayloadEventListener listener){

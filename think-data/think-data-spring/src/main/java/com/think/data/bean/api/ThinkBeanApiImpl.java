@@ -181,6 +181,11 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
 
 
     @Override
+    public ThinkResult<Integer> delete(ThinkSqlFilter<T> sqlFilter) {
+        return this.dao.delete(sqlFilter);
+    }
+
+    @Override
     public ThinkResult<Integer> physicalDelete(Long[] ids) {
         return dao.physicalDelete(ids);
     }

@@ -12,6 +12,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author : JasonMao
@@ -36,14 +37,26 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
 
 
         if (getConsumer()!=null) {
-            final Iterator<TcpPayloadEventListener> iterator = PayloadListenerManager.getExecuteIterator();
-            while (iterator.hasNext()){
-                TcpPayloadEventListener listener = iterator.next();
+
+
+
+            final List<TcpPayloadEventListener> iterator = PayloadListenerManager.getListeners();
+            for (TcpPayloadEventListener listener : iterator) {
                 if (listener!=null) {
-                    listener.onAccept(payload);
+                    try {
+                        listener.onAccept(payload);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-            getConsumer().acceptMessage(payload);
+            try {
+                getConsumer().acceptMessage(payload);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
         }else{
             log.warn("未指定IThinkTcpConsumer ，无法处理消息 :: {}" ,payload.toString());
 

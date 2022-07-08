@@ -27,6 +27,8 @@ public class ThinkSecurityTokenTransferManager {
 
 
 
+
+
     public static final String buildFullTransferStringByToken(ThinkSecurityToken token){
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("sessionData",token.getSessionData());
@@ -124,7 +126,7 @@ public class ThinkSecurityTokenTransferManager {
             return t;
         }
         for (IThinkSecurityAsyncTokenFilter tokenFilter : filterList) {
-            log.info("from filter to getTOKEN  : {}" ,tokenFilter.getClass().getName());
+//            log.info("from filter to getTOKEN  : {}" ,tokenFilter.getClass().getName());
             final ThinkSecurityToken asyncToken = tokenFilter.getAsyncTokenFromWebRequestInfo();
             if(asyncToken!=null){
                 return asyncToken;

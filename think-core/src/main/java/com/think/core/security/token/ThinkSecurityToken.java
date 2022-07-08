@@ -1,5 +1,6 @@
 package com.think.core.security.token;
 
+import com.alibaba.fastjson.JSONObject;
 import com.think.common.result.ThinkResult;
 import com.think.common.util.FastJsonUtil;
 import com.think.common.util.security.Base64Util;
@@ -46,6 +47,7 @@ public class ThinkSecurityToken implements Serializable {
 
 
     protected ThinkSecurityToken() {
+        this.sessionData = new HashMap<>();
     }
 
 
@@ -164,9 +166,46 @@ public class ThinkSecurityToken implements Serializable {
     }
 
 
+//    public static void main(String[] args) {
+//        String  json = "{\"sessionData\":{\"deptId\":\"725723693275152385\"},\"tokenData\":{\"tokenDataRegion\":[\"A7\"],\"sysRole\":[\"USER\"],\"tokenUserLoginId\":[\"8ns2haa\"],\"departmentIds\":[\"725723693275152385\",\"724455928133320705\",\"721046482071846913\",\"706710703719841793\",\"702277187267461121\",\"696640323230629889\",\"696572008278786049\",\"696571964162048001\",\"696114862185512961\",\"696113979962949633\",\"695654535572488193\"],\"mscId\":[\"695327730125766657\"],\"tokenDataId\":[\"695331901491118081\"],\"userLoginId\":[\"8ns2haa\"],\"customerAccountId\":[\"694883152758309889\"],\"hospitalId\":[\"695338450281299969\"],\"hospitalManager\":[\"true\"],\"committeeIds\":[\"695972089603031041\",\"695969384026341377\"],\"tokenDataNick\":[\"林旭\"],\"workGroupIds\":[\"706353836013387777\",\"696044539466481665\",\"696042001390370817\",\"696041672461516801\"]}}";
+//        System.out.println(json);
+//        final ThinkSecurityToken thinkSecurityToken = ThinkSecurityToken.valueOfJsonString(json);
+//        System.out.println(ThinkSecurityTokenTransferManager.buildFullTransferStringByToken(thinkSecurityToken));
+//
+//    }
+
+
 
     @Remark("从tokenString还原TOKEN，不包含SESSION Data")
     public static ThinkSecurityToken valueOfJsonString(String jsonString){
+        try {
+            JSONObject json = FastJsonUtil.parseToJson(jsonString);
+            if (json!= null && json.containsKey("tokenData")) {
+                Map<String, Object> tokenData = json.getJSONObject("tokenData");
+                ThinkSecurityToken token = ofTokenData(tokenData);
+                if (json.containsKey("sessionData")) {
+                    Map<String, Object> sessionData = json.getJSONObject("sessionData");
+                    if (sessionData != null) {
+                        for (Map.Entry<String, Object> entry : sessionData.entrySet()) {
+                            token.getSessionData().put(entry.getKey(), (String) entry.getValue());
+                        }
+                    }
+
+                }
+                return token;
+            } else {
+                return tokenDataJsonString(jsonString);
+
+            }
+        }catch (Exception e){
+//            e.printStackTrace();
+            return tokenDataJsonString(jsonString);
+        }
+
+    }
+
+
+    private static final ThinkSecurityToken tokenDataJsonString(String jsonString){
         Map<String, Object> json = FastJsonUtil.getMapFromJSON(jsonString);
         ThinkSecurityToken token = new ThinkSecurityToken();
         json.forEach((k,v)->{
@@ -199,6 +238,53 @@ public class ThinkSecurityToken implements Serializable {
         return token;
     }
 
+    private static final ThinkSecurityToken ofTokenData(Map<String,Object> json){
+        ThinkSecurityToken token = new ThinkSecurityToken();
+        json.forEach((k,v)->{
+            String[] strings;
+            if(v instanceof List){
+                strings = ((List<?>) v).stream().toArray(String[]::new);
+                token.setTokenDataInfo(k,strings);
+            }else if(v instanceof Set){
+                strings = ((Set<?>) v).stream().toArray(String[]::new);
+                token.setTokenDataInfo(k,strings);
+            }else if(v instanceof String[]){
+                strings =(String[] ) v;
+                token.setTokenDataInfo(k, (String[]) v);
+            }else{
+                throw new RuntimeException("无法解析 "+k +" 类型：" + v.getClass());
+            }
+
+            if(k.equals("tokenDataId")){
+                token.setId(Long.valueOf(strings[0]));
+            }else if(k.equals("tokenDataNick")){
+                token.setNickName(strings[0]);
+            }else if(k.equals("tokenDataRegion")){
+                token.setCurrentRegion(strings[0]);
+            }else if(k.equals("tokenUserLoginId")){
+                token.setUserLoginId(String.valueOf(strings[0]));
+            }else if(k.equals("sysRole")){
+                token.setSysRole(strings[0]);
+            }
+        });
+        return token;
+
+    }
+
+
+
+
+
+
+
+//
+//    public static final ThinkSecurityToken valueOfJsonStringWithSessionData(String jsonString){
+//        Map<String, Object> json = FastJsonUtil.getMapFromJSON(jsonString);
+//        json.containsKey("jason")
+//
+//
+//    }
+
     /**
      *  userTokenData中是否包含制定的key 和 value
      * @param key   关键字
@@ -229,6 +315,9 @@ public class ThinkSecurityToken implements Serializable {
     public String getBase64TokenString(){
         return Base64Util.encodeToString(getTokenJsonString());
     }
+
+
+
 
 
 

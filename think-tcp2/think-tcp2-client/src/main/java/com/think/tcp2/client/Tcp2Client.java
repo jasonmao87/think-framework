@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -130,20 +131,23 @@ public class Tcp2Client {
         return sendPayLoad(payload);
     }
 
-    public boolean sendPayLoad(TcpPayload payload){
-        Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
-        while (executeIterator.hasNext()) {
-            try{
-                executeIterator.next().beforeSend(payload);
-            }catch (Exception e){
-                log.error("执行TcpPayloadListener[beforeSend]出现的异常（该异常不会影响消息的发送）" ,e );
-            }
+    public boolean sendPayLoad(TcpPayload payload) throws InterruptedException {
+//        Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
+        final List<TcpPayloadEventListener> listeners = PayloadListenerManager.getListeners();
+        for (TcpPayloadEventListener eventListener : listeners) {
+            try {
+                eventListener.beforeSend(payload);
+            }catch (Exception e){}
+        }
+        if(channel == null){
+            log.error("暂未与服务端[{}:{}]建立连接，无法发送相关信息，丢弃信息" ,this.serverAddr,this.port);
+//            throw new InterruptedException("暂未何服务端建立连接");
+            throw new InterruptedException("暂未与服务端建立连接");
         }
         this.channel.writeAndFlush(payload);
-        Iterator<TcpPayloadEventListener>  iteratorAfter = PayloadListenerManager.getExecuteIterator();
-        while (iteratorAfter.hasNext()) {
+        for (TcpPayloadEventListener tcpPayloadEventListener : listeners) {
             try {
-                iteratorAfter.next().afterSend(payload);
+                tcpPayloadEventListener.afterSend(payload);
             }catch (Exception e){
                 log.error("执行TcpPayloadListener[afterSend]出现的异常（该异常发送在消息发送后，不会影响正常程序）" ,e );
             }

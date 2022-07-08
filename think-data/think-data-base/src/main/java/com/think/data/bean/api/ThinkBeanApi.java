@@ -81,6 +81,13 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
     ThinkResult<Integer> delete(long id);
 
     /**
+     * 根据条件删除
+     * @param sqlFilter
+     * @return
+     */
+    ThinkResult<Integer> delete(ThinkSqlFilter<T> sqlFilter);
+
+    /**
      * 物理删除
      * @param ids
      * @return

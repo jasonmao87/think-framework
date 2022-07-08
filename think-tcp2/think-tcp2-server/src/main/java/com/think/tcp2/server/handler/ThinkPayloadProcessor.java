@@ -27,6 +27,7 @@ public class ThinkPayloadProcessor {
 
     public static final void processPayload(TcpPayload payload, Channel channel){
 
+        String payloadSession = payload.getSession();
         Serializable data =null;
         try{
             data = (Serializable) payload.getData();
@@ -56,7 +57,7 @@ public class ThinkPayloadProcessor {
         }
         //最终的执行环节
         if(consumer!=null) {
-            consumer.handle(data,channel);
+            consumer.handle(data,channel,payloadSession);
         }else{
             if (log.isDebugEnabled()) {
                 log.debug("未找到何时的 消息处理器 {} -->> {} " ,data.getClass().getTypeName(),data);

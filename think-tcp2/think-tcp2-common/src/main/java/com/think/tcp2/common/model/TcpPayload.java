@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author : JasonMao
@@ -51,23 +52,26 @@ public class TcpPayload implements Serializable {
         this.data = ObjectUtil.serializeObject(data);
         this.dataType = data.getClass().getName();
         this.initTime = ThinkMilliSecond.currentTimeMillis();
-        Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
-        while (executeIterator.hasNext()) {
-            try{
-                executeIterator.next().onInit(this);
-            }catch (Exception e){
-                log.error("执行TcpPayloadListener出现的异常 " ,e );
+        List<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getListeners();
+        for (TcpPayloadEventListener listener : executeIterator) {
+            try {
+                listener.onInit(this);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+
     }
 
     public TcpPayload retry(){
-        Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
-        while (executeIterator.hasNext()) {
-            try{
-                executeIterator.next().onRetry(this);
-            }catch (Exception e){
-                log.error("执行TcpPayloadListener出现的异常 " ,e );
+
+
+        final List<TcpPayloadEventListener> listeners = PayloadListenerManager.getListeners();
+        for (TcpPayloadEventListener listener : listeners) {
+            try {
+                listener.onRetry(this);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         this.tryCount ++ ;

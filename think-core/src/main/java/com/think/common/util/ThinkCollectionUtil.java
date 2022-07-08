@@ -69,4 +69,16 @@ public class ThinkCollectionUtil {
         }
         return collection.stream().filter(predicate).findAny();
     }
+
+
+    public static  final <T>  void removeIf(@Nullable Collection<T> collection, Predicate<T> predicate){
+        Iterator<T> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            T next = iterator.next();
+            if (predicate.test(next)) {
+                iterator.remove();
+            }
+        }
+
+    }
 }

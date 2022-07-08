@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.think.common.data.IFilterChecker;
 import com.think.common.data.ThinkFilterOp;
 import com.think.common.util.DateUtil;
+import com.think.common.util.StringUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
 import com.think.core.annotations.bean.ThinkStateColumn;
@@ -251,6 +252,34 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
+
+    public ThinkSqlFilter<T> eqIfNotNull(String k ,Serializable v){
+        if(v!=null){
+            return this.eq(k,v);
+        }
+        return this;
+    }
+
+    public ThinkSqlFilter<T> eqIfNotEmpty(String k ,String v){
+        if(StringUtil.isNotEmpty(v)){
+            return this.eq(k,v);
+        }
+        return this;
+    }
+
+    public ThinkSqlFilter<T> eqIfNumberGreaterThanZero(String k ,Number v){
+        if(v !=null && v.intValue()>0){
+            return this.eq(k,v);
+        }
+        return this;
+    }
+
+
+
+
+
+
+
     public ThinkSqlFilter<T> notEq(String k ,Serializable v){
         this._append(k,ThinkFilterOp.NOT_EQ,v);
         return this;
@@ -306,12 +335,12 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
     /**
-     * 在日期日期
+     * 在 指定的 这一天里面
      * @param k
      * @param d
      * @return
      */
-    public ThinkSqlFilter<T> onThatDay(String k, Date d){
+    public ThinkSqlFilter<T> inThatDay(String k, Date d){
         this.betweenAnd(k, DateUtil.beginOfDate(d),DateUtil.endOfDate(d));
         return this;
     }

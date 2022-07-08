@@ -82,8 +82,16 @@ public class TcpClient implements Serializable {
         TcpPayload payload = new TcpPayload(message);
         payload.setClientId( this.getId());
         final ChannelFuture channelFuture = channel.writeAndFlush(payload);
-
     }
+
+    public <T extends Serializable> void sendMessageWithSession(T message,String session){
+        TcpPayload payload = new TcpPayload(message);
+        payload.setSession(session);
+        payload.setClientId( this.getId());
+        final ChannelFuture channelFuture = channel.writeAndFlush(payload);
+    }
+
+
 
     public boolean isExpire(){
         return ThinkMilliSecond.currentTimeMillis() - lastIdleStateTime > (ThinkTcpConfig.getIdleTimeoutMillis() + 5000L);

@@ -17,6 +17,6 @@ public interface IServerMessageHandler<T extends Serializable> {
      * @param data
      * @param channel
      */
-    void handle(T data, Channel channel);
+    void handle(T data, Channel channel,String sessionString);
 
 }
