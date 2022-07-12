@@ -147,12 +147,12 @@ public class ThinkThreadExecutor {
 
 
                 if (taskOptional.isPresent()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("成功渠道可执行的 定时任务");
+                    if (log.isTraceEnabled()) {
+                        log.trace("成功渠道可执行的 定时任务");
                     }
                     try {
-                        if (log.isDebugEnabled()) {
-                            log.debug(" ----提取任务----- ");
+                        if (log.isTraceEnabled()) {
+                            log.trace(" ----提取任务----- ");
                         }
 
                         ScheduledTask scheduledTask = taskOptional.get();
@@ -202,7 +202,7 @@ public class ThinkThreadExecutor {
     @Remark("延迟N秒执行")
     public static final synchronized void runDelay(ThinkAsyncTask task , @Remark("延迟秒数") int second ) throws ThinkNotSupportException {
         if (log.isDebugEnabled()) {
-            log.debug("添加延迟执行任务，将在{}}秒后执行" ,second);
+            log.debug("添加延迟执行任务，将在{}秒后执行" ,second);
         }
         ThinkScheduleCronConfig config = ThinkScheduleBuilder.buildDelayConfig(second, TimeUnit.SECONDS);
         startScheduledTask(task,config);

@@ -63,8 +63,8 @@ public class ThinkAsyncExecutor {
             @Override
             public void run() {
                 if(token!=null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("异步的TOKEN 信息 === {}" , FastJsonUtil.parseToJSON(token));
+                    if (log.isTraceEnabled()) {
+                        log.trace("异步的TOKEN 信息 === {}" , FastJsonUtil.parseToJSON(token));
                     }
                     ThinkSecurityTokenTransferManager.setThreadLocal(token, false);
                 }

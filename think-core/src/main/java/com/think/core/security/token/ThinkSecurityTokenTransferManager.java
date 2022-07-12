@@ -111,7 +111,9 @@ public class ThinkSecurityTokenTransferManager {
 //        }
 
         String transferTokenString = threadLocalBean.getValue();
-        log.info("{} --本地线程读取 token >>>>> {}" ,tinfo(),transferTokenString);
+        if (log.isTraceEnabled()) {
+            log.trace("{} --本地线程读取 token >>>>> {}" ,tinfo(),transferTokenString);
+        }
         if (StringUtil.isEmpty(transferTokenString)) {
             return null;
         }

@@ -82,8 +82,8 @@ public class ThinkResult<T> implements Serializable {
         this.threadId = Thread.currentThread().getId();
         this.code =code;
         if(success == false){
-            if (log.isDebugEnabled()) {
-                log.debug("ThinkResult Not Success , message ： {}" ,this.message);
+            if (log.isTraceEnabled()) {
+                log.trace("ThinkResult Not Success , message ： {}" ,this.message);
             }
         }
         if(throwable!=null){

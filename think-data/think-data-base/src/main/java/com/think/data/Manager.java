@@ -119,7 +119,10 @@ public class Manager {
     }
     public static final boolean beginDataSrv(String splitRegion){
         if(dataRuntimeThreadLocal.get() == null) {
-            log.debug("线程 指定数据分区 --- {}" ,splitRegion);
+            if (log.isTraceEnabled()) {
+
+                log.trace("线程 指定数据分区 --- {}" ,splitRegion);
+            }
 
             dataRuntimeThreadLocal.set(new ThinkDataRuntime(splitRegion));
             return true;
@@ -129,7 +132,9 @@ public class Manager {
             if(runtime !=null){
                 currentP = runtime.getPartitionRegion();
             }
-            log.debug("指定数据分区未成功,当前已经有分区--- {}" ,currentP);
+            if (log.isDebugEnabled()) {
+                log.debug("指定数据分区未成功,当前已经有分区--- {}" ,currentP);
+            }
             return false;
         }
     }
@@ -140,7 +145,9 @@ public class Manager {
      */
     public static final void unsafeChangeDataSrv(String splitRegion){
        if(!beginDataSrv(splitRegion)){
-           log.debug("线程 强制切换指定数据分区 --- {}" ,splitRegion);
+           if (log.isDebugEnabled()) {
+               log.debug("线程 强制切换指定数据分区 --- {}" ,splitRegion);
+           }
            dataRuntimeThreadLocal.remove();
            dataRuntimeThreadLocal.set(new ThinkDataRuntime(splitRegion));
        }
@@ -251,7 +258,7 @@ public class Manager {
      */
     public  static final <T> void registerBeanValidator(Class<T> targetBeanClass , ThinkKeyValidator validator){
         if (log.isDebugEnabled()) {
-            log.debug("为对象[{}]注册指定的值校验器",targetBeanClass);
+            log.debug("为对象[{}]注册指定的值校验器",targetBeanClass!=null?targetBeanClass.getName():"NULL CLASS");
         }
         ThinkDataValidator.registerBeanValidator(targetBeanClass,validator);
     }
