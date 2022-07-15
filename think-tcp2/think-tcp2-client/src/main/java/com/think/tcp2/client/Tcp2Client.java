@@ -1,5 +1,6 @@
 package com.think.tcp2.client;
 
+import com.think.common.util.rt.ThinkMachineUtil;
 import com.think.tcp2.IThinkTcpPayloadHandler;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
@@ -18,10 +19,12 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.NetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.net.*;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +59,9 @@ public class Tcp2Client {
     protected boolean connected = false;
 
 
+    private String localIpaddr = "";
+
+
     public boolean isConnected() {
         return connected;
     }
@@ -70,6 +76,16 @@ public class Tcp2Client {
     }
     private Channel channel;
 
+
+    public void setLocalIpaddr(String localIpaddr) {
+        if (NetUtil.isValidIpV4Address(localIpaddr)) {
+            this.localIpaddr = localIpaddr;
+        }
+        if(channel!=null && channel.isActive()){
+
+        }
+    }
+
     public void reConnect(){
         if(this.channel !=null) {
             try {
@@ -79,6 +95,8 @@ public class Tcp2Client {
         }
     }
     public final void connect(String serverAddr, int port , IThinkTcpPayloadHandler consumer) throws InterruptedException {
+
+
         if(consumer!=null ){
             this.consumer = consumer;
         }
@@ -88,6 +106,10 @@ public class Tcp2Client {
         this.port = port;
         this.serverAddr = serverAddr;
         bootstrap= new Bootstrap();
+
+//        bootstrap.bind();
+
+
         worker =new NioEventLoopGroup();
         bootstrap.group(worker);
         bootstrap.channel(NioSocketChannel.class);
@@ -204,4 +226,22 @@ public class Tcp2Client {
 //        }
 //
 //    }
+
+
+    public static void main(String[] args) throws UnknownHostException, SocketException {
+
+
+        final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+
+        while (networkInterfaces.hasMoreElements()) {
+            final NetworkInterface networkInterface = networkInterfaces.nextElement();
+            System.out.println(networkInterface);
+            final Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+            while (inetAddresses.hasMoreElements()) {
+                System.out.println(" >> "+inetAddresses.nextElement());
+            }
+        }
+
+    }
+
 }

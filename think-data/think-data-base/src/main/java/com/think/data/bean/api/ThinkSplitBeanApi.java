@@ -4,6 +4,7 @@ import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.core.annotations.Remark;
+import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 
 import java.util.List;
@@ -18,6 +19,14 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      * @return
      */
     T get(long id);
+
+    /**
+     * 读取自定义的视图对象
+     * @param id
+     * @param vClass
+     * @param <V>
+     */
+    <V extends BaseVo<T>> V getView(long id ,Class<V> vClass);
 
     T findDeleted(long id) ;
 

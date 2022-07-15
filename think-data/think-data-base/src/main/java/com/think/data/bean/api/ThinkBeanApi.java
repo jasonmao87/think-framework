@@ -25,6 +25,15 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
      */
     T get(long id );
 
+
+    /**
+     * 读取自定义的 VIEW
+     * @param id
+     * @param viewClass
+     * @param <V>
+     * @return
+     */
+    <V extends BaseVo<T>> V getView(long id,Class<V> viewClass);
     /**
      * 获取 被删除的对象 详情数据
      * @param id

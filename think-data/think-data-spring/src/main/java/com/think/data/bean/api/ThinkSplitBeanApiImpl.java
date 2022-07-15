@@ -6,6 +6,7 @@ import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
 import com.think.core.annotations.Remark;
+import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean.util.ObjectUtil;
 import com.think.data.Manager;
@@ -47,6 +48,11 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
         return dao.findDeleted(id);
     }
 
+    @Override
+    public <V extends BaseVo<T>> V getView(long id, Class<V> vClass) {
+
+        return dao.findOne(id,vClass);
+    }
 
     @Override
     public ThinkResult<T> create(T t) {

@@ -46,6 +46,11 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
     }
 
     @Override
+    public <V extends BaseVo<T>> V getView(long id,Class<V> vClass) {
+        return dao.findOne(id,vClass);
+    }
+
+    @Override
     public T findDeleted(long id) {
         return dao.findDeleted(id);
     }

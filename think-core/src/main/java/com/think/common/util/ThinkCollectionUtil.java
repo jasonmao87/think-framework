@@ -3,6 +3,7 @@ package com.think.common.util;
 import com.think.structure.ThinkReadOnlyList;
 import org.springframework.lang.Nullable;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -79,6 +80,21 @@ public class ThinkCollectionUtil {
                 iterator.remove();
             }
         }
+
+    }
+
+
+    public static void main(String[] args) {
+        List<String> list= new ArrayList<>();
+        list.add("x");
+        list.add("x");list.add("x");
+
+        ThinkCollectionUtil.findAny(list,(t)->{
+
+           return true;
+        });
+
+
 
     }
 }
