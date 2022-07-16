@@ -311,36 +311,32 @@ public class WebUtil {
     }
 
     public static Optional<ThinkSecurityToken> getToken(){
-        ThinkSecurityToken token ;
+        ThinkSecurityToken token = null;
         String tokenString = WebUtil.headerValue("token");
         if(StringUtil.isEmpty(tokenString)){
-//            log.info("未找到token string ，返回EMPTY ");
             return Optional.ofNullable(null);
         }
-
         try {
-//            log.info("构建token -----------");
             tokenString = Base64Util.decodeToString(tokenString);
             token = ThinkSecurityToken.valueOfJsonString(tokenString);
-//            log.info("构建token成功 {}" ,token);
             if(token!=null) {
                 final Map<String, String> sessionData = getSessionDataMapFromWebRequest();
-//                log.info("SESSION Data = {}" ,sessionData);
                 if(sessionData!=null ){
                     for (Map.Entry<String, String> entry : sessionData.entrySet()) {
-                        token.getSessionData().put(entry.getKey(),entry.getValue());
+                        token.setSessionValue(entry.getKey(),entry.getValue());
                     }
                 }
+                token.getSessionData();
             }
 
         }catch (Exception e){
-//            e.printStackTrace();
             token = null;
             if(log.isTraceEnabled()){
                 log.debug("source token string is : {} ",tokenString);
                 log.debug("exception while try to catch header token :" ,e);
             }
         }
+
         return Optional.ofNullable(token);
     }
 

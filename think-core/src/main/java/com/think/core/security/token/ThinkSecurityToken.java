@@ -6,6 +6,7 @@ import com.think.common.util.FastJsonUtil;
 import com.think.common.util.security.Base64Util;
 import com.think.core.annotations.Remark;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.*;
@@ -17,6 +18,7 @@ import java.util.*;
  * @author JasonMao
  * @Description :    token version 2
  */
+@Slf4j
 public class ThinkSecurityToken implements Serializable {
     private static final long serialVersionUID = -1234567890987654321L;
 
@@ -39,7 +41,7 @@ public class ThinkSecurityToken implements Serializable {
 
 
     @Remark("当前SESSION数据,一次性数据，不参与签名")
-    private Map<String,String> sessionData;
+    private Map<String,String> sessionData =new HashMap<>();
 
 
     @Remark("用户token数据，参与签名")
@@ -47,7 +49,7 @@ public class ThinkSecurityToken implements Serializable {
 
 
     protected ThinkSecurityToken() {
-        this.sessionData = new HashMap<>();
+
     }
 
 
@@ -93,7 +95,6 @@ public class ThinkSecurityToken implements Serializable {
      */
     protected void setSessionData(Map<String, String> sessionData) {
         if(this.tokenData.isEmpty()) {
-            this.sessionData = sessionData;
             this.sessionData.forEach((k, v) -> {
                 this.tokenData.put(k, new String[]{v});
             });
@@ -103,8 +104,10 @@ public class ThinkSecurityToken implements Serializable {
     }
 
     public Map<String, String> getSessionData() {
-        return sessionData;
+//        return sessionData;
+        return getFixedSessionData();
     }
+
 
 
     /**
@@ -112,9 +115,6 @@ public class ThinkSecurityToken implements Serializable {
      * @return
      */
     public Map<String, String> getFixedSessionData() {
-        if(this.sessionData == null){
-            this.sessionData = new HashMap<>();
-        }
         this.sessionData.put("tokenDataId", String.valueOf(id));
         this.sessionData.put("tokenUserLoginId",userLoginId);
         this.sessionData.put("tokenDataNick",nickName);
@@ -131,14 +131,11 @@ public class ThinkSecurityToken implements Serializable {
 
     @Remark("sessionData，临时会话数据设置，但是会在线程中传递，不会传递回WEB 前端")
     public ThinkResult<Integer> setSessionValue(String key, String value) {
-        if(this.sessionData == null) {
-            this.sessionData = new HashMap<>();
-        }
-        if (containsUserDataInfo(key,value)) {
+//        if (containsUserDataInfo(key,value)) {
             sessionData.put(key,value);
-            return ThinkResult.success(1);
-        }
-        return ThinkResult.forbidden("token中未包含key:"+key+"的value:"+value);
+        return ThinkResult.success(1);
+//        }
+//        return ThinkResult.forbidden("token中未包含key:"+key+"的value:"+value);
 
     }
 
@@ -179,18 +176,19 @@ public class ThinkSecurityToken implements Serializable {
     @Remark("从tokenString还原TOKEN，不包含SESSION Data")
     public static ThinkSecurityToken valueOfJsonString(String jsonString){
         try {
+            String tokenDataKey = "tokenData";
+            String sessionDataKey = "sessionData";
             JSONObject json = FastJsonUtil.parseToJson(jsonString);
-            if (json!= null && json.containsKey("tokenData")) {
-                Map<String, Object> tokenData = json.getJSONObject("tokenData");
+            if (json!= null && json.containsKey(tokenDataKey)) {
+                Map<String, Object> tokenData = json.getJSONObject(tokenDataKey);
                 ThinkSecurityToken token = ofTokenData(tokenData);
-                if (json.containsKey("sessionData")) {
-                    Map<String, Object> sessionData = json.getJSONObject("sessionData");
+                if (json.containsKey(sessionDataKey)) {
+                    Map<String, Object> sessionData = json.getJSONObject(sessionDataKey);
                     if (sessionData != null) {
                         for (Map.Entry<String, Object> entry : sessionData.entrySet()) {
                             token.getSessionData().put(entry.getKey(), (String) entry.getValue());
                         }
                     }
-
                 }
                 return token;
             } else {
@@ -205,37 +203,21 @@ public class ThinkSecurityToken implements Serializable {
     }
 
 
+//    public static void main(String[] args) {
+//        String json = "{\"x\":{\"deptId\":\"725723693275152385\"},\"tokenData\":{\"tokenDataRegion\":[\"A7\"],\"sysRole\":[\"USER\"],\"tokenUserLoginId\":[\"8ns2haa\"],\"departmentIds\":[\"725723693275152385\",\"724455928133320705\",\"721046482071846913\",\"706710703719841793\",\"702277187267461121\",\"696640323230629889\",\"696572008278786049\",\"696571964162048001\",\"696114862185512961\",\"696113979962949633\",\"695654535572488193\"],\"mscId\":[\"695327730125766657\"],\"tokenDataId\":[\"695331901491118081\"],\"userLoginId\":[\"8ns2haa\"],\"customerAccountId\":[\"694883152758309889\"],\"hospitalId\":[\"695338450281299969\"],\"hospitalManager\":[\"true\"],\"committeeIds\":[\"695972089603031041\",\"695969384026341377\"],\"tokenDataNick\":[\"林旭\"],\"workGroupIds\":[\"706353836013387777\",\"696044539466481665\",\"696042001390370817\",\"696041672461516801\"]}}";
+//
+//        final ThinkSecurityToken token = valueOfJsonString(json);
+//        System.out.println(FastJsonUtil.toPrettyString(token));
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//        System.out.println(token.getSessionData());
+//
+//    }
+
+
+
     private static final ThinkSecurityToken tokenDataJsonString(String jsonString){
         Map<String, Object> json = FastJsonUtil.getMapFromJSON(jsonString);
-        ThinkSecurityToken token = new ThinkSecurityToken();
-        json.forEach((k,v)->{
-            String[] strings;
-            if(v instanceof List){
-                strings = ((List<?>) v).stream().toArray(String[]::new);
-                token.setTokenDataInfo(k,strings);
-            }else if(v instanceof Set){
-                strings = ((Set<?>) v).stream().toArray(String[]::new);
-                token.setTokenDataInfo(k,strings);
-            }else if(v instanceof String[]){
-                strings =(String[] ) v;
-                token.setTokenDataInfo(k, (String[]) v);
-            }else{
-                throw new RuntimeException("无法解析 "+k +" 类型：" + v.getClass());
-            }
-
-            if(k.equals("tokenDataId")){
-                token.setId(Long.valueOf(strings[0]));
-            }else if(k.equals("tokenDataNick")){
-                token.setNickName(strings[0]);
-            }else if(k.equals("tokenDataRegion")){
-                token.setCurrentRegion(strings[0]);
-            }else if(k.equals("tokenUserLoginId")){
-                token.setUserLoginId(String.valueOf(strings[0]));
-            }else if(k.equals("sysRole")){
-                token.setSysRole(strings[0]);
-            }
-        });
-        return token;
+        return ofTokenData(json);
     }
 
     private static final ThinkSecurityToken ofTokenData(Map<String,Object> json){
@@ -306,17 +288,21 @@ public class ThinkSecurityToken implements Serializable {
         return this.tokenData.containsKey(key);
     }
 
+    @Remark("主token，主要用于签名，不包含sessionData ")
     public String getTokenJsonString(){
         return FastJsonUtil.parseToJSON(this.tokenData);
     }
 
 
-    @ApiModelProperty("base64编码的TOKENString，每次返回，且用于签名")
+    @ApiModelProperty("base64编码的TOKENString，（不包含SessionData）每次返回，且用于签名")
     public String getBase64TokenString(){
         return Base64Util.encodeToString(getTokenJsonString());
     }
 
 
+    public String getFullJsonString(){
+        return ThinkSecurityTokenTransferManager.buildFullTransferStringByToken(this);
+    }
 
 
 

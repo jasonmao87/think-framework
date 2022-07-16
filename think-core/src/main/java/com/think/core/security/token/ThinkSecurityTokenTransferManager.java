@@ -4,6 +4,7 @@ package com.think.core.security.token;
 import com.alibaba.fastjson.JSONObject;
 import com.think.common.util.FastJsonUtil;
 import com.think.common.util.StringUtil;
+import com.think.core.annotations.Remark;
 import com.think.core.security.token.filter.IThinkSecurityAsyncTokenFilter;
 import com.think.core.threadLocal.ThinkThreadLocal;
 import com.think.core.threadLocal.ThreadLocalBean;
@@ -36,13 +37,19 @@ public class ThinkSecurityTokenTransferManager {
         return jsonObject.toJSONString();
     }
 
+    @Remark("调整---不在使用精简token ")
     public static final String buildSimpleTransferStringByToken(ThinkSecurityToken token){
+        return buildFullTransferStringByToken(token);
+        /*
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("sessionData",token.getFixedSessionData());
         return jsonObject.toJSONString();
+        */
     }
 
     private static final ThinkSecurityToken buildTokenByTransferString(String transferString){
+        return ThinkSecurityToken.valueOfJsonString(transferString);
+        /*
         JSONObject jsonObject = JSONObject.parseObject(transferString);
         if(jsonObject == null){
             if (log.isTraceEnabled()) {
@@ -76,6 +83,7 @@ public class ThinkSecurityTokenTransferManager {
         });
 
         return token;
+         */
     }
 
     public static final void addFilter(IThinkSecurityAsyncTokenFilter filter){
