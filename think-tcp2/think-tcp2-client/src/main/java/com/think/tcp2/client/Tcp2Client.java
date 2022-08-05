@@ -123,6 +123,9 @@ public class Tcp2Client {
                 ch.pipeline().addLast(new TcpClientHandler());
             }
         });
+
+
+//        bootstrap.remoteAddress()
         ChannelFuture channelFuture = bootstrap.connect(serverAddr, port).sync();
         log.info("正在建立到{} : {} 的连接" ,serverAddr ,port);
         this.channel = channelFuture.channel();

@@ -1,5 +1,6 @@
 package com.think.common.util;
 
+import com.think.core.annotations.Remark;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
@@ -693,6 +694,28 @@ public class DateUtil extends TimeUtil{
         return endOfYear(DateUtil.now());
     }
 
+
+    @Remark("是否普通工作日，即 周一至周五 ，大部分场景适用")
+    public static final boolean isSimpleWeekDay(Date date){
+        int week = DateUtil.getWeek();
+        if(week == 1 || week == 7){
+            return false;
+        }
+        return true;
+    }
+
+    @Remark("是否普通中国适用的休息日，大部分场景适用（周六，周日,10.1 -10，7 ，5.1 都为休息日）")
+    public static final boolean isSimpleChinesRestDay(Date date){
+        if(month(date) == 10 ){
+            //10.1 -7 标记未 休息日
+            return day(date) < 7;
+        }
+        if(month(date) == 5 ){
+            return  day(date) ==1;
+        }
+        return !isSimpleWeekDay(date);
+
+    }
 
 }
 

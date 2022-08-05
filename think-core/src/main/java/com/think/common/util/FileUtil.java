@@ -1,7 +1,13 @@
 package com.think.common.util;
 
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -266,5 +272,109 @@ public class FileUtil {
         }
     }
 
+
+    public static File downloadFile(String urlPath ){
+        File file = null;
+        try {
+            // 统一资源
+            URL url = new URL(urlPath);
+            // 连接类的父类，抽象类
+            URLConnection urlConnection = url.openConnection();
+            // http的连接类
+            HttpURLConnection httpURLConnection = (HttpURLConnection) urlConnection;
+            //设置超时
+            httpURLConnection.setConnectTimeout(1000*5);
+            //设置请求方式，默认是GET
+            httpURLConnection.setRequestMethod("GET");
+            // 设置字符编码
+            httpURLConnection.setRequestProperty("Charset", "UTF-8");
+            // 打开到此 URL引用的资源的通信链接（如果尚未建立这样的连接）。
+            httpURLConnection.connect();
+            // 文件大小
+            int fileLength = httpURLConnection.getContentLength();
+
+            // 控制台打印文件大小
+            System.out.println("您要下载的文件大小为:" + fileLength / (1024 * 1024) + "MB");
+
+            // 建立链接从请求中获取数据
+            URLConnection con = url.openConnection();
+            BufferedInputStream bin = new BufferedInputStream(httpURLConnection.getInputStream());
+            // 指定文件名称(有需求可以自定义)
+            String fileFullName = "aaa.apk";
+            // 指定存放位置(有需求可以自定义)
+            String path =   File.separatorChar + fileFullName;
+            file = new File(path);
+            // 校验文件夹目录是否存在，不存在就创建一个目录
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+
+            OutputStream out = new FileOutputStream(file);
+            int size = 0;
+            int len = 0;
+            byte[] buf = new byte[2048];
+            while ((size = bin.read(buf)) != -1) {
+                len += size;
+                out.write(buf, 0, size);
+                // 控制台打印文件下载的百分比情况
+                System.out.println("下载了-------> " + len * 100 / fileLength + "%\n");
+            }
+            // 关闭资源
+            bin.close();
+            out.close();
+            System.out.println("文件下载成功！");
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.out.println("文件下载失败！");
+        } finally {
+            return file;
+        }
+
+    }
+
+
+
+
+    public static void main(String[] args) throws IOException {
+
+        //<a style="display: inline" class="file_name" docid="695422333802775552" docname="科主任查房3.pdf" onclick="showP(this)" href="javascript:void(0);">科主任查房3.pdf</a>
+        String pngPath = "https://sh.thinkdid.com/images/tx.png";
+        String xlsPath = "https://sh.thinkdid.com/files/52631635753400534.xlsx";
+        String urlPath = "http://192.168.0.220:58089/docUrl?id=695422333732519936&fullfilename=%E7%A5%9E%E7%BB%8F%E5%86%85%E7%A7%91%E7%A7%91%E5%AE%A4%E9%9D%9E%E8%AE%A1%E5%88%92%E5%86%8D%E5%85%A5%E9%99%A212%E6%9C%88%E5%88%86%E6%9E%90%EF%BC%88%E6%A8%A1%E6%9D%BF%EF%BC%89.xlsx%22";
+        URL url = new URL(pngPath);
+        // 连接类的父类，抽象类
+        URLConnection urlConnection = url.openConnection();
+        // http的连接类
+        HttpURLConnection httpURLConnection = (HttpURLConnection) urlConnection;
+        //设置超时
+        httpURLConnection.setConnectTimeout(1000*5);
+        //设置请求方式，默认是GET
+        httpURLConnection.setRequestMethod("GET");
+        // 设置字符编码
+        httpURLConnection.setRequestProperty("Charset", "UTF-8");
+        // 打开到此 URL引用的资源的通信链接（如果尚未建立这样的连接）。
+        httpURLConnection.connect();
+
+        int fileLength = httpURLConnection.getContentLength();
+
+        System.out.println(url.getFile());
+        //{
+        //  null=[HTTP/1.1 200], Server=[nginx/1.9.9], X-Content-Type-Options=[nosniff], Connection=[keep-alive], Last-Modified=[Mon, 01 Nov 2021 07:56:40 GMT],
+        //  Pragma=[no-cache], X-Application-Context=[adminClient:8800], Access-Control-Allow-Headers=[*], Date=[Wed, 03 Aug 2022 12:26:33 GMT],
+        //  Accept-Ranges=[bytes], Strict-Transport-Security=[max-age=31536000 ; includeSubDomains], Cache-Control=[no-cache, no-store, max-age=0, must-revalidate],
+        //  Expires=[0], X-XSS-Protection=[1; mode=block], Content-Length=[83899], Content-Type=[application/octet-stream;charset=UTF-8]
+        // }
+        System.out.println(httpURLConnection.getContentType());
+        System.out.println(httpURLConnection.getContentType());
+        System.out.println(httpURLConnection.getResponseMessage());
+        System.out.println(httpURLConnection.getResponseCode());
+        System.out.println(httpURLConnection.getHeaderField("Content-Disposition"));
+        System.out.println(httpURLConnection.getHeaderFields());
+
+    }
 
 }
