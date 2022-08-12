@@ -424,7 +424,7 @@ public class DateUtil extends TimeUtil{
         c.set(Calendar.HOUR_OF_DAY,23);
         c.set(Calendar.MINUTE,59);
         c.set(Calendar.SECOND,59);
-        c.set(Calendar.MILLISECOND,999);
+        c.set(Calendar.MILLISECOND,0);
         return c.getTime();
     }
 
@@ -445,7 +445,7 @@ public class DateUtil extends TimeUtil{
         Date t = beginOfMonth(date);
         Calendar c = getCalendar(t);
         c.add(Calendar.MONTH,1);
-        c.add(Calendar.MILLISECOND,-1);
+        c.add(Calendar.SECOND,-1);
         return c.getTime();
     }
 
@@ -703,8 +703,12 @@ public class DateUtil extends TimeUtil{
         }
         return true;
     }
+    @Remark("是否普通工作日，即 周一至周五 ，大部分场景适用")
+    public static final boolean isSimpleWeekDay(){
+        return isSimpleWeekDay(DateUtil.now());
+    }
 
-    @Remark("是否普通中国适用的休息日，大部分场景适用（周六，周日,10.1 -10，7 ，5.1 都为休息日）")
+        @Remark("是否普通中国适用的休息日，大部分场景适用（周六，周日,10.1 -10，7 ，5.1 都为休息日）")
     public static final boolean isSimpleChinesRestDay(Date date){
         if(month(date) == 10 ){
             //10.1 -7 标记未 休息日
@@ -716,6 +720,30 @@ public class DateUtil extends TimeUtil{
         return !isSimpleWeekDay(date);
 
     }
+    @Remark("是否普通中国适用的休息日，大部分场景适用（周六，周日,10.1 -10，7 ，5.1 都为休息日）")
+    public static final boolean isSimpleChinesRestDay(){
+        return isSimpleChinesRestDay(DateUtil.now());
+    }
 
+
+    public static Date nextDay(){
+        return DateUtil.nextDay(DateUtil.now());
+    }
+    public static Date nextDay(Date date){
+        return DateUtil.computeAddDays(date,1);
+    }
+
+
+    public static Date nextMonday(Date date){
+        date = nextDay(date);
+        while (getWeek(date) !=2){
+            date= nextDay();
+        }
+        return date;
+
+    }
+    public static Date nextMonday(){
+        return nextMonday(DateUtil.now());
+    }
 }
 

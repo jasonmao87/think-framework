@@ -159,7 +159,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public ThinkUpdateMapper<T> updateDateAsNow(String key){
         if (this.checkKeyIsDateType(key) ) {
-            this.ambiguityErrorCheck(key);
+//            this.ambiguityErrorCheck(key);
             this.updateValue(key, DateUtil.now());
         }
         return this;

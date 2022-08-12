@@ -259,10 +259,17 @@ public class R<T>  implements Serializable {
                         this.setNextAccessKey(accessKey.getAccessKeyString());
                     }
                 }
+            }else{
+                //如果accessKey 存在，那么检查是否需要renew
+                if (accessKey.canRenew()) {
+                    accessKey.renewAccessKey();
+                    this.setNextAccessKey(accessKey.getAccessKeyString());
+                }
 
             }
 
         }
+
         return nextAccessKey;
     }
 
