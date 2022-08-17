@@ -74,7 +74,7 @@ public class R<T>  implements Serializable {
 
     public void setNextAccessKey(boolean isNew ,String nextAccessKey){
         this.setNextAccessKey(nextAccessKey);
-        this.newAk = true;
+        this.newAk = isNew;
     }
 
     public boolean isNewAk() {
@@ -256,14 +256,14 @@ public class R<T>  implements Serializable {
                     final Optional<ThinkSecurityToken> token = WebUtil.getToken();
                     if (token.isPresent()) {
                         accessKey = WebSecurityUtil.getInstance().buildAccessKey(token.get().getId(),WebUtil.userAgent());
-                        this.setNextAccessKey(accessKey.getAccessKeyString());
+                        this.setNextAccessKey(false,accessKey.getAccessKeyString());
                     }
                 }
             }else{
                 //如果accessKey 存在，那么检查是否需要renew
                 if (accessKey.canRenew()) {
                     accessKey.renewAccessKey();
-                    this.setNextAccessKey(accessKey.getAccessKeyString());
+                    this.setNextAccessKey(true,accessKey.getAccessKeyString());
                 }
 
             }

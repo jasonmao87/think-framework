@@ -21,9 +21,15 @@ public class AccessKey implements Serializable {
     private long expireTime;
     private int uaHashCode;
 
+
+
+    private long timeAfter30Minutes(){
+        return ThinkMilliSecond.currentTimeMillis() + TimeUnit.MINUTES.toMillis(32);
+    }
+
     protected AccessKey(long id,String ua ) {
         this.id = id;
-        this.expireTime = ThinkMilliSecond.currentTimeMillis() + TimeUnit.MINUTES.toMillis(60);
+        this.expireTime = timeAfter30Minutes();
         this.uaHashCode = 0;
         try {
             this.uaHashCode = ua.hashCode();
@@ -88,7 +94,6 @@ public class AccessKey implements Serializable {
             String securityKey = WebSecurityUtil.getInstance().getKey();
             String sourceString = sb.toString();
             if (log.isDebugEnabled()) {
-                log.debug(" source === {} $ {} " ,sourceString ,securityKey );
             }
             return AESUtil.encrypt(sourceString,securityKey);
         } catch (Exception e) {
@@ -101,8 +106,7 @@ public class AccessKey implements Serializable {
     }
 
     public AccessKey renewAccessKey() {
-        // 15分钟  30 (minute)  * 1000 (ms) *60 (second) = 1800 000
-        this.expireTime += TimeUnit.MINUTES.toMillis(30);
+        this.expireTime = timeAfter30Minutes();
         return this;
     }
 
@@ -123,7 +127,7 @@ public class AccessKey implements Serializable {
 
     @Remark("是否建议续期")
     public boolean canRenew() {
-        return ThinkMilliSecond.currentTimeMillis() - getExpireTime() > TimeUnit.MINUTES.toMillis(15);
+        return  getExpireTime() - ThinkMilliSecond.currentTimeMillis() > TimeUnit.MINUTES.toMillis(15);
     }
 
     @Remark("获取AKString，即将续期会自动续期")
@@ -132,6 +136,13 @@ public class AccessKey implements Serializable {
             this.renewAccessKey();
         }
         return this.getAccessKeyString();
+    }
+
+
+    public boolean isNew(){
+        return getExpireTime() -ThinkMilliSecond.currentTimeMillis() > TimeUnit.MINUTES.toMillis(30);
+
+
     }
 
 }
