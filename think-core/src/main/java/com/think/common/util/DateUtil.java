@@ -33,6 +33,14 @@ public class DateUtil extends TimeUtil{
         return calendar;
     }
 
+    public static final String toFmtYMd(Date date){
+        return new SimpleDateFormat(FMT_YMD).format(date);
+    }
+
+    public static final String toFmtYMdHms(Date date){
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+    }
+
 
 
     public static final String toFmtString(Date date,String fmt){
@@ -736,14 +744,23 @@ public class DateUtil extends TimeUtil{
 
     public static Date nextMonday(Date date){
         date = nextDay(date);
+//        System.out.println(toFmtString(date,FMT_YMD));
         while (getWeek(date) !=2){
-            date= nextDay();
+//            System.out.println(getWeek(date) + " " + getWeekZhCN(date)  + " " + toFmtString(date,FMT_YMD) );
+            date= nextDay(date);
         }
         return date;
-
     }
+
+    public static void main(String[] args) {
+        Date da =new Date();
+        System.out.println(DateUtil.toFmtYMdHms(DateUtil.computeAddMonths(da,2)));
+    }
+
     public static Date nextMonday(){
         return nextMonday(DateUtil.now());
     }
+
+
 }
 

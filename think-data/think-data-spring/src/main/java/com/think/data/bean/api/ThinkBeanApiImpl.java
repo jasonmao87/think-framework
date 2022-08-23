@@ -278,4 +278,11 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
     public ThinkSqlFilter<T> emptySqlFilter(int limit) {
         return ThinkSqlFilter.build(targetClass(),limit);
     }
+
+    @Override
+    public List<T> listByIds(Long[] ids) {
+        ThinkSqlFilter<T> sqlFilter= ThinkSqlFilter.build(targetClass(),ids.length)
+                .in("id",ids);
+        return list(sqlFilter);
+    }
 }

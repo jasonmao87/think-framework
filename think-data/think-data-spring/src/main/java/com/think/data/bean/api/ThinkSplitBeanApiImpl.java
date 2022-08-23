@@ -5,7 +5,6 @@ import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
-import com.think.core.annotations.Remark;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean.util.ObjectUtil;
@@ -109,6 +108,11 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter) {
         return dao.autoList(sqlFilter);
+    }
+
+    @Override
+    public <V extends BaseVo<T>> List<V> voList(ThinkSqlFilter<T> sqlFilter, Class<V> vo) {
+        return dao.autoVoList(sqlFilter,vo);
     }
 
     @Override

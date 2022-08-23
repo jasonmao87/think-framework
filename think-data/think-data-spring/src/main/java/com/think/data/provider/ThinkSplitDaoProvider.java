@@ -82,11 +82,8 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
 
     @Override
     public List<String> showSplitTables() {
-//        log.info("检查 split 表清单  {} ， {}" ,ThinkMilliSecond.currentTimeMillis() , lastCheckDb );
         if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
-
             String showTablesSql = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
-//            log.info("{}",showTablesSql);
             List<String> list = jdbcTemplate.queryForList(showTablesSql, String.class);
             for (String t : list) {
                 if (Manager.isTableInitialized(t) == false) {

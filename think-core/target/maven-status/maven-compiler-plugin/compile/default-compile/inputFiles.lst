@@ -97,6 +97,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\ut
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\rt\ThinkMachineUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\rt\ThinkDefaultTargetTypeUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\threadLocal\ThreadLocalBean.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\ThinkSyncExecutor.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\exception\ThinkNotSupportException.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\ThinkCacheMap.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\rt\ThinkRuntimeUtil.java

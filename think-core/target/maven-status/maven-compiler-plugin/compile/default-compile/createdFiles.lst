@@ -127,6 +127,7 @@ com\think\structure\ThinkTimeoutList.class
 com\think\core\data\ThinkLogLogo.class
 com\think\common\data\ThinkFilterOp.class
 com\think\common\util\TAssert.class
+com\think\core\executor\ThinkSyncExecutor.class
 com\think\structure\ThinkRandomSet.class
 com\think\common\util\TimeUtil.class
 com\think\common\util\security\Base64Util.class

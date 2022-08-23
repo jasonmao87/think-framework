@@ -57,6 +57,33 @@ public class ThinkAsyncExecutor {
 
     }
 
+    /**
+     * 同步的执行方法
+     * @param task
+     * @param token
+     */
+    public static final void runSyncWithToken(final ThinkAsyncTask task,final ThinkSecurityToken token){
+        if(token!=null) {
+            if (log.isTraceEnabled()) {
+                log.trace("TOKEN 信息 === {}" , FastJsonUtil.parseToJSON(token));
+            }
+            ThinkSecurityTokenTransferManager.setThreadLocal(token, false);
+        }
+        try {
+            if(token!=null) {
+                ThinkThreadExecutor.noticeDataRegionChange(token.getCurrentRegion());
+            }
+            task.execute();
+        }catch (Exception e){
+            if (log.isErrorEnabled()) {
+                log.error("",e );
+            }
+        }finally {
+            ThinkThreadExecutor.getChangedDataRagionAndRemove();
+            ThinkSecurityTokenTransferManager.removeTokenFromThreadLocal();
+        }
+    }
+
 
     public static final CompletableFuture<Void> executeWithToken(final ThinkAsyncTask task,final ThinkSecurityToken token){
         Runnable runnable = new Runnable() {

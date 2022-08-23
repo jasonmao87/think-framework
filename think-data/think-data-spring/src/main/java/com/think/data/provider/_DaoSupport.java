@@ -143,17 +143,7 @@ public class _DaoSupport{
      * @return
      */
     protected static final  <T extends SimplePrimaryEntity> int[] possibleSplitYears(ThinkSqlFilter<T> sqlFilter, List<String> showSplitTables){
-//        if(sqlFilter.getFilterSplitYear()>2000){
-//            if(log.isDebugEnabled()){
-//                log.debug("sqlFilter 指定了查询年份，将不在额外分析，直接限制查询年份为：{}",sqlFilter.getFilterSplitYear());
-//            }
-//            return new int[]{sqlFilter.getFilterSplitYear()};
-//        }
 
-
-//        if(log.isDebugEnabled()){
-//            log.debug("analysis think Sql Filter ： {} " , FastJsonUtil.parseToJSON(sqlFilter));
-//        }
         boolean locationAble = false;
         long maxId =  Long.MAX_VALUE ;
         long minId = 0L ;         // max min 应该 取最小并集

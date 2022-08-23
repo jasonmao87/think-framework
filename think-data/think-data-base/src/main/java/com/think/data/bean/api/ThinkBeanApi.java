@@ -145,6 +145,9 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
 
     ThinkSqlFilter<T> emptySqlFilter(int limit);
 
+    @Remark("通过id 获取")
+    List<T> listByIds(Long[] ids);
+
 
 
 

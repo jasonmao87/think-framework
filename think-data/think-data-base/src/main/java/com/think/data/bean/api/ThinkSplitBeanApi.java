@@ -50,6 +50,10 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      */
     List<T> list(ThinkSqlFilter<T> sqlFilter);
 
+
+    <V extends BaseVo<T>> List<V> voList(ThinkSqlFilter<T> sqlFilter, Class<V> vo);
+
+
     /**
      * 获取count ，会自动匹配 跨表 等复杂逻辑， 无需过多考虑，性能上略微会逊色一些
      * @param sqlFilter
@@ -64,7 +68,7 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      * @return
      */
     @Deprecated
-    List<T> list(ThinkSqlFilter<T> sqlFilter,int splitYear);
+    List<T> list(ThinkSqlFilter<T> sqlFilter, int splitYear);
 
     /**
      * 指定年份得count

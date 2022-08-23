@@ -205,13 +205,34 @@ public class ThinkUpdateMapper<T extends _Entity> {
      * @throws ThinkRuntimeException
      */
     public ThinkUpdateMapper<T> setTargetDataId(long id) throws ThinkRuntimeException {
+        /**
         if(this.filter != null){
             throw new ThinkRuntimeException("已经为UpdateMapper设置了Filter，再设置Id值将会引起过滤筛选条件的混乱！");
         }
-        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
-        sqlFilter.eq("id",id);
-        return this.setFilter(sqlFilter);
+         **/
+//        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
+        this.getFilter().eq("id",id);
+        return this;
+
+//        sqlFilter.eq("id",id);
+//        return this.setFilter(sqlFilter);
     }
+
+    public ThinkUpdateMapper<T> setTargetDataIdAndClearOtherCondition(long id) throws ThinkRuntimeException {
+        /**
+         if(this.filter != null){
+         throw new ThinkRuntimeException("已经为UpdateMapper设置了Filter，再设置Id值将会引起过滤筛选条件的混乱！");
+         }
+         **/
+        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
+        this.filter = sqlFilter;
+        return setTargetDataId(id);
+
+//        sqlFilter.eq("id",id);
+//        return this.setFilter(sqlFilter);
+    }
+
+
 
 
     public ThinkSqlFilter<T> getFilter() {
