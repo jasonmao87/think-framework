@@ -1,5 +1,6 @@
 package com.think.core.bean.util;
 
+import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 
 import java.io.File;
@@ -10,10 +11,7 @@ import java.math.BigDecimal;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -23,8 +21,11 @@ import java.util.jar.JarFile;
 public class ClassUtil {
 
     protected final static void setValue(Field field, Object bean  ,Object v){
+        boolean exception = false;
         try{
             field.setAccessible(true);
+
+
             if(field.getName().equals("serialVersionUID")){
                 return;
             }
@@ -51,6 +52,15 @@ public class ClassUtil {
             }
         }catch (Exception e){
             e.printStackTrace();
+            exception = true;
+        }finally {
+            if(exception && field.getType().getName().equals(Date.class.getName())){
+                //如果是Date类型----导致的异常
+                try{
+                    //尝试 设置为 zeroTime ！！！
+                    field.set(bean, DateUtil.zeroDate());
+                }catch (Exception e){}
+            }
         }
     }
 
