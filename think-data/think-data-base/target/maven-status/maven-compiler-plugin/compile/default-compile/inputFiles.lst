@@ -11,6 +11,7 @@ D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\dao\IThinkBlobDao.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\bean\api\ThinkApiUpdateMethodFilter.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\bean\api\ThinkSplitBeanApi.java
+D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\model\MysqlStructColumnBean.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\Manager.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\verification\SimpleAbstractDataValidator.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\provider\ThinkQuery.java
@@ -31,6 +32,7 @@ D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\model\ThinkIndexModel.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\filter\ThinkDataFilter.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\verification\ThinkSimpleDataValidator.java
+D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\model\TbStructAlterSqlLog.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\filter\ThinkVersionRecorder.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\dao\ThinkSplitRefDao.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-base\src\main\java\com\think\data\provider\ThinkUpdateQueryBuilder.java

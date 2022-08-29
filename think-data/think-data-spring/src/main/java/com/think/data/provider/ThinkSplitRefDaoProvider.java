@@ -70,20 +70,27 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public List<String> showSplitTables() {
-        long durtion = 1000*60*5;
-        if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
-            String showtables = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
-            List<String> list = jdbcTemplate.queryForList(showtables, String.class);
-            for (String t : list) {
-                if (Manager.isTableInitialized(t) == false) {
-                    Manager.recordTableInit(t);
-                }
-            }
-            lastCheckDb =ThinkMilliSecond.currentTimeMillis();
-            return list;
-        }else{
-            return Manager.findInitializedTableNameList(_DaoSupport.baseTableName(targetClass));
-        }
+
+
+        List<String> showSplitTables = showSplitTables(jdbcTemplate, targetClass, lastCheckDb);
+        lastCheckDb = ThinkMilliSecond.currentTimeMillis();
+        return showSplitTables;
+
+//
+//
+//        if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
+//            String showtables = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
+//            List<String> list = jdbcTemplate.queryForList(showtables, String.class);
+//            for (String t : list) {
+//                if (Manager.isTableInitialized(t) == false) {
+//                    Manager.recordTableInit(t);
+//                }
+//            }
+//            lastCheckDb =ThinkMilliSecond.currentTimeMillis();
+//            return list;
+//        }else{
+//            return Manager.findInitializedTableNameList(_DaoSupport.baseTableName(targetClass));
+//        }
     }
     @Override
     public Class<T> targetClass() {

@@ -7,8 +7,10 @@ import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean._Entity;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
+import com.think.data.extra.StructAlterSqlLogger;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -19,6 +21,10 @@ import java.util.*;
 
 @Slf4j
 public abstract class _JdbcExecutor {
+
+
+    private StructAlterSqlLogger dbTableAlterLogger;
+
     public abstract <T extends _Entity> Class getTargetClass();
     public abstract JdbcTemplate getJdbcTemplate();
 
@@ -28,31 +34,38 @@ public abstract class _JdbcExecutor {
         return Optional.ofNullable(Manager.getDataSrvRuntimeInfo()) ;
     }
 
-    public <T extends _Entity> void executeTableInit(String tableName){
 
+    public  <T extends _Entity>  List<String> showSplitTables(JdbcTemplate jdbcTemplate,Class<T> targetClass,long lastCheckDb){
+        if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
+            String showTablesSql = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
+            List<String> list = jdbcTemplate.queryForList(showTablesSql, String.class);
+            for (String t : list) {
+                this.executeTableInit(targetClass,t);
+//
+//                if (Manager.isTableInitialized(t) == false) {
+//                    Manager.recordTableInit(t);
+//                }
+            }
+            if(!showTablesSql.contains("nonePart")) {
+//                lastCheckDb = ThinkMilliSecond.currentTimeMillis();
+            }
+            return list;
+        }else{
+            return Manager.findInitializedTableNameList(_DaoSupport.baseTableName(  targetClass));
+        }
+    }
+
+
+    public <T extends _Entity> void executeTableInit(Class<T> targetClass ,String tableName){
         this.checkTransactionAndLogPrint();
         if (Manager.isTableInitialized(tableName) == false) {
-//            // TODO:  临时代码 ，协助系统自动完成 createUserName 和 updateUserName 字段的增加 ！  该代码应该在一定时间后予以删除 ！当然该代码有大概率执行不了，所以tryCatch掉
-//            try{
-//                String addCreateUserNameAndUpdateUserName  = "ALTER TABLE " + tableName + " " +
-//                        "ADD COLUMN createUserName varchar(32) NOT NULL AFTER createUserId  ," +
-//                        "ADD COLUMN updateUserName varchar(32) NOT NULL AFTER updateUserId " ;
-//                getJdbcTemplate().update(addCreateUserNameAndUpdateUserName);
-//            }catch (Exception e){
-//
-//            }
-
-
-
             try {
-
                 String showTableExitsSql = "show tables like '" +tableName +"'";
-
                 Map<String, Object> showTableExitsMap = new HashMap<>();
                 try {
                     showTableExitsMap =getJdbcTemplate().queryForMap(showTableExitsSql);
                 }catch (Exception r){
-
+                    showTableExitsMap = new HashMap<>();
                 }
                 if (log.isTraceEnabled()) {
                     log.trace("检查表{}是否存在  --> {}::{}", tableName,showTableExitsSql ,showTableExitsMap);
@@ -88,10 +101,14 @@ public abstract class _JdbcExecutor {
                         log.trace("表结构构建完成....");
                     }
                 }else{
+                    //同步 ----表结构
+                    try{
+                        log.info("检查 {}表结构 并自动 新增 新字段 ",tableName );
+                        _SyncTableStructureUtil.syncUtil.doExecuteSync(targetClass,tableName,getJdbcTemplate());
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                     Manager.recordTableInit(tableName);
-
-
-
                     /*
                     //是否需要关联id支持
                     if(Manager.isThinkLinkedIdSupportAble()){
@@ -176,7 +193,7 @@ public abstract class _JdbcExecutor {
 
 
     public Map<String,Object> executeOne( ThinkExecuteQuery executeQuery, String finalTableName){
-        this.executeTableInit(finalTableName);
+        this.executeTableInit(executeQuery.getTargetClass(),finalTableName);
 
         Map<String,Object> result = null;
         if(executeQuery.isMayByEmpty()){
@@ -234,7 +251,7 @@ public abstract class _JdbcExecutor {
             return new ArrayList<>();
         }
 
-        this.executeTableInit(finalTableName);
+        this.executeTableInit(getTargetClass(),finalTableName);
         List<Map<String,Object>> result = null;
         long duration = 0L;
         long start =0L;
@@ -275,7 +292,7 @@ public abstract class _JdbcExecutor {
     }
 
     public ThinkResult executeUpdate(ThinkExecuteQuery executeQuery, String finalTableName){
-        this.executeTableInit(finalTableName);
+        this.executeTableInit(getTargetClass(),finalTableName);
         long duration = 0 ;
         int result = 0;
         boolean success = false;

@@ -70,6 +70,10 @@ public class ThinkDataDDLBuilder {
                if(StringUtil.isNotEmpty(cm.getComment())) {
                    sql.append(" COMMENT ").append("'").append(cm.getComment()).append("'");
                }
+               if(cm.getDefaultValue()!=null){
+                   sql.append(" DEFAULT ").append(cm.getDefaultValue()).append(" ");
+               }
+
                /**
                 * 支持高效排序  ，且列不包含索引 ,且 列 类型是 String/ boolean  类型的 ，那么创建 附加 索引
                 */
@@ -92,6 +96,8 @@ public class ThinkDataDDLBuilder {
                            .append(" ")
                            .append(secondTypeString)
                            .append(" COMMENT 'match Secondary key of ").append(cm.getKey()).append("'");
+
+//                   sql.append(" " ).append(cm.getDefaultValue());
 
                }
 

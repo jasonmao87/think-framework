@@ -57,7 +57,7 @@ public class ThinkColumnModel implements Serializable {
     private boolean fastMatchAble = false;
 
     @Remark("默认值")
-    private String defaultValue;
+    private String defaultValue =null;
 
     @Remark("Date类型不要设置默认值")
     private boolean noSetDateDefaultValue =false;
@@ -296,7 +296,17 @@ public class ThinkColumnModel implements Serializable {
 //    }
 
     public String getDefaultValue() {
-        return defaultValue;
+        if (this.nullable ) {
+            return null;
+        }
+
+        if (isUsingText()) {
+            return null;
+        }
+
+        return ThinkJdbcTypeConverter.defaultValueString(ThinkJdbcTypeConverter.getType(type),defaultValue);
+
+//        return defaultValue;
     }
 
     public boolean isUsingText() {

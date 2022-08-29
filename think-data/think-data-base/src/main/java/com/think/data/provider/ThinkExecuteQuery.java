@@ -18,11 +18,15 @@ public class ThinkExecuteQuery {
     private Serializable[] values ;
 
     List<IThinkResultFilter> resultFilters;
+    private Class targetClass ;
 
 
+    public Class getTargetClass() {
+        return targetClass;
+    }
 
-
-    public ThinkExecuteQuery(String sql, Serializable[] values , List<IThinkResultFilter> resultFilters ,boolean mayByEmpty ) {
+    public ThinkExecuteQuery(String sql, Serializable[] values , List<IThinkResultFilter> resultFilters , boolean mayByEmpty, Class targetClass ) {
+        this.targetClass = targetClass;
         this.sql = sql;
         this.values = values;
         this.mayByEmpty = mayByEmpty;

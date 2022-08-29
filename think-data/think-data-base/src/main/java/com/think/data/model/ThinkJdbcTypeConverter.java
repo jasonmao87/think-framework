@@ -1,6 +1,8 @@
 package com.think.data.model;
 
 import com.think.common.util.ByteUtil;
+import com.think.common.util.DateUtil;
+import com.think.common.util.StringUtil;
 import com.think.core.annotations.bean.ThinkColumn;
 import com.think.core.bean.util.ClassUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,61 @@ import java.util.Map;
 
 @Slf4j
 public class ThinkJdbcTypeConverter {
+
+    public static String defaultValueString(ThinkSqlType sqlType ,String defaultValue){
+//        if(defaultValue!=null){
+//            return defaultValue;
+//        }
+        String t = null;
+        switch (sqlType){
+            case NONE:{
+                return null;
+            }
+            case VARCHAR:{
+
+                return sqlStringDefaultValue(defaultValue);
+            }
+            case BIT:{
+                return null;
+            }
+            case CHAR:{
+                return sqlStringDefaultValue(defaultValue);
+            }
+            case DATE:{
+
+                return  sqlDateValue(defaultValue);
+            }
+            case TIME:{
+                return "'00:00:00'";
+            }
+            case FLOAT:{
+                return "0.0";
+            }
+            case BIGINT:{
+                return "0";
+            }
+            case DOUBLE:{
+                return "0.0";
+            }
+            case INTEGER:{
+                return "0";
+            }
+            case DATETIME:{
+                return sqlDateTimeValue(defaultValue);
+//                t = "'1970-01-01 08:00:00'";
+//                break;
+            }
+            case ENUM:{
+                t = "''";
+                break;
+            }
+            default:{
+                t = null;
+            }
+        }
+        return t;
+    }
+
 
     public static String toJdbcTypeAsString(ThinkSqlType sqlType ,int len , boolean nullAble){
         String t = "" ;
@@ -156,7 +213,7 @@ public class ThinkJdbcTypeConverter {
         }
     }
 
-    private static final ThinkSqlType getType(Type type){
+    protected static final ThinkSqlType getType(Type type){
         return typeMap.getOrDefault( type, ThinkSqlType.NONE);
     }
 
@@ -211,6 +268,40 @@ public class ThinkJdbcTypeConverter {
 
     }
 
+    private static final String sqlDateTimeValue(String def){
+        return "'"+DateUtil.toFmtString(DateUtil.valueOfString(def),"yyyy-MM-dd HH:mm:ss") + "'";
+    }
 
-    byte[] nn = new byte[2];
+
+    private static final String sqlDateValue(String def){
+        return "'"+DateUtil.toFmtString(DateUtil.valueOfString(def),"yyyy-MM-dd") + "'";
+    }
+
+
+
+    private static String sqlStringDefaultValue(String def){
+        if(StringUtil.isEmpty(def)){
+            return "''";
+        }
+        if (def.startsWith("'") && def.endsWith("'") ) {
+            def = def.substring(1,def.length()-1);
+            System.out.println(def);
+            int i = def.indexOf("'");
+            System.out.println(i);
+            while (i > 0){
+                def = def.replace("'","’");
+                System.out.println(def);
+                i = def.indexOf("'");
+            }
+        }
+        return "'"+def+"'";
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(DateUtil.valueOfString("2021-1-1"));
+        System.out.println(sqlDateValue(""));
+        System.out.println(sqlStringDefaultValue("dadda'dadad'"));
+
+    }
 }

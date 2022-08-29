@@ -440,7 +440,7 @@ public class ThinkQuery {
                 .append( tableName(cls)).append(" ")
                 .append(queryStr);
         Serializable[] values = paramValues.toArray(new Serializable[paramValues.size()]);
-        return new ThinkExecuteQuery(sb.toString(),values,this.filter.getResultFilterList(),isMaybyEmpty());
+        return new ThinkExecuteQuery(sb.toString(),values,this.filter.getResultFilterList(),isMaybyEmpty(),cls);
     }
 
     public <T extends _Entity> ThinkExecuteQuery selectFullKeys(Class cls){
@@ -506,7 +506,7 @@ public class ThinkQuery {
                 valueTempList.add(filter.getLimit());
             }
         }
-        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList(),isMaybyEmpty());
+        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList(),isMaybyEmpty(),cls);
      }
 
 
@@ -518,7 +518,7 @@ public class ThinkQuery {
                 .append(queryStr).append(" ");
         List<Serializable> valueTempList = new ArrayList<>();
         valueTempList.addAll(this.paramValues);
-        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList(),isMaybyEmpty());
+        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList(),isMaybyEmpty(),filter!=null?filter.gettClass():null);
 
     }
 

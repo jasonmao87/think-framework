@@ -194,7 +194,7 @@ public class ThinkUpdateQueryBuilder {
 
 
         sql.append(") ");
-        return  new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null,false);
+        return  new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null,false,t.getSelfClass());
     }
 
 
@@ -342,7 +342,7 @@ public class ThinkUpdateQueryBuilder {
             sql.append(") ");
             outIndex ++ ;
         }
-        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null ,false);
+        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null ,false,t.getClass());
     }
 
     protected static <T extends _Entity> ThinkExecuteQuery updateSql(T t){
@@ -410,7 +410,7 @@ public class ThinkUpdateQueryBuilder {
         }
         sql.append(" WHERE id = ?");
         valuesList.add(t.getId());
-        return new ThinkExecuteQuery(sql.toString(),valuesList.toArray(new Serializable[valuesList.size()]),null,false);
+        return new ThinkExecuteQuery(sql.toString(),valuesList.toArray(new Serializable[valuesList.size()]),null,false,t.getClass());
     }
 
 
@@ -581,7 +581,7 @@ public class ThinkUpdateQueryBuilder {
         }
 
 
-        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null, query.isMaybyEmpty());
+        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null, query.isMaybyEmpty(), tableModal.getBeanClass());
     }
 
 
@@ -590,7 +590,7 @@ public class ThinkUpdateQueryBuilder {
                 .append(tableName(sqlFilter.gettClass())).append(" ");
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         sql.append(query.filterQuery());
-        return new ThinkExecuteQuery(sql.toString(),query.filterParamValueArray(),null, query.isMaybyEmpty());
+        return new ThinkExecuteQuery(sql.toString(),query.filterParamValueArray(),null, query.isMaybyEmpty(),sqlFilter.gettClass());
     }
 
 

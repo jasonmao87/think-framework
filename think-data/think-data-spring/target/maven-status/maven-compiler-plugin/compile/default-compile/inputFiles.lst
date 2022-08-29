@@ -14,5 +14,7 @@ D:\projectFarm\gitee\think-famework\think-data\think-data-spring\src\main\java\c
 D:\projectFarm\gitee\think-famework\think-data\think-data-spring\src\main\java\com\think\data\bean\api\ThinkSplitRefBeanApiImpl.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-spring\src\main\java\com\think\data\provider\_DaoSupport.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-spring\src\main\java\com\think\data\provider\_JdbcExecutor.java
+D:\projectFarm\gitee\think-famework\think-data\think-data-spring\src\main\java\com\think\data\extra\StructAlterSqlLogger.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-spring\src\main\java\com\think\data\provider\DaoExceptionTranslater.java
+D:\projectFarm\gitee\think-famework\think-data\think-data-spring\src\main\java\com\think\data\provider\_SyncTableStructureUtil.java
 D:\projectFarm\gitee\think-famework\think-data\think-data-spring\src\main\java\com\think\data\provider\ThinkSplitDaoImpl.java
