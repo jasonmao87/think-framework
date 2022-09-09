@@ -1,9 +1,7 @@
 package com.think.tcp2.server;
 
 import com.think.tcp2.common.ThinkTcpConfig;
-import com.think.tcp2.server.handler.TcpPayloadHandler;
-import com.think.tcp2.server.handler.ThinkDefaultServerHandler;
-import com.think.tcp2.server.handler.ThinkHeartbeatHandler;
+import com.think.tcp2.server.handler.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -81,11 +79,14 @@ public class ThinkTcp2Server {
                 ThinkDefaultServerHandler defaultServerHandler = new ThinkDefaultServerHandler();
                 ThinkHeartbeatHandler heartBeatHandler = new ThinkHeartbeatHandler();
                 TcpPayloadHandler payloadHandler = new TcpPayloadHandler();
+                ThinkAuthRequestHandler authRequestHandler = new ThinkAuthRequestHandler();
                 ChannelPipeline pipeline = ch.pipeline();
                 pipeline.addLast(new IdleStateHandler(ThinkTcpConfig.getIdleTimeoutSeconds(),0,0, TimeUnit.SECONDS))
                         .addLast(new ObjectEncoder())
                         .addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)))
+                        .addLast(new ThinkTcpAddressFilter())
                         .addLast(heartBeatHandler)
+                        .addLast(authRequestHandler)
                         .addLast(payloadHandler)
                         .addLast(defaultServerHandler);
             }

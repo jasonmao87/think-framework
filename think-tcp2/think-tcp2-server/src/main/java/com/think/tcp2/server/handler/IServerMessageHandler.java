@@ -12,6 +12,8 @@ import java.io.Serializable;
  */
 public interface IServerMessageHandler<T extends Serializable> {
 
+
+
     /**
      * 处理payload内 对象
      * @param data

@@ -1,6 +1,8 @@
 package com.think.tcp2.client;
 
-import com.think.common.util.rt.ThinkMachineUtil;
+import com.think.common.util.StringUtil;
+import com.think.common.util.security.MD5Util;
+import com.think.core.annotations.Remark;
 import com.think.tcp2.IThinkTcpPayloadHandler;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
@@ -9,10 +11,7 @@ import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import com.think.tcp2.listener.DefaultTcpEventListener;
 import com.think.tcp2.listener.ThinkTcpClientEventListener;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
@@ -40,6 +39,13 @@ public class Tcp2Client {
 
     private String id ;
 
+    @Remark("客户端控制id")
+    private final String authKey;
+
+    @Remark("客户端的应用名称")
+    private String applicationName;
+
+
     private static Tcp2Client instance ;
     private int port;
 
@@ -49,7 +55,6 @@ public class Tcp2Client {
 
     private EventLoopGroup worker = null;
 
-
     private IThinkTcpPayloadHandler consumer;
 
     private ThinkTcpClientEventListener listener;
@@ -58,15 +63,31 @@ public class Tcp2Client {
 
     protected boolean connected = false;
 
+    private boolean deny =true;
+
 
     private String localIpaddr = "";
 
+
+    public String getAuthKey() {
+        return authKey;
+    }
+
+    public boolean isDeny() {
+        return deny && connected;
+    }
+
+    public void setDeny(boolean deny) {
+        this.deny = deny;
+    }
 
     public boolean isConnected() {
         return connected;
     }
 
+
     private Tcp2Client() {
+        this.authKey =  MD5Util.encryptMd5(StringUtil.uuid() +"-millis-"+  System.currentTimeMillis() + "nano-"+ System.nanoTime());
     }
     public static final Tcp2Client getInstance(){
         if(instance == null){
@@ -82,7 +103,7 @@ public class Tcp2Client {
             this.localIpaddr = localIpaddr;
         }
         if(channel!=null && channel.isActive()){
-
+            throw new RuntimeException("无效绑定本机IP，请在Connect之前绑定！");
         }
     }
 
@@ -94,7 +115,7 @@ public class Tcp2Client {
             }
         }
     }
-    public final void connect(String serverAddr, int port , IThinkTcpPayloadHandler consumer) throws InterruptedException {
+    public final void connect(String tcpServerHostAddr, int port , IThinkTcpPayloadHandler consumer) throws InterruptedException {
 
 
         if(consumer!=null ){
@@ -104,7 +125,7 @@ public class Tcp2Client {
             throw new InterruptedException("未设置消息处理的Consumer");
         }
         this.port = port;
-        this.serverAddr = serverAddr;
+        this.serverAddr = tcpServerHostAddr;
         bootstrap= new Bootstrap();
 
 //        bootstrap.bind();
@@ -116,19 +137,26 @@ public class Tcp2Client {
         bootstrap.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
-                ch.pipeline().addLast(new ObjectEncoder());
-                ch.pipeline().addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)));
-                ch.pipeline().addLast((new IdleStateHandler(0, ThinkTcpConfig.getIdleActiveSequenceTimeSeconds(), 0, TimeUnit.SECONDS)));
-                ch.pipeline().addLast(new TcpWelMessageHandler());
-                ch.pipeline().addLast(new TcpClientHandler());
+                ChannelPipeline pipeline = ch.pipeline();
+                pipeline.addLast(new ObjectEncoder());
+                pipeline.addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)));
+                pipeline.addLast((new IdleStateHandler(0, ThinkTcpConfig.getIdleActiveSequenceTimeSeconds(), 0, TimeUnit.SECONDS)));
+                pipeline.addLast(new TcpWelMessageHandler());
+                pipeline.addLast(new TcpAuthResponseHandler());
+                pipeline.addLast(new TcpClientHandler());
             }
         });
 
+        if(StringUtil.isNotEmpty(localIpaddr)){
+//            bootstrap.remoteAddress()
+        }
 
 //        bootstrap.remoteAddress()
-        ChannelFuture channelFuture = bootstrap.connect(serverAddr, port).sync();
-        log.info("正在建立到{} : {} 的连接" ,serverAddr ,port);
+        ChannelFuture channelFuture = bootstrap.connect(tcpServerHostAddr, port).sync();
+        log.info("正在建立到{} : {} 的连接" ,tcpServerHostAddr ,port);
         this.channel = channelFuture.channel();
+
+
 
         CompletableFuture.runAsync(()->{
             try{
@@ -142,6 +170,7 @@ public class Tcp2Client {
                 bootstrap = null;
             }
         });
+
     }
 
 
@@ -157,6 +186,10 @@ public class Tcp2Client {
     }
 
     public boolean sendPayLoad(TcpPayload payload) throws InterruptedException {
+        if(isDeny()){
+            log.warn("当前TCP CLIENT 通信运维受限，通信的内容可能不被服务器处理和消费");
+        }
+
 //        Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
         final List<TcpPayloadEventListener> listeners = PayloadListenerManager.getListeners();
         for (TcpPayloadEventListener eventListener : listeners) {
@@ -199,6 +232,14 @@ public class Tcp2Client {
 
     public String getId() {
         return id;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
     }
 
     protected void setId(String id) {

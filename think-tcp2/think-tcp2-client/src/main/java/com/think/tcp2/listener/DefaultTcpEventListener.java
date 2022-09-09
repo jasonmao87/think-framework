@@ -25,7 +25,12 @@ public class DefaultTcpEventListener implements ThinkTcpClientEventListener {
         if (log.isDebugEnabled()) {
             log.debug("连接断开");
         }
+    }
 
+
+    @Override
+    public void onDenyStateChange() {
+        Tcp2Client.getInstance();
     }
 
     @Override

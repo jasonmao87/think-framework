@@ -63,18 +63,19 @@ public class ThinkThreadExecutor {
     /**
      * 最大线程数量，超过核心数量当空闲时候会被回收
      */
-    private static final int maximumPoolSize = 36 ;
+    private static final int maximumPoolSize = 64 ;
     /**
      * 拒绝策略采用 thinkRunsPolicy ，尝试 加queue 三次，如果 失败，让生产线程 自己跑去 ！
      */
     private static final Executor executor = new ThreadPoolExecutor(
             corePoolSize,
             maximumPoolSize,
-            0,
-            TimeUnit.MINUTES,
+            30,
+            TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(queueCapacity),
             new DefaultThinkThreadFactory(),
-            new ThinkRunsPolicy());
+            new ThinkRunsPolicy()
+    );
 
 
     /**

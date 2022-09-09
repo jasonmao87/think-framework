@@ -17,6 +17,11 @@ public interface ThinkTcpClientEventListener {
     void onConnected() ;
 
     /**
+     * 收到授权通知 消息
+     */
+    void onDenyStateChange();
+
+    /**
      * 离线事件
      */
     void onDisConnected();

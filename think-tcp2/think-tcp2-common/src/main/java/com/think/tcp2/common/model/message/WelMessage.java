@@ -1,14 +1,17 @@
-package com.think.tcp2.common.model;
-
-import org.omg.CORBA.PUBLIC_MEMBER;
+package com.think.tcp2.common.model.message;
 
 import java.io.Serializable;
+
 
 /**
  * @author : JasonMao
  * @version : 1.0
  * @date : 2022/6/15 19:47
- * @description : TODO
+ * @description :  欢饮消息 WEL MESSAGE
+ *  这个消息由 服务器端 发送给 客户端  / 用于表示欢饮
+ *      同时， 通知 client - 可以执行接下来一系列的操作了！
+ *
+ *
  */
 public class WelMessage implements Serializable {
 

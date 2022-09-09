@@ -1,13 +1,16 @@
 package com.think.tcp2.server;
 
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
+import com.think.tcp2.common.model.message.AuthResponseMessage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelId;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,12 +20,14 @@ import java.util.Set;
  * @date : 2022/5/23 13:09
  * @description : 连接客户端模型
  */
+@Slf4j
 public class TcpClient implements Serializable {
 
     private static final long serialVersionUID = 8972824446970992179L;
 
+    private boolean deny = false ;
 
-    private String name ;
+    private String appName;
 
     private long initTime ;
 
@@ -37,14 +42,18 @@ public class TcpClient implements Serializable {
      */
     private Set<String> extendsSet ;
 
+    private String authKey ;
+
+    /*>>>>>>>>>>>>>>>>>>>>>>IP-ADDRESS<<<<<<<<<<<<<<<<<<<<<<<*/
+    private InetSocketAddress socketAddress ;
 
     protected TcpClient(Channel channel) {
         this.channel = channel;
         this.initTime = ThinkMilliSecond.currentTimeMillis();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     public void idleState(){
@@ -58,8 +67,8 @@ public class TcpClient implements Serializable {
         return channel.id().asShortText();
     }
 
-    public String getName() {
-        return name;
+    public String getAppName() {
+        return appName;
     }
 
     public long getInitTime() {
@@ -78,13 +87,24 @@ public class TcpClient implements Serializable {
         return channel;
     }
 
+    public void setSocketAddress(InetSocketAddress socketAddress) {
+        this.socketAddress = socketAddress;
+    }
+
+    public InetSocketAddress getSocketAddress() {
+        return socketAddress;
+    }
+
     public <T extends Serializable> void sendMessage(T message){
+
         TcpPayload payload = new TcpPayload(message);
         payload.setClientId( this.getId());
         final ChannelFuture channelFuture = channel.writeAndFlush(payload);
+        this.active();
     }
 
     public <T extends Serializable> void sendMessageWithSession(T message,String session){
+        this.active();
         TcpPayload payload = new TcpPayload(message);
         payload.setSession(session);
         payload.setClientId( this.getId());
@@ -97,6 +117,22 @@ public class TcpClient implements Serializable {
         return ThinkMilliSecond.currentTimeMillis() - lastIdleStateTime > (ThinkTcpConfig.getIdleTimeoutMillis() + 5000L);
     }
 
+    public boolean isDeny() {
+        if(StringUtil.isNotEmpty(authKey)) {
+            return deny;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("由于客户端 {} 未发送注册授权请求，当前状态受限！",getId());
+        }
+        return true;
+    }
+
+    public void setDeny(boolean deny,String message) {
+        this.deny = deny;
+        AuthResponseMessage authResponseMessage = new AuthResponseMessage(deny);
+        authResponseMessage.setMessage(message);
+        this.getChannel().writeAndFlush(authResponseMessage);
+    }
 
     public void addExtendData(String extend){
         if(this.extendsSet == null){
@@ -119,5 +155,15 @@ public class TcpClient implements Serializable {
             this.extendsSet = null;
         }
         super.finalize();
+    }
+
+
+
+    public void setAuthKey(String authKey) {
+        this.authKey = authKey;
+    }
+
+    public String getAuthKey() {
+        return authKey;
     }
 }

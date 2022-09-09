@@ -8,6 +8,7 @@ import com.think.tcp2.core.listener.PayloadListenerManager;
 import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import com.think.tcp2.listener.ThinkTcpClientEventListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,9 +38,6 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
 
 
         if (getConsumer()!=null) {
-
-
-
             final List<TcpPayloadEventListener> iterator = PayloadListenerManager.getListeners();
             for (TcpPayloadEventListener listener : iterator) {
                 if (listener!=null) {

@@ -2,13 +2,17 @@ package com.think.tcp2.server.handler;
 
 import com.think.exception.ThinkRuntimeException;
 import com.think.tcp2.common.model.TcpPayload;
+import com.think.tcp2.server.ClientManager;
+import com.think.tcp2.server.TcpClient;
 import com.think.tcp2.server.handler.provider.StringMessagePrintConsumer;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author : JasonMao
@@ -19,9 +23,20 @@ import java.util.Map;
 @Slf4j
 public class ThinkPayloadProcessor {
 
+    private static final Set<String> freeAuthTypeSet = new HashSet<>();
 
     private static final Map<String, IServerMessageHandler> consumerMap =new HashMap<>();
 
+
+    public boolean auth(Channel channel,String dataType){
+        if (freeAuthTypeSet.contains(dataType)) {
+            return true;
+        }
+        final TcpClient tcpClient = ClientManager.getInstance().get(channel);
+        return !tcpClient.isDeny();
+
+
+    }
 
 
 
@@ -66,11 +81,26 @@ public class ThinkPayloadProcessor {
         }
     }
 
+    @Deprecated
+    public static final <T extends Serializable> void bindC2SMessageHandler(String messageType , IServerMessageHandler<T> messageConsumer ){
+        bindC2SMessageHandler(messageType,messageConsumer,false);
+    }
+    @Deprecated
+    public static final <T extends Serializable> void bindC2SMessageHandler(Class messageType , IServerMessageHandler<T> messageConsumer ){
+        bindC2SMessageHandler(messageType,messageConsumer,false);
+    }
 
 
-    public static final <T extends Serializable> void bindC2SMessageHandler(String messageType , IServerMessageHandler<T> messageConsumer ) throws ThinkRuntimeException {
+
+    public static final <T extends Serializable> void bindC2SMessageHandler(String messageType , IServerMessageHandler<T> messageConsumer ,boolean authAble) throws ThinkRuntimeException {
         try {
-            log.info("服务绑定消息处理器 类型 {} ，实例 {}" ,messageType,messageConsumer.getClass().getTypeName());
+            if(authAble == false){
+                //无需 授权校验的加入到 set中
+                freeAuthTypeSet.add(messageType);
+            }
+            if (log.isInfoEnabled()) {
+                log.info("服务绑定消息处理器 类型 {} ，实例 {}" ,messageType,messageConsumer.getClass().getTypeName());
+            }
             final Class<?> aClass = Class.forName(messageType);
             if (aClass != null) {
                 consumerMap.put(messageType, messageConsumer);
@@ -81,8 +111,9 @@ public class ThinkPayloadProcessor {
     }
 
 
-    public static final <T extends Serializable> void bindC2SMessageHandler(Class messageType , IServerMessageHandler<T> messageConsumer ){
-        bindC2SMessageHandler(messageType.getTypeName(),messageConsumer);
+
+    public static final <T extends Serializable> void bindC2SMessageHandler(Class messageType , IServerMessageHandler<T> messageConsumer,boolean authAble){
+        bindC2SMessageHandler(messageType.getTypeName(),messageConsumer,authAble);
     }
 
 

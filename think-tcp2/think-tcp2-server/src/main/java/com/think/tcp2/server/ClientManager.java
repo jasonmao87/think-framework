@@ -1,5 +1,6 @@
 package com.think.tcp2.server;
 
+import com.think.common.util.TimeUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.executor.ThinkAsyncExecutor;
 import com.think.tcp2.common.model.TcpPayload;
@@ -8,9 +9,11 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
@@ -27,8 +30,14 @@ public class ClientManager {
     private final Map<String, TcpClient> clientHolder ;
 
 
+    public final Set<String> authDenySet;
+
+
     private ClientManager() {
+        authDenySet = new HashSet<>();
         clientHolder = new ConcurrentHashMap<>();
+        ///启动自动巡检
+        this._autoCheck();
     }
 
     private IThinkTcpClientTrigger tcpClientTrigger;
@@ -202,14 +211,83 @@ public class ClientManager {
     public void printClients(){
         int index =0;
         for (String key : this.clientHolder.keySet()) {
-            final TcpClient tcpClient = get(key);
+            TcpClient tcpClient = get(key);
             index++;
             if(log.isInfoEnabled()) {
-                log.info("{} : {}  --最后活跃：{}", index, tcpClient.getId(), tcpClient.getLastActiveTime());
+                log.info("{} : [{}]{}  --最后活跃：{} 是否受限 {} ", index, tcpClient.getId(),tcpClient.getSocketAddress(), tcpClient.getLastActiveTime() , tcpClient.isDeny());
             }else{
                 System.out.println(index + ":" + tcpClient.getId() +" --最后活跃 ： "+ tcpClient.getLastActiveTime());
             }
         }
-
     }
+
+
+    /**
+     * 检查 客户端是否受限
+     * @param authKey
+     * @return
+     */
+    public boolean checkIsDenyByAuthKey(String authKey){
+        return this.authDenySet.contains(authKey);
+    }
+
+    /**
+     * 设置客户端受限
+     * @param authKey
+     * @param message
+     */
+    public void denyClientByAuthKey(String authKey,String message){
+        for (String key : this.clientHolder.keySet()) {
+            TcpClient tcpClient = get(key);
+            if(tcpClient.getAuthKey().equals(authKey)){
+                tcpClient.setDeny(true,message);
+            }
+            this.authDenySet.add(authKey);
+        }
+    }
+
+    public void acknowledgeClientByAuthKey(String authKey){
+        for (String key : this.clientHolder.keySet()) {
+            TcpClient tcpClient = get(key);
+            if(tcpClient.getAuthKey().equals(authKey)){
+                tcpClient.setDeny(false,"");
+            }
+            this.authDenySet.remove(authKey);
+        }
+    }
+
+
+
+
+    private void _autoCheck(){
+        ThinkAsyncExecutor.execute(()->{
+            while (true) {
+                try {
+                    for (String key : this.clientHolder.keySet()) {
+                        TcpClient tcpClient = get(key);
+                        boolean deny = tcpClient.isDeny();
+                        if (this.authDenySet.contains(tcpClient.getAuthKey())) {
+                            if(deny == false){
+                                deny = true;
+                            }
+                        }else{
+                            if(deny == true){
+                                deny =false;
+                            }
+                        }
+                        tcpClient.setDeny(deny, "巡检重复通知");
+                    }
+                    log.info("巡检结束");
+                    TimeUtil.sleep(15, TimeUnit.MINUTES);
+                }catch (Exception e){}
+            }
+
+
+        });
+
+
+
+
+        }
+
 }

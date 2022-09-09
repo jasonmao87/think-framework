@@ -1,14 +1,17 @@
 package com.think.core.executor;
 
+import com.think.common.result.ThinkMiddleState;
+import com.think.common.result.ThinkResult;
 import com.think.common.util.FastJsonUtil;
 import com.think.common.util.TimeUtil;
 import com.think.core.security.token.ThinkSecurityToken;
 import com.think.core.security.token.ThinkSecurityTokenTransferManager;
-import com.think.core.security.token.ThinkSecurityTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * @Date :2021/3/24
@@ -42,20 +45,62 @@ public class ThinkAsyncExecutor {
         }
         ThinkSecurityToken securityToken = getSecurityToken();
         return executeWithToken(task,securityToken);
-//        if(securityToken!=null){
-//        }else{
-//            return execute(task,null);
-//        }
+    }
 
-//        //
-//        if(sharedToken!=null) {
-//            return execute(task, sharedToken.toTokenString());
-//        }else{
-//            return execute(task,null);
-//        }
-//
+
+    /**
+     * 带锁的
+     * @param task
+     * @param locker
+     * @return
+     */
+    public static final ThinkResult<CompletableFuture<Void>> execute(final ThinkAsyncTask task , Lock locker ){
+        final ThinkMiddleState middleState = new ThinkMiddleState();
+        execute(()->{
+            boolean canRun =true;
+            if (locker!=null) {
+                canRun =locker.tryLock();
+            }
+            if(canRun){
+                execute(task).whenComplete((a,e)->{
+                    if (locker!=null) {
+                        locker.unlock();
+                    }
+                });
+            }
+
+
+        });
+
+        final CompletableFuture<Void> completableFuture = execute(() -> {
+            if (locker.tryLock()) {
+                /*>>>>>>>>>>>>>>>>>>>>>>-获得了锁-<<<<<<<<<<<<<<<<<<<<<<<*/
+                try {
+                    middleState.success();
+                    task.execute();
+                }finally {
+                    /*>>>>>>>>>>>>>>>>>>>>>>-解锁 -<<<<<<<<<<<<<<<<<<<<<<<*/
+                    locker.unlock();
+                }
+
+            }else{
+                middleState.fail();
+            }
+
+
+        });
+        while (!middleState.isEnable()){
+            TimeUtil.sleep(1,TimeUnit.MILLISECONDS);
+        }
+        if (middleState.isSuccess()) {
+            return ThinkResult.success(completableFuture);
+        }else{
+            return ThinkResult.fastFail();
+        }
 
     }
+
+
 
     /**
      * 同步的执行方法
@@ -84,7 +129,6 @@ public class ThinkAsyncExecutor {
         }
     }
 
-
     public static final CompletableFuture<Void> executeWithToken(final ThinkAsyncTask task,final ThinkSecurityToken token){
         Runnable runnable = new Runnable() {
             @Override
@@ -110,7 +154,11 @@ public class ThinkAsyncExecutor {
                 }
             }
         };
+//        final Thread thread = new Thread(runnable);
+////        ThinkThreadExecutor.getExecutor().execute(runnable);
+
         return CompletableFuture.runAsync(runnable,ThinkThreadExecutor.getExecutor());
+
     }
 
 //
@@ -144,6 +192,13 @@ public class ThinkAsyncExecutor {
 //    }
 
 
+    public static String  getThreadName(){
+        final String name = Thread.currentThread().getName();
+        return name ;
+    }
 
+    public static final void print(String t){
+        System.out.println( System.currentTimeMillis() + "> "+getThreadName() + " " +t );
+    }
 
 }

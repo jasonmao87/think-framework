@@ -353,7 +353,7 @@ public class WebUtil {
             });
             return sessionDataMap;
         }catch (Exception e){}
-        return new HashMap<>();
+        return new HashMap<String, String>();
     }
 
 
