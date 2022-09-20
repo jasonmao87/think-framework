@@ -19,6 +19,8 @@ public class DateUtil extends TimeUtil{
     private static long lastCallNowTime = 0L;
     private static Date lastCallNowDate = new Date();
 
+    private static final Date zero =new Date(0);
+
     public static final Calendar getCalendar(){
         return Calendar.getInstance();
     }
@@ -192,7 +194,12 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date zeroDate(){
-        return new Date(0L);
+        if(zero.getTime() == 0L){
+            return zero;
+        }else{
+            zero.setTime(0L);
+            return zero;
+        }
     }
 
     /**

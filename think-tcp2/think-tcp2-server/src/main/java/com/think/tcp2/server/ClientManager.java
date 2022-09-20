@@ -176,15 +176,30 @@ public class ClientManager {
         return idList;
     }
 
+    public List<TcpClient> fullClientList(){
+        List<TcpClient> list = new ArrayList<>();
+        this.clientHolder.forEach((k,v)->{
+            list.add(v);
+        });
+        if(list.size() > 1) {
+            list.sort((a, b) -> {
+                return b.getAppName().compareTo(a.getAppName());
+            });
+        }
+        return list;
+
+    }
+
+
     public List<TcpClient> list(final int start, final int limit){
         final List<TcpClient> list = new ArrayList<>();
         final int finalLimit = limit >0?limit:Integer.MAX_VALUE;
         final int finalStart = start>0? start:0 ;
         AtomicInteger integer =new AtomicInteger(0);
-        this.clientHolder.forEach((k,v)->{
+        this.fullClientList().forEach(t->{
             int index = integer.incrementAndGet();
             if(index>=finalStart && index - finalLimit < finalLimit){
-                list.add(v);
+                list.add(t);
             }
         });
         return list;

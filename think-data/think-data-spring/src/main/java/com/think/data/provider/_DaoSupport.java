@@ -172,8 +172,8 @@ public class _DaoSupport{
                 if(op == ThinkFilterOp.BETWEEN_AND){
                     long small = getIdValueForPossibleInteger(fb.getValues()[0]);
                     long big = getIdValueForPossibleInteger(fb.getValues()[0]);
-                    if(log.isDebugEnabled()){
-                        log.debug("analysis between {} and {} " , small,big);
+                    if(log.isTraceEnabled()){
+                        log.trace("analysis between {} and {} " , small,big);
                     }
                     if(small> minId){
                         minId = small;
@@ -182,8 +182,8 @@ public class _DaoSupport{
                         maxId = big;
                     }
                     locationAble =true;
-                    if(log.isDebugEnabled()){
-                        log.debug("current  {} -  {} " , minId,maxId);
+                    if(log.isTraceEnabled()){
+                        log.trace("current  {} -  {} " , minId,maxId);
                     }
                 }
             }
@@ -225,8 +225,8 @@ public class _DaoSupport{
                     minY = initedMin;
                 }
                 if (minY > maxY) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(" compute result is min largethan max {} {} ");
+                    if (log.isTraceEnabled()) {
+                        log.trace(" compute result is min large than max {} {} ");
                     }
                     return new int[]{};
                 } else {
@@ -238,8 +238,8 @@ public class _DaoSupport{
                             arr[i] = i + minY;
                         }
                     }
-                    if (log.isDebugEnabled()) {
-                        log.debug("{}", Arrays.toString(arr));
+                    if (log.isTraceEnabled()) {
+                        log.trace("{}", Arrays.toString(arr));
                     }
 
                     return arr;
@@ -290,8 +290,8 @@ public class _DaoSupport{
             }
         });
 
-        if(log.isDebugEnabled()){
-            log.debug(" {} splits -> {} ",desc?"DESC":"ASC" , Arrays.toString(list.toArray()));
+        if(log.isTraceEnabled()){
+            log.trace(" {} splits -> {} ",desc?"DESC":"ASC" , Arrays.toString(list.toArray()));
         }
         return list;
     }

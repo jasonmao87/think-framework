@@ -47,6 +47,11 @@ public class TcpClient implements Serializable {
     /*>>>>>>>>>>>>>>>>>>>>>>IP-ADDRESS<<<<<<<<<<<<<<<<<<<<<<<*/
     private InetSocketAddress socketAddress ;
 
+
+    public String getClientHostName(){
+        return socketAddress!=null?socketAddress.getHostName():"";
+    }
+
     protected TcpClient(Channel channel) {
         this.channel = channel;
         this.initTime = ThinkMilliSecond.currentTimeMillis();
