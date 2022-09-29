@@ -75,7 +75,7 @@ public class DataModelBuilder {
 //        String buildTableName = "";
         if(modal!=null ){
             if(modal.isPartitionAble()){
-                if(Manager.getDataSrvRuntimeInfo() ==null){
+                if(Manager.getDataSrvRuntimeInfo() ==null   ){
                     if (log.isDebugEnabled()) {
                         log.debug("未找到必要的RUNTIME INFO， 为了正常运行返回了 nonePart分区");
                     }

@@ -41,6 +41,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\ut
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\security\DesensitizationUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\supports\ClasspathPackageScaner.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\office\ThinkDocUtil.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\thread\ThinkStopAbleTasker.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\table\ThinkGridModel.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\TFlowBuilder.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\schedule\ScheduledTask.java
@@ -132,6 +133,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\ut
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkMongoIndex.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\executor\ThinkAsyncTask.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\data\mysql\ThinkFilterBean.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\ThinkTextFileUtil.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\state\ThinkState.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\bean\IThinkFilterAndUpdateMapperBuilder.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\DataHistoryType.java
@@ -147,6 +149,7 @@ D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\thre
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\enums\TStateEnum.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\table\ThinkGridColumnModel.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\structure\ThinkFastList.java
+D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\ThinkTimeMeter.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\cache\ThinkSimpleCacheStorage.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\common\util\rt\models\MemeryInfoModel.java
 D:\projectFarm\gitee\think-famework\think-core\src\main\java\com\think\core\data\cache\CacheStorageMonitor.java

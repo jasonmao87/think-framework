@@ -42,6 +42,7 @@ com\think\common\data\mysql\ThinkSqlFilter.class
 com\think\common\util\ThinkMilliSecond.class
 com\think\common\util\BinaryTool.class
 com\think\core\enums\TEnableRequired$1.class
+com\think\common\util\ThinkTimeMeter.class
 com\think\common\data\ThinkMongoFilterOp.class
 com\think\core\security\AccessKey.class
 com\think\core\bean\TEnumExplain.class
@@ -57,6 +58,7 @@ com\think\common\util\ThinkCollectionUtil.class
 com\think\structure\ThinkSimpleHolder.class
 com\think\common\data\ThinkMongoFilterOp$1.class
 com\think\common\data\mysql\permission\ThinkSqlFilterPermissionFilter.class
+com\think\core\executor\thread\ThinkStopAbleTasker.class
 com\think\core\security\token\filter\IThinkSecurityAsyncTokenFilter.class
 com\think\core\annotations\bean\ThinkMongoIndex.class
 com\think\common\result\state\ThinkResultState.class
@@ -71,7 +73,6 @@ com\think\core\data\cache\ThinkCache.class
 com\think\common\util\RandomUtil.class
 com\think\core\security\token\ThinkSecurityToken.class
 com\think\common\result\ResultInfo.class
-com\think\common\util\ThinkTimer.class
 com\think\core\bean\BlobEntity.class
 com\think\core\data\DynamicArray.class
 com\think\core\security\ThinkLock$thinkInner.class
@@ -173,7 +174,6 @@ com\think\structure\ThinkReadOnlyList.class
 com\think\exception\ThinkNotSupportException.class
 com\think\structure\TCacheBean.class
 com\think\common\util\FastJsonUtil.class
-com\think\common\util\ThinkTimer$1.class
 com\think\core\security\ThinkKey.class
 com\think\structure\ThinkFastList$1.class
 com\think\common\data\mysql\TFlowStateUpdate.class
@@ -187,6 +187,7 @@ com\think\core\bean\SimplePrimaryEntity.class
 com\think\core\bean\IThinkFilterAndUpdateMapperBuilder.class
 com\think\common\util\TVerification.class
 com\think\core\security\token\ThinkSecurityTokenUtil.class
+com\think\common\util\ThinkTextFileUtil.class
 com\think\core\security\token\filter\IThinkTokenWebFilter.class
 com\think\common\util\office\ThinkExcelUtil$1.class
 com\think\common\util\security\RSAUtil.class

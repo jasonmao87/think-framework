@@ -152,23 +152,12 @@ public class TimeUtil {
 
 
 
-
-
-
-
-
-
-
     public static boolean isAM(Date datetime){
         return hourOfTime(datetime) < 12;
     }
 
     public static boolean isPM(Date datetime){
         return !isAM(datetime);
-    }
-
-    public static final ThinkTimer timer(){
-        return new ThinkTimer();
     }
 
     public static void sleepForSeconds(int durationSeconds){
@@ -212,49 +201,84 @@ public class TimeUtil {
     }
 
 
+    public static void main(String[] args) {
 
+        Thread t =new Thread(()->{
+            try{
+                while (true){
 
+                }
 
-}
+            }catch (Exception e){
 
-class ThinkTimer{
-
-    private long begin ;
-
-    protected ThinkTimer(){
-        begin = ThinkMilliSecond.currentTimeMillis();
-    }
-
-    public long duration(TimeUnit unit){
-
-        long duration = ThinkMilliSecond.currentTimeMillis() - begin;
-        switch (unit){
-            case MILLISECONDS:{
-                return duration;
             }
-            case NANOSECONDS:{
-                return TimeUnit.MILLISECONDS.toNanos(duration);
-            }
-            case MICROSECONDS:{
-                return TimeUnit.MILLISECONDS.toMicros(duration);
-            }
-            case SECONDS:{
-                return TimeUnit.MILLISECONDS.toSeconds(duration);
-            }
-            case MINUTES:{
-                return TimeUnit.MILLISECONDS.toMinutes(duration);
-            }
-            case HOURS:{
-                return TimeUnit.MILLISECONDS.toHours(duration);
-            }
-            case DAYS:{
-                return TimeUnit.MILLISECONDS.toDays(duration);
+            int i = 0;
+           while (true){
+               TimeUtil.sleepForSeconds(1);
+               System.out.println("run  " + i );
+               i++;
+           }
+        });
+        t.start();
+        int i = 0;
+        while (true){
+
+            TimeUtil.sleepForSeconds(3);
+            System.out.println("hello" + i );
+            i ++ ;
+            if(i % 5==0){
+                if (t.isAlive()) {
+                    t.interrupt();
+                    System.out.println("to interrupt ");
+                }
             }
         }
-        return duration;
+
     }
 
+
+
+
 }
+//
+//class ThinkTimer{
+//
+//    private long begin ;
+//
+//    protected ThinkTimer(){
+//        begin = ThinkMilliSecond.currentTimeMillis();
+//    }
+//
+//    public long duration(TimeUnit unit){
+//
+//        long duration = ThinkMilliSecond.currentTimeMillis() - begin;
+//        switch (unit){
+//            case MILLISECONDS:{
+//                return duration;
+//            }
+//            case NANOSECONDS:{
+//                return TimeUnit.MILLISECONDS.toNanos(duration);
+//            }
+//            case MICROSECONDS:{
+//                return TimeUnit.MILLISECONDS.toMicros(duration);
+//            }
+//            case SECONDS:{
+//                return TimeUnit.MILLISECONDS.toSeconds(duration);
+//            }
+//            case MINUTES:{
+//                return TimeUnit.MILLISECONDS.toMinutes(duration);
+//            }
+//            case HOURS:{
+//                return TimeUnit.MILLISECONDS.toHours(duration);
+//            }
+//            case DAYS:{
+//                return TimeUnit.MILLISECONDS.toDays(duration);
+//            }
+//        }
+//        return duration;
+//    }
+//
+//}
 
 
 

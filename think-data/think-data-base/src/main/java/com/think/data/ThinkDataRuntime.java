@@ -1,5 +1,6 @@
 package com.think.data;
 
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.structure.ThinkFastList;
 
@@ -90,6 +91,9 @@ public class ThinkDataRuntime implements Serializable {
     }
 
     public String getPartitionRegion() {
+        if (StringUtil.isEmpty(this.partitionRegion)) {
+            return "nonePart";
+        }
         return partitionRegion;
     }
 

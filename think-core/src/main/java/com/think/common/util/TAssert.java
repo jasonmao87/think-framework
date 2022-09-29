@@ -12,6 +12,8 @@ import java.util.Map;
  * @Name :TAssert
  * @Description : 请输入
  */
+
+@Deprecated
 public class TAssert {
     public TAssert() {
     }
