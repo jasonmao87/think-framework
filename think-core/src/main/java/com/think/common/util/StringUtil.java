@@ -5,6 +5,7 @@ import com.github.stuxuhai.jpinyin.PinyinHelper;
 import lombok.extern.slf4j.Slf4j;
 //import com.sun.istack.internal.NotNull;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -508,5 +509,18 @@ public class StringUtil {
 
     public static String fixStringIfNullAsEmpty(String str){
         return str!=null?str:getEmptyStr();
+    }
+
+
+    /**
+     * 进制 转换
+     * @param source
+     * @param sourceRadix
+     * @param targetRadix
+     * @return
+     */
+    public static final String radixChange(String source ,int sourceRadix ,int targetRadix) throws RuntimeException{
+        BigInteger bg = new BigInteger(source,sourceRadix);
+        return bg.toString(targetRadix);
     }
 }

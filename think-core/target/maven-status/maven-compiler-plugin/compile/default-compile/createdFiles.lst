@@ -92,6 +92,7 @@ com\think\core\data\cache\ThinkCacheManager$Builder.class
 com\think\common\data\mongo\ThinkMongoFilterBean$1.class
 com\think\moudles\auth\RoleModel.class
 com\think\exception\ThinkDataVerificationException.class
+com\think\common\util\security\ThinkOrderedHashUtil.class
 com\think\core\data\cache\ThinkCacheManager$1.class
 com\think\common\data\mysql\permission\SqlFilterPermissionRule.class
 com\think\core\annotations\bean\ThinkClollection.class

@@ -74,7 +74,7 @@ public class Tcp2Client {
     }
 
     public boolean isDeny() {
-        return deny && connected;
+        return deny && isConnected();
     }
 
     public void setDeny(boolean deny) {
@@ -82,7 +82,13 @@ public class Tcp2Client {
     }
 
     public boolean isConnected() {
-        return connected;
+        if (this.channel!=null) {
+            if (this.channel.isRegistered()) {
+                return true;
+            }
+        }
+        return false;
+//        return connected;
     }
 
 

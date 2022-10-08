@@ -74,15 +74,8 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
 
     @Override
     public boolean exists(long id) {
-
-        return findOne(id)!=null;
-//
-//        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(this.targetClass)
-//                .eq("id",id);
-//        ThinkQuery  query = ThinkQuery.build(sqlFilter);
-//
-//        Map<String,Object> result =  executeOne(query.selectForKeys(targetClass,"id"),finalTableName());
-//        return  !result.isEmpty() ;
+        Map<String, Object> map = findOne(id, "id");
+        return map!=null && (!map.isEmpty()) ;
     }
 
     @Override
@@ -97,24 +90,42 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
         return this.list(sqlFilter).size() > 0 ;
      }
 
-     public ThinkResult<Integer> checkIdBeforeBatchInsert(List<T> list){
-         //检查 id 是否 冲突
-         Long[] idArray = _DaoSupport.getIdArray(list);
-         if(idArray.length >0) {
-             ThinkSqlFilter<T> checkIdSqlFilter = ThinkSqlFilter.build(targetClass, -1).in("id", idArray);
-             List<Map<String, Object>> findExistIdList = this.list(checkIdSqlFilter, "id");
-             if(findExistIdList.size() >0){
-                 StringBuilder idErrorInfo = new StringBuilder("以下id可能存在冲突：");
-                 int i=0;
-                 for (Map<String, Object> map : findExistIdList) {
-                     if(i > 0){
-                         idErrorInfo.append(",");
+     public ThinkResult<Integer> checkIdBeforeBatchInsert(List<T> list) {
+
+         if (list.size() > 100) {
+             List<T> tempList = new ArrayList<>();
+             for (T t : list) {
+                 tempList.add(t);
+                 if (tempList.size() == 50) {
+                     ThinkResult<Integer> tempResult = this.checkIdBeforeBatchInsert(tempList);
+                     if (tempResult.isNotSuccess()) {
+                         return tempResult;
                      }
-                     idErrorInfo.append( map.get("id"));
-                     i ++ ;
+                     tempList.clear();
                  }
-                 idErrorInfo.append("操作被拒绝");
-                 return ThinkResult.forbidden(idErrorInfo.toString());
+             }
+             if (tempList.isEmpty() == false) {
+                 return this.checkIdBeforeBatchInsert(tempList);
+             }
+         } else {
+             //检查 id 是否 冲突
+             Long[] idArray = _DaoSupport.getIdArray(list);
+             if (idArray.length > 0) {
+                 ThinkSqlFilter<T> checkIdSqlFilter = ThinkSqlFilter.build(targetClass, -1).in("id", idArray);
+                 List<Map<String, Object>> findExistIdList = this.list(checkIdSqlFilter, "id");
+                 if (findExistIdList.size() > 0) {
+                     StringBuilder idErrorInfo = new StringBuilder("以下id可能存在冲突：");
+                     int i = 0;
+                     for (Map<String, Object> map : findExistIdList) {
+                         if (i > 0) {
+                             idErrorInfo.append(",");
+                         }
+                         idErrorInfo.append(map.get("id"));
+                         i++;
+                     }
+                     idErrorInfo.append("操作被拒绝");
+                     return ThinkResult.forbidden(idErrorInfo.toString());
+                 }
              }
          }
          return ThinkResult.success();
@@ -135,9 +146,8 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
             ObjectUtil.setDbPersistent(t);
             return ThinkResult.success(t);
         }
-
         return result;
-     }
+    }
 
     @Override
     public ThinkResult<Integer> batchInsert(List<T> list) {
