@@ -45,7 +45,7 @@ public class _SyncTableStructureUtil {
                 log.info("需要调整{}的表结构，需要新增{}个字段 ",tableName,newKeys.size());
                 String alterSql = this.alterSql(newKeys, tableName);
                 String reverseSql = this.reverseSql(newKeys,tableName);
-                log.info("即将执行结构调整脚本SQ---->>:  {}" , alterSql );
+                log.info("即将执行结构调整脚本SQL---->>:  {}" , alterSql );
                 log.info("如果遇到错误需要回滚的SQL-->>:  {}" ,reverseSql);
                 int updateResult = template.update(alterSql);
                 getAlterLogger(template).afterAlter(tClass,tableName,alterSql,reverseSql);
@@ -120,6 +120,7 @@ public class _SyncTableStructureUtil {
             }
             if(columnModel.isNullable() == false){
                 sql.append(" DEFAULT ").append( columnModel.getDefaultValue()).append(" ");
+            }else{
             }
         }
 

@@ -296,15 +296,16 @@ public class ThinkColumnModel implements Serializable {
 //    }
 
     public String getDefaultValue() {
-        if (this.nullable ) {
-            return null;
-        }
 
-        if (isUsingText()) {
-            return null;
+        if (isNullable()) {
+            return this.defaultValue;
         }
-
-        return ThinkJdbcTypeConverter.defaultValueString(ThinkJdbcTypeConverter.getType(type),defaultValue);
+        /*>>>>>>>>>>>>>>>>>>>>>>-edit here ！ you must check later !-<<<<<<<<<<<<<<<<<<<<<<<*/
+        String valueString = ThinkJdbcTypeConverter.defaultValueString(ThinkJdbcTypeConverter.getType(type), defaultValue);
+        if (valueString == null) {
+            ThinkJdbcTypeConverter.sqlDefaultValueString(type);
+        }
+        return valueString;
 
 //        return defaultValue;
     }

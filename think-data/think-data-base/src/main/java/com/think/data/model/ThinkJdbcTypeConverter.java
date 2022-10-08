@@ -269,14 +269,20 @@ public class ThinkJdbcTypeConverter {
     }
 
     private static final String sqlDateTimeValue(String def){
-        return "'"+DateUtil.toFmtString(DateUtil.valueOfString(def),"yyyy-MM-dd HH:mm:ss") + "'";
+        return sqlDateTimeValue( DateUtil.valueOfString(def));
     }
 
+    private static final String sqlDateTimeValue(Date def){
+        return "'"+DateUtil.toFmtString( def,"yyyy-MM-dd HH:mm:ss") + "'";
+    }
 
     private static final String sqlDateValue(String def){
-        return "'"+DateUtil.toFmtString(DateUtil.valueOfString(def),"yyyy-MM-dd") + "'";
+        return sqlDateValue(DateUtil.valueOfString(def));
     }
 
+    private static final String sqlDateValue(Date def){
+        return "'"+DateUtil.toFmtString(def,"yyyy-MM-dd") + "'";
+    }
 
 
     private static String sqlStringDefaultValue(String def){
@@ -296,6 +302,39 @@ public class ThinkJdbcTypeConverter {
         }
         return "'"+def+"'";
     }
+
+
+    public static final String sqlDefaultValueString(Type type){
+        return sqlDefaultValueString(getType(type));
+    }
+
+    /**>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     *  you hace to check here later !
+     *<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+    public static final String sqlDefaultValueString(ThinkSqlType thinkSqlType){
+        switch (thinkSqlType){
+            case ENUM: return "''";
+            case BIT: return  "0";
+            case INTEGER: return "0";
+            case BIGINT: return "0";
+            case CHAR: return "''";
+            case VARCHAR: return "''";
+            case TEXT: return "''";
+            case TIME: return "'00:00:00'";
+            case DATE:  return sqlDateValue(DateUtil.zeroDate());
+            case DATETIME:  return  sqlDateTimeValue(DateUtil.zeroDate()) ;
+            case FLOAT: return "0.0";
+            case DOUBLE: return "0.0";
+            default: {
+                return null;
+            }
+
+        }
+//            pdca 命名 ：  动词 + 名次 + 指标
+
+
+    }
+
 
 
     public static void main(String[] args) {
