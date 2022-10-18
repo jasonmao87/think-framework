@@ -117,6 +117,7 @@ com\think\core\annotations\bean\ThinkMongoPartitionAble.class
 com\think\core\executor\ThinkAsyncExecutor.class
 com\think\core\bean\_Entity.class
 com\think\common\util\rt\ThinkDefaultTargetTypeUtil.class
+com\think\core\annotations\bean\ThinkAlias.class
 com\think\core\executor\schedule\ThinkScheduledTaskHolder.class
 com\think\core\security\WebSecurityUtil.class
 com\think\common\data\mysql\ThinkFilterBean$1.class

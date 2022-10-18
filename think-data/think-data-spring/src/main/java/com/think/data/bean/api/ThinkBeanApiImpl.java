@@ -84,10 +84,10 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
                 return result.intResult();
             }
         }
-
-
         return dao.batchInsert(list);
     }
+
+
 
     //    @Override
     @Deprecated

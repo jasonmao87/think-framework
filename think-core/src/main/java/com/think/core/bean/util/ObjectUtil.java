@@ -2,6 +2,7 @@ package com.think.core.bean.util;
 
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
+import com.think.core.annotations.bean.ThinkAlias;
 import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.TFlowBuilder;
@@ -78,6 +79,8 @@ public class ObjectUtil  {
             ClassUtil.setValue(field,t,state);
 //            log.info("设置值 {}" ,state);
         }else{
+
+
 //            Field field = ClassUtil.getField(t.getClass(), key);
             if(field.getType().getSuperclass()!=null && field.getType().getSuperclass().equals(Enum.class)){
                 if(map.get(key)!=null) {
@@ -92,11 +95,24 @@ public class ObjectUtil  {
 
 
         }
-
-
-
-
     }
+
+
+    public static final  <T extends BaseVo> T voInit(Map<String, Object> map,T t ,Field field){
+        if(t instanceof BaseVo){
+            ThinkAlias annotation = field.getAnnotation(ThinkAlias.class);
+            String key = null;
+            if(annotation!=null &&  StringUtil.isNotEmpty(annotation.sourceColumnName())){
+                key = annotation.sourceColumnName();
+            }else{
+                key = field.getName();
+            }
+
+
+        }
+        return null;
+    }
+
 
     public static final <T> T mapToBean( Map<String, Object> map,Class<T> targetClass ,String...  ignoreKeys  ){
         T t = null;

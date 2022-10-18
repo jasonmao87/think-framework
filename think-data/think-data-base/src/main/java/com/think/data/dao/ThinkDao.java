@@ -15,6 +15,7 @@ public interface ThinkDao<T extends SimplePrimaryEntity> extends ThinkSelector<T
 
     ThinkResult<Integer> batchInsert(List<T> tList);
 
+
     @Deprecated
     @Remark("尽量不推荐使用全量的update方法，毕竟会引起很多不必要的麻烦，比如覆盖某些不该覆盖的值等")
     ThinkResult<Integer> update(T t);

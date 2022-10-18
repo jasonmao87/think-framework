@@ -7,7 +7,7 @@
     <groupId>com.think</groupId>
     <artifactId>think-framework</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5.1-SNAPSHOT</version>
     <modules>
         <module>think-core</module>
         <module>think-mongo-spring</module>
@@ -50,7 +50,7 @@
         <snapshotRepository>
             <id>nexus-snapshots</id>
             <name>nexus-snapshots</name>
-            <url>http://8.136.215.26:8088/repository/maven-snapshots/</url>
+            <url>https://nexus.x-service.cn/repository/maven-snapshots/</url>
         </snapshotRepository>
 
     </distributionManagement>
@@ -58,7 +58,7 @@
         <repository>
             <id>think-nexus</id>
             <name>think-nexus</name>
-            <url>http://8.136.215.26:8088/repository/maven-public/</url>
+            <url>https://nexus.x-service.cn/repository/maven-public/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -74,66 +74,66 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-core</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data-base</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data-spring</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-simple-redis</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-client</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-server</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp2-common</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp2-client</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp2-server</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-mongo-spring</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
@@ -163,18 +163,18 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-base</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-auth-support</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-service</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <!-- think framework -dependencies -->

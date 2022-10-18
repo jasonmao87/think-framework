@@ -303,7 +303,7 @@ public class ThinkColumnModel implements Serializable {
         /*>>>>>>>>>>>>>>>>>>>>>>-edit here ！ you must check later !-<<<<<<<<<<<<<<<<<<<<<<<*/
         String valueString = ThinkJdbcTypeConverter.defaultValueString(ThinkJdbcTypeConverter.getType(type), defaultValue);
         if (valueString == null) {
-            ThinkJdbcTypeConverter.sqlDefaultValueString(type);
+            valueString = ThinkJdbcTypeConverter.sqlDefaultValueString(type);
         }
         return valueString;
 

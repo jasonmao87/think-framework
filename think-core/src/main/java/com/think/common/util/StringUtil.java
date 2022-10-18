@@ -2,9 +2,11 @@ package com.think.common.util;
 
 import com.github.stuxuhai.jpinyin.PinyinFormat;
 import com.github.stuxuhai.jpinyin.PinyinHelper;
+import com.think.core.annotations.Remark;
 import lombok.extern.slf4j.Slf4j;
 //import com.sun.istack.internal.NotNull;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -522,5 +524,85 @@ public class StringUtil {
     public static final String radixChange(String source ,int sourceRadix ,int targetRadix) throws RuntimeException{
         BigInteger bg = new BigInteger(source,sourceRadix);
         return bg.toString(targetRadix);
+    }
+
+
+    @Remark("约束String 的长度")
+    public final static String fixedStrLenForPrintAndLogger(String source , int len){
+        if(len ==0){
+            return "";
+        }
+        StringBuilder sb ;
+        if(source==null){
+            sb =new StringBuilder("");
+            while (sb.length()<len){
+                sb.append(" ");
+            }
+            return sb.toString();
+        }
+
+
+        byte[] bytes = source.getBytes();
+        byte[] target =new byte[len];
+        int maxIndex = (target.length>bytes.length?bytes.length:target.length);
+        for (int i = 0; i < maxIndex; i++) {
+            target[i] = bytes[i];
+        }
+        String fixedString = new String(target);
+        return fixedString;
+
+
+
+
+        /**
+
+        if(len == source.length() ){
+            return source;
+        }else if(len > source.length()){
+            sb= new StringBuilder("");
+            while ( (sb.length() + source.length() )< len){
+                sb.append(" ");
+            }
+            return sb.append(source).toString();
+        } else{
+            byte[] bytes = source.getBytes();
+            byte[] target =new byte[len*2];
+            int maxIndex = (target.length>bytes.length?bytes.length:target.length);
+            for (int i = 0; i < maxIndex; i++) {
+                target[i] = bytes[i];
+            }
+            if(maxIndex<target.length){
+                sb.append(new String())
+            }
+
+
+
+
+
+            sb = new StringBuilder();
+            sb.append(source.substring(0,len));
+            if(sb.length()>5){
+                sb.replace(sb.length()-4,sb.length()-1,"...");
+            }
+            return sb.toString();
+        }
+         **/
+    }
+
+    public static void main(String[] args) throws UnsupportedEncodingException {
+
+        String s = "我爱茜茜";
+
+
+        byte[] bytes = s.getBytes("GB2312");
+
+        System.out.println(s);
+
+
+        String s2 = new String(bytes, "ISO-8859-1");
+
+
+        System.out.println(s2);
+
     }
 }

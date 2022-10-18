@@ -546,19 +546,6 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
 
     public ThinkSqlFilter removeKeyConditions(String key){
-//        Iterator<ThinkFilterBean> iterator = beans.iterator();
-//        if(iterator!=null){
-//            List<ThinkFilterBean> removeBeans = new ArrayList<>();
-//            while (iterator.hasNext()) {
-//                ThinkFilterBean next = iterator.next();
-//                if (next.getKey().equals(key)) {
-//                    removeBeans.add(next);
-//                }
-//            }
-//            for(ThinkFilterBean remove : removeBeans){
-//                beans.remove(remove);
-//            }
-//        }
         if(beans.size() > 0){
             beans.removeIf(bean -> bean.getKey().equals(key));
         }

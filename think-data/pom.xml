@@ -5,7 +5,7 @@
     <parent>
         <artifactId>think-framework</artifactId>
         <groupId>com.think</groupId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.5.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,12 +21,12 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data-base</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data-spring</artifactId>
-                <version>1.0.5-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
                 <exclusions>
                     <exclusion>
                         <groupId>mysql</groupId>

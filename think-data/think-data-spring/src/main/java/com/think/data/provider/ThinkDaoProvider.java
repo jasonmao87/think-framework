@@ -163,10 +163,10 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
                 }
             }
         }
-        ThinkResult<Integer> checkIdBeforeBatchInsertResult = this.checkIdBeforeBatchInsert(list);
-        if(checkIdBeforeBatchInsertResult.isNotSuccess()){
-            return checkIdBeforeBatchInsertResult;
-        }
+//        ThinkResult<Integer> checkIdBeforeBatchInsertResult = this.checkIdBeforeBatchInsert(list);
+//        if(checkIdBeforeBatchInsertResult.isNotSuccess()){
+//            return checkIdBeforeBatchInsertResult;
+//        }
 
 
         int size = list.size();
@@ -205,6 +205,10 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
         ThinkExecuteQuery query = ThinkUpdateQueryBuilder.batchInsertSQL(list);
         return executeUpdate(query,finalTableName());
     }
+
+
+
+
 
     public ThinkResult<Integer> rollbackInsert(List<T> list ,ThinkResult result){
         Long[] idArray = list.stream()
