@@ -46,7 +46,8 @@
         <snapshotRepository>
             <id>nexus-snapshots</id>
             <name>nexus-snapshots</name>
-            <url>http://8.136.215.26:8088/repository/maven-snapshots/</url>
+            <url>https://nexus.x-service.cn/repository/maven-snapshots/</url>
+<!--            <url>http://8.136.215.26:8088/repository/maven-snapshots/</url>-->
         </snapshotRepository>
 
     </distributionManagement>
@@ -54,7 +55,8 @@
         <repository>
             <id>think-nexus</id>
             <name>think-nexus</name>
-            <url>http://8.136.215.26:8088/repository/maven-public/</url>
+            <url>https://nexus.x-service.cn/repository/maven-public/</url>
+<!--            <url>http://8.136.215.26:8088/repository/maven-public/</url>-->
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
