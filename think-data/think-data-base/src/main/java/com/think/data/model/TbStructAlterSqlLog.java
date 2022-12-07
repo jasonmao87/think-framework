@@ -25,20 +25,21 @@ public class TbStructAlterSqlLog extends SimplePrimaryEntity {
 
 
     @ThinkColumn(length = 256)
-    private String tbObjectClass ;
+    private String tbObjectClass ="" ;
 
     @ThinkColumn(length = 128)
-    private String tableName;
+    private String tableName = "";
+
 
     @Remark("执行的SQL")
     @ThinkColumn(usingText = true)
-    private String alterSql ;
+    private String alterSql ="";
 
     @Remark("逆向操作的SQL")
     @ThinkColumn(usingText = true)
-    private String reverseSql;
+    private String reverseSql = "";
 
-    private boolean stateFlag;
+    private boolean stateFlag = false;
 
 
 

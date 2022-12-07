@@ -19,6 +19,37 @@ import java.util.Map;
 @Slf4j
 public class ThinkJdbcTypeConverter {
 
+    /**
+     * 是否需要在 sql中使用string 描述 默认值
+     *  如 bit 不需要   >>> BIT(1) NOT NULL DEFAULT 0
+     *  varchar 需要   >>> VARCHAR(12) NOT NULL DEFAULT 'AC'
+     * @param sqlType
+     * @return
+     */
+    public static boolean isUsingStringInSqlDefaultValue(ThinkSqlType sqlType){
+        switch (sqlType){
+            case NONE:{
+                return false;
+            }
+            case BIT:{
+                return false;
+            }
+            case FLOAT:{
+                return false;
+            }
+            case BIGINT:{
+                return false;
+            }
+            case DOUBLE:{
+                return false;
+            }
+            case INTEGER:{
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static String defaultValueString(ThinkSqlType sqlType ,String defaultValue){
 //        if(defaultValue!=null){
 //            return defaultValue;
@@ -43,7 +74,7 @@ public class ThinkJdbcTypeConverter {
                 return  sqlDateValue(defaultValue);
             }
             case TIME:{
-                return "'00:00:00'";
+                return "00:00:00";
             }
             case FLOAT:{
                 return "0.0";
@@ -59,11 +90,9 @@ public class ThinkJdbcTypeConverter {
             }
             case DATETIME:{
                 return sqlDateTimeValue(defaultValue);
-//                t = "'1970-01-01 08:00:00'";
-//                break;
             }
             case ENUM:{
-                t = "''";
+                t = "";
                 break;
             }
             default:{
@@ -273,7 +302,7 @@ public class ThinkJdbcTypeConverter {
     }
 
     private static final String sqlDateTimeValue(Date def){
-        return "'"+DateUtil.toFmtString( def,"yyyy-MM-dd HH:mm:ss") + "'";
+        return DateUtil.toFmtString( def,"yyyy-MM-dd HH:mm:ss") ;
     }
 
     private static final String sqlDateValue(String def){
@@ -281,26 +310,15 @@ public class ThinkJdbcTypeConverter {
     }
 
     private static final String sqlDateValue(Date def){
-        return "'"+DateUtil.toFmtString(def,"yyyy-MM-dd") + "'";
+        return  DateUtil.toFmtString(def,"yyyy-MM-dd");
     }
 
 
     private static String sqlStringDefaultValue(String def){
         if(StringUtil.isEmpty(def)){
-            return "''";
+            return "";
         }
-        if (def.startsWith("'") && def.endsWith("'") ) {
-            def = def.substring(1,def.length()-1);
-            System.out.println(def);
-            int i = def.indexOf("'");
-            System.out.println(i);
-            while (i > 0){
-                def = def.replace("'","’");
-                System.out.println(def);
-                i = def.indexOf("'");
-            }
-        }
-        return "'"+def+"'";
+        return def;
     }
 
 
@@ -313,14 +331,14 @@ public class ThinkJdbcTypeConverter {
      *<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
     public static final String sqlDefaultValueString(ThinkSqlType thinkSqlType){
         switch (thinkSqlType){
-            case ENUM: return "''";
+            case ENUM: return "";
             case BIT: return  "0";
             case INTEGER: return "0";
             case BIGINT: return "0";
-            case CHAR: return "''";
-            case VARCHAR: return "''";
-            case TEXT: return "''";
-            case TIME: return "'00:00:00'";
+            case CHAR: return "";
+            case VARCHAR: return "";
+            case TEXT: return "";
+            case TIME: return "00:00:00";
             case DATE:  return sqlDateValue(DateUtil.zeroDate());
             case DATETIME:  return  sqlDateTimeValue(DateUtil.zeroDate()) ;
             case FLOAT: return "0.0";

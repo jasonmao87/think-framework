@@ -94,7 +94,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
                     Manager.recordTableInit(t);
                 }
             }
-            if(!showTablesSql.contains("nonePart")) {
+            if(!showTablesSql.contains("ThinkDataRuntime.NONE_PART")) {
                 lastCheckDb = ThinkMilliSecond.currentTimeMillis();
             }
             return list;

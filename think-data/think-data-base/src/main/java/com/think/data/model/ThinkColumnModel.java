@@ -306,9 +306,20 @@ public class ThinkColumnModel implements Serializable {
             valueString = ThinkJdbcTypeConverter.sqlDefaultValueString(type);
         }
         return valueString;
-
-//        return defaultValue;
     }
+
+    public String getDefaultValueForAlterAndCreate(){
+        String defValue = getDefaultValue();
+        if (ThinkJdbcTypeConverter.isUsingStringInSqlDefaultValue(ThinkJdbcTypeConverter.getType(type))) {
+            if(defValue!=null) {
+                return "'" + defValue + "'";
+            }
+            return "''";
+        }
+        return defValue;
+    }
+
+
 
     public boolean isUsingText() {
         return usingText;

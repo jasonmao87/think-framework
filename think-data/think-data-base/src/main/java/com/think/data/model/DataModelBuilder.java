@@ -8,6 +8,7 @@ import com.think.core.bean.TFlowState;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.data.Manager;
+import com.think.data.ThinkDataRuntime;
 import com.think.data.exception.ThinkDataModelException;
 import com.think.data.exception.ThinkDataRuntimeException;
 import io.swagger.annotations.ApiModel;
@@ -77,9 +78,9 @@ public class DataModelBuilder {
             if(modal.isPartitionAble()){
                 if(Manager.getDataSrvRuntimeInfo() ==null   ){
                     if (log.isDebugEnabled()) {
-                        log.debug("未找到必要的RUNTIME INFO， 为了正常运行返回了 nonePart分区");
+                        log.debug("未找到必要的RUNTIME INFO， 为了正常运行返回了 {}分区" , ThinkDataRuntime.NONE_PART);
                     }
-                    return modal.getTableName() + "_" + "nonePart";
+                    return modal.getTableName() + "_" + ThinkDataRuntime.NONE_PART;
                     //throw new ThinkDataRuntimeException("未找到必要的RUNTIME INFO， 请检查是否是正常构建");
                 }else{
 //                    log.info("FIND {} ",Manager.getDataSrvRuntimeInfo().getPartitionRegion());

@@ -118,18 +118,18 @@ public class Manager {
         }
     }
     public static final boolean beginDataSrv(String splitRegion){
-        if(dataRuntimeThreadLocal.get() == null) {
+        final ThinkDataRuntime localDataRuntime = dataRuntimeThreadLocal.get();
+        if(  localDataRuntime == null ||
+                ThinkDataRuntime.isNonePartitionRegion(localDataRuntime.getPartitionRegion())) {
             if (log.isTraceEnabled()) {
-
                 log.trace("线程 指定数据分区 --- {}" ,splitRegion);
             }
-
             dataRuntimeThreadLocal.set(new ThinkDataRuntime(splitRegion));
             return true;
         }else{
             String currentP = null;
             ThinkDataRuntime runtime = getDataSrvRuntimeInfo() ;
-            if(runtime !=null){
+            if(runtime !=null ){
                 currentP = runtime.getPartitionRegion();
             }
             if (log.isDebugEnabled()) {

@@ -46,7 +46,7 @@ public abstract class _JdbcExecutor {
 //                    Manager.recordTableInit(t);
 //                }
             }
-            if(!showTablesSql.contains("nonePart")) {
+            if(!showTablesSql.contains(ThinkDataRuntime.NONE_PART)) {
 //                lastCheckDb = ThinkMilliSecond.currentTimeMillis();
             }
             return list;

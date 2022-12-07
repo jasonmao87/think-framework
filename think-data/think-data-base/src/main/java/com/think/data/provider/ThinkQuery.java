@@ -10,6 +10,7 @@ import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
+import com.think.data.ThinkDataRuntime;
 import com.think.data.model.ThinkColumnModel;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
@@ -44,12 +45,13 @@ public class ThinkQuery {
         /*这里可能不是唯一入口*/
         if (ThinkThreadExecutor.isDataRegionChange()) {
             String currentRegion =ThinkThreadExecutor.getChangedDataRagionAndRemove();
+            if (!ThinkDataRuntime.isNonePartitionRegion(currentRegion)) {
+                if (log.isDebugEnabled()) {
 
-            if (log.isDebugEnabled()) {
-
-                log.debug("需要调整新的数据分区，原因应该异步任务的线程数据分区更新通知--- 调整为 ：：：{}" , currentRegion);
+                    log.debug("需要调整新的数据分区，原因应该异步任务的线程数据分区更新通知--- 调整为 ：：：{}" , currentRegion);
+                }
+                Manager.unsafeChangeDataSrv(currentRegion);
             }
-            Manager.unsafeChangeDataSrv(currentRegion);
         }
 
 

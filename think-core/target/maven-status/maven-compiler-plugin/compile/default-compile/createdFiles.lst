@@ -73,6 +73,7 @@ com\think\core\data\cache\ThinkCache.class
 com\think\common\util\RandomUtil.class
 com\think\core\security\token\ThinkSecurityToken.class
 com\think\common\result\ResultInfo.class
+com\think\common\util\security\StrCompressionUtil.class
 com\think\core\bean\BlobEntity.class
 com\think\core\data\DynamicArray.class
 com\think\core\security\ThinkLock$thinkInner.class

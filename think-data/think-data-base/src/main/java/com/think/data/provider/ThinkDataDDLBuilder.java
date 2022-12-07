@@ -71,7 +71,7 @@ public class ThinkDataDDLBuilder {
                    sql.append(" COMMENT ").append("'").append(cm.getComment()).append("'");
                }
                if(cm.getDefaultValue()!=null){
-                   sql.append(" DEFAULT ").append(cm.getDefaultValue()).append(" ");
+                   sql.append(" DEFAULT ").append(cm.getDefaultValueForAlterAndCreate()).append(" ");
                }
 
                /**

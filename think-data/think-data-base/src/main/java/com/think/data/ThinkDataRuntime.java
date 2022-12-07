@@ -14,6 +14,8 @@ public class ThinkDataRuntime implements Serializable {
      */
     private String partitionRegion = null;
 
+    public static final String NONE_PART = "nonePart";
+
     /**
      * 线程id
      */
@@ -92,9 +94,17 @@ public class ThinkDataRuntime implements Serializable {
 
     public String getPartitionRegion() {
         if (StringUtil.isEmpty(this.partitionRegion)) {
-            return "nonePart";
+            return ThinkDataRuntime.NONE_PART;
         }
         return partitionRegion;
+    }
+
+    public static final boolean isNonePartitionRegion(String regionValue){
+        if ( StringUtil.isEmpty(regionValue) ||ThinkDataRuntime.NONE_PART.equals(regionValue)) {
+            return true;
+        }
+
+        return false;
     }
 
     public RuntimeQuerysEntry fireUpdate(String updateSql,boolean success ,int affectedCount ,long duration , Serializable[] paramsValues ){

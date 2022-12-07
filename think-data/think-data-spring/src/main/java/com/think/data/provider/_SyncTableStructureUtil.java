@@ -119,7 +119,7 @@ public class _SyncTableStructureUtil {
                 sql.append(" COMMENT '").append(columnModel.getComment()).append("' ");
             }
             if(columnModel.isNullable() == false){
-                sql.append(" DEFAULT ").append( columnModel.getDefaultValue()).append(" ");
+                sql.append(" DEFAULT ").append( columnModel.getDefaultValueForAlterAndCreate()).append(" ");
             }else{
             }
         }
