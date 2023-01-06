@@ -8,7 +8,7 @@ import com.think.common.util.IdUtil;
 import com.think.core.annotations.Remark;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.*;
 
 /**
  * 参数条件对象类
@@ -262,6 +262,9 @@ public class ThinkFilterBean implements Serializable {
         if(this.finish){
             return null;
         }
+        /**数据去重  ---by JasonMao @ 2023/1/6 19:32 */
+        values = distinctValues(values);
+        
         StringBuilder sb = new StringBuilder( " ")
                 .append(key)
                 .append(" ");
@@ -504,4 +507,17 @@ public class ThinkFilterBean implements Serializable {
     public int getCurrentIndex() {
         return currentIndex;
     }
+
+
+    public static Serializable[] distinctValues(Serializable[] values){
+        /**当数据 长度大于3个时候，则去重  ---by JasonMao @ 2023/1/6 19:32 */
+        if (values.length>3) {
+            return Arrays.stream(values).distinct().toArray(Serializable[]::new);
+        }
+        return values;
+
+
+    }
+
+
 }

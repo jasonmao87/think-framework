@@ -9,6 +9,7 @@ com\think\data\bean\api\ThinkSplitBeanApiImpl.class
 com\think\data\provider\ThinkBlobDao.class
 com\think\data\provider\ThinkSplitDaoImpl.class
 com\think\data\provider\ThinkSplitRefDaoProvider.class
+com\think\data\provider\DD.class
 com\think\data\provider\_JdbcExecutor.class
 com\think\data\bean\api\ThinkSplitRefBeanApiImpl.class
 com\think\data\provider\ThinkSplitRefDaoImpl.class

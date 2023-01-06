@@ -4,6 +4,7 @@ import com.think.common.data.mysql.ThinkFilterBean;
 import com.think.common.data.ThinkFilterOp;
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
+import com.think.common.result.ThinkResult;
 import com.think.common.util.DateUtil;
 import com.think.common.util.FastJsonUtil;
 import com.think.common.util.IdUtil;
@@ -48,7 +49,7 @@ public class _DaoSupport{
             filter.beforeExecuteInsert(t);
         }
         if( rt!=null){
-            if(StringUtil.isNotEmpty(rt.getPartitionRegion())){
+            if(StringUtil.isNotEmpty(rt.getPartitionRegion()) && !ThinkDataRuntime.isNonePartitionRegion(rt.getPartitionRegion())){
                 t.setPartitionRegion(rt.getPartitionRegion());
             }
         }

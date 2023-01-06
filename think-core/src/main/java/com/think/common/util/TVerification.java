@@ -3,7 +3,9 @@ package com.think.common.util;
 import com.think.exception.ThinkDataVerificationException;
 import org.apache.commons.math3.random.StableRandomGenerator;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,25 +61,70 @@ public class TVerification<T extends Object>{
         return this;
     }
 
+    @Deprecated
     public final  TVerification<T> throwIfNoInstanceOfString(){
-        return throwIfNotInstanceOfType(String.class);
+        return throwIfNotInstanceOfString();
     }
 
+    @Deprecated
     public final  TVerification<T> throwIfNoInstanceOfLong(){
+        return throwIfNotInstanceOfLong();
+    }
+
+    @Deprecated
+    public final  TVerification<T> throwIfNoInstanceOfBoolean(){
+        return throwIfNotInstanceOfBoolean();
+    }
+
+    @Deprecated
+    public final  TVerification<T> throwIfNoInstanceOfInteger(){
+        return throwIfNotInstanceOfInteger();
+    }
+
+    @Deprecated
+    public final  TVerification<T> throwIfNoInstanceOfDouble(){
+        return throwIfNotInstanceOfDouble();
+    }
+
+    public final  TVerification<T> throwIfNotInstanceOfString(){
+        return throwIfNotInstanceOfType(String.class);
+    }
+    public final  TVerification<T> throwIfNotInstanceOfLong(){
         return throwIfNotInstanceOfType(Long.class);
     }
 
-    public final  TVerification<T> throwIfNoInstanceOfBoolean(){
+    public final  TVerification<T> throwIfNotInstanceOfBoolean(){
         return throwIfNotInstanceOfType(Boolean.class);
     }
 
-    public final  TVerification<T> throwIfNoInstanceOfInteger(){
+    public final  TVerification<T> throwIfNotInstanceOfInteger(){
         return throwIfNotInstanceOfType(Integer.class);
     }
 
-    public final  TVerification<T> throwIfNoInstanceOfDouble(){
+    public final  TVerification<T> throwIfNotInstanceOfDouble(){
         return throwIfNotInstanceOfType(Double.class);
     }
+
+    public final TVerification<T> throwIfNotInstanceOfFloat(){
+        return throwIfNotInstanceOfType(Float.class);
+    }
+
+    public final TVerification<T> throwIfNotInstanceOfShort(){
+        return throwIfNotInstanceOfType(Short.class);
+    }
+
+    public final TVerification<T> throwIfNotInstanceOfByte(){
+        return throwIfNotInstanceOfType(Byte.class);
+    }
+
+    public final TVerification<T> throwIfNotInstanceOfDate(){
+        return throwIfNotInstanceOfType(Date.class);
+    }
+
+    public final TVerification<T> throwIfNotInstanceOfLocalDateTime(){
+        return throwIfNotInstanceOfType(LocalDateTime.class);
+    }
+
 
     public final TVerification<T> throwIfCollectionIsEmpty(String message){
         throwIfNull(message);
@@ -89,36 +136,11 @@ public class TVerification<T extends Object>{
         return this;
     }
 
+
+
     public final TVerification<T> throwIfCollectionIsEmpty(){
         return throwIfCollectionIsEmpty("容器不存在任何数据");
     }
-
-
-
-//    private boolean isThrowExceptionHappen(){
-//        try{
-//
-//        }catch (Exception e){
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    public final boolean isNull(){
-//        return t==null;
-//    }
-//
-//    public final boolean isTrue(){
-//        try{
-//            this.throwIfFalse();
-//            return  true;
-//        }catch (Exception e){
-//            return false;
-//        }
-//    }
-
-
-
 
 
 

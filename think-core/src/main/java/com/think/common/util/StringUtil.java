@@ -428,7 +428,7 @@ public class StringUtil {
      * @return
      */
     public static final String buildStringAppend( Object... appends){
-        TAssert.isNull(appends,"构建String的入参不能为NULL");
+        TVerification.valueOf(appends).throwIfNull("传入参数不能为NULL");
         if(appends.length == 1 && appends[0] !=null){
             if(appends[0] instanceof Appendable){
                 throw new RuntimeException("不能使用Append作为参数中的内容");
