@@ -70,7 +70,7 @@ public class ThinkDataDDLBuilder {
                if(StringUtil.isNotEmpty(cm.getComment())) {
                    sql.append(" COMMENT ").append("'").append(cm.getComment()).append("'");
                }
-               if(cm.getDefaultValue()!=null){
+               if(cm.getDefaultValue()!=null && cm.isUsingText() ==false){
                    sql.append(" DEFAULT ").append(cm.getDefaultValueForAlterAndCreate()).append(" ");
                }
 

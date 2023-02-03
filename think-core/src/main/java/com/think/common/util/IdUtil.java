@@ -13,8 +13,7 @@ import java.util.Set;
  * ID工具类
  */
 @Slf4j
-public class
-IdUtil {
+public class IdUtil {
     private static ThinkIdGenerator idGenerator = null;
     private final static int machineBitLen = 10 ;
 

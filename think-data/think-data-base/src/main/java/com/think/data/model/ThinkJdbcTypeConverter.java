@@ -56,6 +56,9 @@ public class ThinkJdbcTypeConverter {
 //        }
         String t = null;
         switch (sqlType){
+            case TEXT:{
+                return null;
+            }
             case NONE:{
                 return null;
             }
