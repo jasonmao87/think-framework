@@ -1,9 +1,17 @@
 package com.think.common.util.security;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * 数据脱敏 / 还原工具类
  */
-public class DesensitizationUtil {
+public class Desensitization2Util {
+
+    private String[] dicSource = {};
 
 
     /**
@@ -60,10 +68,49 @@ public class DesensitizationUtil {
     }
 
     public static void main(String[] args) {
-        System.out.println(encode("888"));
 
-        System.out.println(encode("dajiba@tom.com"));
+        for (int i = 58; i <96 ; i++) {
+            if(i<65 || i > 90) {
+                System.out.print((char) i);
+            }
+        }
+        System.out.println("");
+
+
+        String str  = ":;<=>?@[\\]^_1234567890qwertyuiopasdfghjklzxcvbnm";//"QWERTYUIOPASDFGHJKLZXCVBNM";
+        System.out.println(str.length());
+        List<String> list = new ArrayList<>();
+        String[] x = {"",""};
+
+        for (char c : str.toCharArray()) {
+            if(!list.contains(c+"")){
+                list.add(c+"");
+            }
+        }
+        Collections.sort(list);
+        System.out.println("{");
+        list.stream().forEach(t->{
+            System.out.print( "'"+t + "',");
+        });
+        System.out.println("}");
+        System.out.println(list.size());
+
+
+
+        int num = 55;
+        while (num>48){
+
+            final int i = num % 48;
+            System.out.print(i + " ");
+            num = num/48;
+        }
+        System.out.print(num );
+
+
+
+
     }
+
 
 
 }

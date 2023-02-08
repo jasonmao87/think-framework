@@ -4,11 +4,12 @@ import com.think.common.result.ThinkMiddleState;
 import com.think.common.result.ThinkResult;
 import com.think.common.util.FastJsonUtil;
 import com.think.common.util.TimeUtil;
+import com.think.core.executor.reduce.ILocalReduceTask;
 import com.think.core.security.token.ThinkSecurityToken;
 import com.think.core.security.token.ThinkSecurityTokenTransferManager;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -200,5 +201,17 @@ public class ThinkAsyncExecutor {
     public static final void print(String t){
         System.out.println( System.currentTimeMillis() + "> "+getThreadName() + " " +t );
     }
+
+
+    public static final void parallelExecute(Queue params, ILocalReduceTask reduce){
+        for (int i = 0; i < 100; i++) {
+            
+        }
+        
+
+
+    }
+
+
 
 }
