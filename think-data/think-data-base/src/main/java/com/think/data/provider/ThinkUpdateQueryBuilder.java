@@ -263,7 +263,7 @@ public class ThinkUpdateQueryBuilder {
                 sql.append(",");
             }
             sql.append("(");
-            for (int x = 0; x < i; x++) {
+            for (int x = 0; x < clms.length; x++) {
 
 
                 if (x > 0) {

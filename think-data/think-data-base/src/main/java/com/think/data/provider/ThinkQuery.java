@@ -253,7 +253,7 @@ public class ThinkQuery {
 
                     if(v instanceof String  && columnModel.isSensitive()){
                         sv = (String) v;
-                        sv =DesensitizationUtil.encodeWithIgnore((String) v, '%');
+                        sv =DesensitizationUtil.encodeForSelectWithIgnore((String) v, '%');
                     }else{
                         sv = (String) v;
                     }
@@ -413,8 +413,8 @@ public class ThinkQuery {
                     if (bean.isSensitive()) {
                         Serializable v = values[i];
                         if (v instanceof String) {
-
-                            paramValues.add(DesensitizationUtil.encodeWithIgnore((String) v, '%'));
+                            //尝试 的
+                            paramValues.add(DesensitizationUtil.encodeForSelectWithIgnore((String) v, '%'));
                         } else {
                             paramValues.add(values[i]);
                         }

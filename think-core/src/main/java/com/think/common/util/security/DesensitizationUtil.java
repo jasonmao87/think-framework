@@ -20,6 +20,9 @@ public class DesensitizationUtil {
         return sb.toString();
     }
 
+
+
+
     /**
      * 数据脱敏  忽略 字符  ，仅用于 like 查询时候 ！
      * @param source
@@ -35,6 +38,42 @@ public class DesensitizationUtil {
             }else{
                 sb.append(c);
             }
+            // UW\YYX[XXXU
+            "".toString();
+
+        }
+        return sb.toString();
+    }
+
+    public static final String encodeForSelect(String source){
+        StringBuilder sb = new StringBuilder("");
+        for(char c : source.toCharArray()){
+            c += 36;
+            if(c == '\\'){
+                sb.append("\\\\");
+            }else{
+                sb.append(c);
+            }
+//            sb.append(c);
+        }
+        return sb.toString();
+    }
+
+    public static final String encodeForSelectWithIgnore(String source ,char ignore){
+        StringBuilder sb = new StringBuilder("");
+        for(char c : source.toCharArray()){
+            if(c != ignore){
+                c += 36;
+                if(c == '\\'){
+                    sb.append("\\\\");
+                }else{
+                    sb.append(c);
+                }
+            }else{
+                sb.append(c);
+            }
+            // UW\YYX[XXXU
+            "".toString();
 
         }
         return sb.toString();
