@@ -1,12 +1,7 @@
 package com.think.data.provider;
 
-import com.mysql.cj.api.xdevapi.CreateTableStatement;
-import com.sun.org.apache.regexp.internal.RE;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
-import org.springframework.dao.DataAccessException;
-
-import java.sql.SQLException;
 
 public class DaoExceptionTranslater {
 
