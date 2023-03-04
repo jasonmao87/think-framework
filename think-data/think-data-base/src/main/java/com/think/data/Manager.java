@@ -1,5 +1,6 @@
 package com.think.data;
 
+import com.think.FrameForceMatchFlag;
 import com.think.common.data.IFilterChecker;
 import com.think.common.data.IThinkQueryFilter;
 import com.think.common.data.mysql.ThinkSqlFilter;
@@ -71,6 +72,7 @@ public class Manager {
     }
 
     static {
+        FrameForceMatchFlag.justMatch();
         /**
          * 注入默认的 filter ，避免dao层无法获得到filter,避免 NULL的错误
          */

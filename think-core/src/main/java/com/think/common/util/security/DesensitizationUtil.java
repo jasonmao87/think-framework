@@ -4,7 +4,6 @@ package com.think.common.util.security;
  * 数据脱敏 / 还原工具类
  */
 public class DesensitizationUtil {
-
     private static final int offSet = (36 + 480) ;
 
     /**
