@@ -72,7 +72,11 @@ public class Manager {
     }
 
     static {
-        FrameForceMatchFlag.justMatch();
+        try{
+            FrameForceMatchFlag.justMatch();
+        }catch (Exception e){
+
+        }
         /**
          * 注入默认的 filter ，避免dao层无法获得到filter,避免 NULL的错误
          */
