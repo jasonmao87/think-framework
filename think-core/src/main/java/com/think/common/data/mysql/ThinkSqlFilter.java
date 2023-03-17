@@ -70,13 +70,13 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
     private List<ThinkFilterBean> beans = new ArrayList<>();
 
-//    private Map<String,Serializable> keyOrMap = new HashMap<>();
 
     private List<ThinkFilterBean> keyOrBeans = new ArrayList<>();
 
 
     @Remark("key or 使用 LIKE 模式，默认未 EQ")
     private boolean keyOrTypeUsingLike  = false;
+
 
 
     public ThinkSqlFilter<T> resultFilter(IThinkResultFilter filter){
@@ -850,4 +850,38 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     public boolean mayBeEmptyResult() {
         return mayBeEmptyResult;
     }
+
+
+//    public static void main(String[] args) {
+//
+//        doss(null);
+//    }
+//
+//    public static final void doss(String... x){
+//        System.out.println(x );
+//    }
+
+
+    public final ThinkSqlFilter<T> copyNew(){
+        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(gettClass(), getLimit());
+        if(this.isDesc()){
+            sqlFilter.sortDesc(this.getSortKey());
+        }else{
+            sqlFilter.sortAsc(this.getSortKey());
+        }
+
+        for (ThinkFilterBean bean : this.beans) {
+            sqlFilter._append(bean.getKey(),bean.getOp(),bean.getValues());
+        }
+
+        sqlFilter.keyOrTypeUsingLike = this.keyOrTypeUsingLike;
+        for (ThinkFilterBean keyOrBean : this.keyOrBeans) {
+            sqlFilter.keyOrBeans.add(keyOrBean);
+        }
+        sqlFilter.mayBeEmptyResult = this.mayBeEmptyResult;
+
+        return sqlFilter;
+    }
+
+
 }

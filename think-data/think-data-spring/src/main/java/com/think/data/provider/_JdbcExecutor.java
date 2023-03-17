@@ -10,7 +10,6 @@ import com.think.data.ThinkDataRuntime;
 import com.think.data.extra.StructAlterSqlLogger;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -21,8 +20,6 @@ import java.util.*;
 
 @Slf4j
 public abstract class _JdbcExecutor {
-
-
     private StructAlterSqlLogger dbTableAlterLogger;
 
     public abstract <T extends _Entity> Class getTargetClass();
@@ -35,23 +32,27 @@ public abstract class _JdbcExecutor {
     }
 
 
-    public  <T extends _Entity>  List<String> showSplitTables(JdbcTemplate jdbcTemplate,Class<T> targetClass,long lastCheckDb){
+    public  <T extends _Entity>  List<String> _showSplitTables(JdbcTemplate jdbcTemplate, Class<T> targetClass){
+        ThinkTableModel model = Manager.getModelBuilder().get(targetClass);
+        long lastCheckDb = 0L;
+        if(model != null){
+            lastCheckDb = model.getLastSplitCheckTime();
+        }
         if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
             String showTablesSql = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
             List<String> list = jdbcTemplate.queryForList(showTablesSql, String.class);
             for (String t : list) {
                 this.executeTableInit(targetClass,t);
-//
-//                if (Manager.isTableInitialized(t) == false) {
-//                    Manager.recordTableInit(t);
-//                }
             }
+
             if(!showTablesSql.contains(ThinkDataRuntime.NONE_PART)) {
-//                lastCheckDb = ThinkMilliSecond.currentTimeMillis();
+            }
+            if(model != null){
+                model.setLastSplitCheckTime(ThinkMilliSecond.currentTimeMillis());
             }
             return list;
         }else{
-            return Manager.findInitializedTableNameList(_DaoSupport.baseTableName(  targetClass));
+            return Manager.findInitializedTableNameListFromCache(_DaoSupport.baseTableName(  targetClass));
         }
     }
 

@@ -1,8 +1,5 @@
 package com.think.data.provider;
 
-import com.mysql.cj.api.exceptions.ExceptionInterceptor;
-import com.mysql.cj.api.log.Log;
-import com.mysql.cj.jdbc.Blob;
 import com.think.core.bean.BlobEntity;
 import com.think.core.enums.TEnum;
 import org.springframework.beans.factory.annotation.Autowired;

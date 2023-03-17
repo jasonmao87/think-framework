@@ -1,7 +1,10 @@
 com\think\core\security\ThinkLock.class
+com\think\common\util\security\Desensitization2Util.class
 com\think\core\bean\TFlowBuilder.class
 com\think\common\result\state\ThinkResultState$1.class
+com\think\core\executor\reduce\TReducer.class
 com\think\common\util\ThinkIdGenerator.class
+com\think\core\executor\reduce\ILocalCombiner.class
 com\think\core\executor\schedule\ScheduledTask.class
 com\think\core\enums\ResultDataType.class
 com\think\core\data\ParentDynamicArray.class
@@ -15,7 +18,9 @@ com\think\structure\ThinkCacheMap.class
 com\think\common\util\security\DesensitizationUtil.class
 com\think\core\executor\ThinkAsyncExecutor$1.class
 com\think\core\security\ThinkTokenAttachment.class
+com\think\core\executor\reduce\ILocalMapTask.class
 com\think\core\executor\ThinkThreadExecutor$DefaultThinkThreadFactory.class
+com\think\common\util\security\S312Code.class
 com\think\core\annotations\bean\ThinkMongoIndexes.class
 com\think\common\result\ThinkResultBuilder.class
 com\think\common\util\DateUtil.class
@@ -26,6 +31,7 @@ com\think\common\data\mongo\ThinkMongoFilterBean.class
 com\think\core\annotations\bean\ThinkTable.class
 com\think\core\threadLocal\ThinkThreadLocal.class
 com\think\core\bean\util\ProtostuffUtil.class
+com\think\common\data\mysql\subSql\ThinkSubSqlFilter.class
 com\think\common\util\PasswordUtil.class
 com\think\core\security\ThinkSecurityManager.class
 com\think\common\util\SimpleHttpUtil.class
@@ -46,6 +52,7 @@ com\think\common\util\ThinkTimeMeter.class
 com\think\common\data\ThinkMongoFilterOp.class
 com\think\core\security\AccessKey.class
 com\think\core\bean\TEnumExplain.class
+com\think\FrameForceMatchFlag.class
 com\think\common\util\security\MD5Util.class
 com\think\common\result\ThinkResult.class
 com\think\common\util\security\SHAUtil.class
@@ -58,6 +65,7 @@ com\think\common\util\ThinkCollectionUtil.class
 com\think\structure\ThinkSimpleHolder.class
 com\think\common\data\ThinkMongoFilterOp$1.class
 com\think\common\data\mysql\permission\ThinkSqlFilterPermissionFilter.class
+com\think\core\executor\reducer\TaskReduceResult.class
 com\think\core\executor\thread\ThinkStopAbleTasker.class
 com\think\core\security\token\filter\IThinkSecurityAsyncTokenFilter.class
 com\think\core\annotations\bean\ThinkMongoIndex.class
@@ -87,6 +95,9 @@ com\think\structure\table\ThinkGridColumnModel.class
 com\think\common\util\NumberCompareUtil.class
 com\think\structure\ThinkEntry.class
 com\think\core\annotations\bean\ThinkStateColumn.class
+com\think\core\executor\reduce\TReducer$1.class
+com\think\core\executor\reduce\CombinerResult.class
+com\think\core\executor\reduce\ThinkLocalMapReduceExecutor.class
 com\think\core\bean\SimpleRefEntity.class
 com\think\common\util\ThinkAssert.class
 com\think\core\data\cache\ThinkCacheManager$Builder.class
@@ -109,6 +120,7 @@ com\think\core\bean\SimpleMongoEntity.class
 com\think\core\SpringContextUtil.class
 com\think\core\annotations\bean\ThinkColumn.class
 com\think\common\data\mysql\IThinkResultFilter.class
+com\think\core\executor\reducer\TaskReducer.class
 com\think\common\data\mysql\ThinkUpdateMapper.class
 com\think\core\annotations\bean\ThinkMongoKV.class
 com\think\core\security\ThinkWebSecuritySigner.class
@@ -133,6 +145,7 @@ com\think\core\executor\ThinkThread.class
 com\think\core\security\ThinkToken.class
 com\think\common\util\rt\models\MemeryInfoModel.class
 com\think\structure\ThinkTimeoutList.class
+com\think\core\executor\reduce\ILocalReduceTask.class
 com\think\core\data\ThinkLogLogo.class
 com\think\common\data\ThinkFilterOp.class
 com\think\common\util\TAssert.class
@@ -144,6 +157,7 @@ com\think\core\executor\ThinkThreadExecutorMonitor.class
 com\think\moudles\auth\UserAccountModel.class
 com\think\core\bean\util\ClassUtil.class
 com\think\common\util\rt\ThinkMachineUtil.class
+com\think\core\executor\reducer\ITaskCallBack.class
 com\think\core\bean\TFlowBuilder$AbleChecker.class
 com\think\core\security\ThinkTokenExtendEntry.class
 com\think\core\enums\ThinkEnum.class
@@ -169,6 +183,7 @@ com\think\common\util\office\ThinkDocUtil.class
 com\think\core\executor\token\TaskTokenCache.class
 com\think\core\data\cache\ThinkCacheManager$singletonHolder.class
 com\think\structure\TimeoutEntry.class
+com\think\core\executor\stream\StreamTasker.class
 com\think\core\data\cache\ThinkCacheStorage.class
 com\think\core\security\ThinkTokenExtends.class
 com\think\common\data\TbA.class
@@ -194,5 +209,6 @@ com\think\common\util\ThinkTextFileUtil.class
 com\think\core\security\token\filter\IThinkTokenWebFilter.class
 com\think\common\util\office\ThinkExcelUtil$1.class
 com\think\common\util\security\RSAUtil.class
+com\think\core\executor\reduce\LocalMapReduce.class
 com\think\core\bean\ThinkVersionEntity.class
 com\think\core\executor\ThinkExecuteThreadSharedTokenManager.class

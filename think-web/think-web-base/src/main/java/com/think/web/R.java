@@ -8,6 +8,7 @@ import com.think.common.util.ThinkMilliSecond;
 import com.think.core.security.AccessKey;
 import com.think.core.security.WebSecurityUtil;
 import com.think.core.security.token.ThinkSecurityToken;
+import com.think.exception.ThinkRuntimeException;
 import com.think.web.util.WebUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class R<T>  implements Serializable {
     private static final long serialVersionUID = 2298131129668199468L;
 
     private static IThinkWebResultInterceptor inteceptor = null;
-    public static final void bindWebResultInterceptor(IThinkWebResultInterceptor impl){
+    public static void bindWebResultInterceptor(IThinkWebResultInterceptor impl){
         inteceptor = impl;
     }
 
@@ -65,7 +66,6 @@ public class R<T>  implements Serializable {
 
 
     private R(){
-
     }
 
     public void setNextAccessKey(String nextAccessKey ) {
@@ -156,8 +156,8 @@ public class R<T>  implements Serializable {
      * 请求资源不存在
      * @return
      */
-    public static R REQUEST_NO_RESOURCE(){
-        R webResult = _init(ResultCode.REQUEST_NO_RESOURCE);
+    public static R<Object> REQUEST_NO_RESOURCE(){
+        R<Object> webResult = _init(ResultCode.REQUEST_NO_RESOURCE);
         webResult.setMessage(webResult.getState().getDescription());
         return webResult;
     }
@@ -171,6 +171,7 @@ public class R<T>  implements Serializable {
     public static R SUCCESS(Object result){
         if(result instanceof ThinkResult){
             log.error("SUCCESS 不能使用 ThinkResult 对象作为参数 ");
+            throw new ThinkRuntimeException("错误的调用，R.SUCCESS 不能使用 ThinkResult 作为参数！");
         }
 
         R webResult = _init(ResultCode.SUCCESS);

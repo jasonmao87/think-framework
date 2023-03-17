@@ -1,5 +1,6 @@
 package com.think.common.util;
 
+import com.think.core.bean.util.ObjectUtil;
 import com.think.structure.ThinkReadOnlyList;
 import org.springframework.lang.Nullable;
 
@@ -83,18 +84,29 @@ public class ThinkCollectionUtil {
 
     }
 
+    public static final <T> List<T> valuesOf(T... t){
+        if (t!=null && t.length>0) {
+            List<T> list = new ArrayList<>();
 
-    public static void main(String[] args) {
-        List<String> list= new ArrayList<>();
-        list.add("x");
-        list.add("x");list.add("x");
+            for (T t1 : t) {
+                list.add(t1);
+            }
+            return list;
+        }
+        return emptyList();
 
-        ThinkCollectionUtil.findAny(list,(t)->{
-
-           return true;
-        });
-
+    }
 
 
+    public static final <T> List<T> copy(List<T> source){
+        if (source!=null) {
+            return new ArrayList<>();
+        }
+        List<T> list =new ArrayList();
+        for (T t : source) {
+            T newT = (T) ObjectUtil.copyObject(t, t.getClass());
+            list.add(newT);
+        }
+        return list;
     }
 }

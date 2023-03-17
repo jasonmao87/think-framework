@@ -18,6 +18,7 @@ import java.util.Comparator;
 @Remark("表模型")
 public class ThinkTableModel implements Serializable {
 
+    private long lastSplitCheckTime = 0L;
 
 //    public static final String[] flowStateSuffixes =new String[]{
 //            flowStateSuffix_Result,
@@ -347,5 +348,14 @@ public class ThinkTableModel implements Serializable {
 
     public boolean isPartitionAble() {
         return partitionAble;
+    }
+
+
+    public long getLastSplitCheckTime() {
+        return lastSplitCheckTime;
+    }
+
+    public void setLastSplitCheckTime(long lastSplitCheckTime) {
+        this.lastSplitCheckTime = lastSplitCheckTime;
     }
 }

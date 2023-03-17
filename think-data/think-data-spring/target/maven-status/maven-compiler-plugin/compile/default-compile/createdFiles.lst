@@ -17,5 +17,7 @@ com\think\data\provider\ThinkDaoFactoryImpl.class
 com\think\data\provider\ThinkAuthRepository.class
 com\think\data\extra\StructAlterSqlLogger.class
 com\think\data\provider\ThinkSplitDaoProvider.class
+com\think\data\provider\_SplitTableSupport.class
 com\think\data\provider\ThinkDaoProvider.class
+com\think\data\test\FixData.class
 com\think\data\provider\_SyncTableStructureUtil.class

@@ -4,15 +4,11 @@ import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
-import com.think.common.util.DateUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.bean.BaseVo;
-import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean.SimpleRefEntity;
 import com.think.core.bean._Entity;
-import com.think.core.bean.util.ClassUtil;
 import com.think.core.bean.util.ObjectUtil;
-import com.think.data.Manager;
 import com.think.data.dao.ThinkSplitRefDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +66,7 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public List<String> showSplitTables() {
-
-
-        List<String> showSplitTables = showSplitTables(jdbcTemplate, targetClass, lastCheckDb);
-        lastCheckDb = ThinkMilliSecond.currentTimeMillis();
+        List<String> showSplitTables = _showSplitTables(jdbcTemplate, targetClass);
         return showSplitTables;
 
 //

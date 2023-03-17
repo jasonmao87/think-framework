@@ -229,7 +229,7 @@ public class Manager {
      * @param preStr
      * @return
      */
-    public static final List<String> findInitializedTableNameList(String preStr){
+    public static final List<String> findInitializedTableNameListFromCache(String preStr){
         Iterator<String> iterable =initTables.iterator();
         List<String> list =new ArrayList<>();
         while (iterable.hasNext()){

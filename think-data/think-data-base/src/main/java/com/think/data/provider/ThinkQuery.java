@@ -399,6 +399,7 @@ public class ThinkQuery {
 
             }
 
+            
             if(doAppendAble) {
                 if( startWithAnd  || ( appendIndex > 0)){
                     sb.append("AND ");

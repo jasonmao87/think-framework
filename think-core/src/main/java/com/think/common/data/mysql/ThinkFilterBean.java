@@ -19,7 +19,7 @@ public class ThinkFilterBean implements Serializable {
     @Remark("是否合法")
     private boolean safe =true;
     @Remark("字段key")
-    private String key ;
+    private final String key ;
     @Remark("操作符")
     private ThinkFilterOp op ;
     @Remark("参数值是不是key")

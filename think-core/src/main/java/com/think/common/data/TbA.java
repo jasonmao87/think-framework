@@ -1,7 +1,9 @@
 package com.think.common.data;
 
+import com.think.core.annotations.bean.ThinkTable;
 import com.think.core.bean.SimplePrimaryEntity;
 
+@ThinkTable(value = "tb_a",yearSplit = true)
 public class TbA extends SimplePrimaryEntity {
 
     private String workNo;
