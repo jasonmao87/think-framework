@@ -25,6 +25,15 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
      */
     T get(long id );
 
+
+    /**
+     * 读取自定义的 VIEW
+     * @param id
+     * @param viewClass
+     * @param <V>
+     * @return
+     */
+    <V extends BaseVo<T>> V getView(long id,Class<V> viewClass);
     /**
      * 获取 被删除的对象 详情数据
      * @param id
@@ -35,10 +44,19 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
 
     public T findFirstOneByKey(String key , Serializable value);
 
+    /**
+     * 通过一个key 查找
+     * @param key
+     * @param value
+     * @param limit
+     * @return
+     */
+    List<T> findListByKey(String key ,Serializable value ,int limit );
+
 
     ThinkResult<T> create(T t);
 
-    ThinkResult<Integer> createMany(List<T> t);
+    ThinkResult<Integer> createMany(List<T> list);
 
 
     ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper);
@@ -70,6 +88,13 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
      * @return
      */
     ThinkResult<Integer> delete(long id);
+
+    /**
+     * 根据条件删除
+     * @param sqlFilter
+     * @return
+     */
+    ThinkResult<Integer> delete(ThinkSqlFilter<T> sqlFilter);
 
     /**
      * 物理删除
@@ -116,6 +141,12 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
 
     @Remark(value = "目标对象的流程状态重置" )
     ThinkResult<Integer> tFlowResultChangeToClearState(long id , String mainKey );
+
+
+    ThinkSqlFilter<T> emptySqlFilter(int limit);
+
+    @Remark("通过id 获取")
+    List<T> listByIds(Long[] ids);
 
 
 

@@ -22,6 +22,18 @@ public class ThinkIdGenerator {
                     log.error("初始化ThinkIdGenerator异常:",e);
                 }
             }
+        }else{
+            try {
+                log.info("重构ID生成器");
+                instance  = new ThinkIdGenerator(machineBitLength, machineId);
+
+            }catch (Exception e){
+                if(log.isErrorEnabled()){
+                    log.error("初始化ThinkIdGenerator异常:",e);
+                }
+            }
+
+
         }
         return instance;
     }
@@ -227,6 +239,7 @@ public class ThinkIdGenerator {
         return false;
     }
 
-
-
+    public int getMachineId() {
+        return machineId;
+    }
 }

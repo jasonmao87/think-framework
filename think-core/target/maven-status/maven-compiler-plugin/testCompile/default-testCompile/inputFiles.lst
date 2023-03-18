@@ -1,7 +1,7 @@
-D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\core\security\ThinkConfigTest.java
+D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\core\bean\schedules\ThinkScheduleBuilderTest.java
 D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\common\util\security\ThinkHashUtilTest.java
 D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\moudles\auth\UserAccountModelTest.java
-D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\core\security\ThinkSecurityManagerTest.java
+D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\common\data\mysql\ThinkSqlFilterTest.java
 D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\core\bean\util\ObjectUtilTest.java
 D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\core\bean\util\TbX_FOR_TEST.java
 D:\projectFarm\gitee\think-famework\think-core\src\test\java\com\think\data\provider\ThinkSqlFilterTest.java

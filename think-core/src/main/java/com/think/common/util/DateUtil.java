@@ -1,8 +1,10 @@
 package com.think.common.util;
 
+import com.think.core.annotations.Remark;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -15,6 +17,9 @@ public class DateUtil extends TimeUtil{
     public static final String FMT_YMD = "yyyy-MM-dd";
 
     private static long lastCallNowTime = 0L;
+    private static Date lastCallNowDate = new Date();
+
+    private static final Date zero =new Date(0);
 
     public static final Calendar getCalendar(){
         return Calendar.getInstance();
@@ -28,6 +33,14 @@ public class DateUtil extends TimeUtil{
         Calendar calendar = getCalendar();
         calendar.setTime(date);
         return calendar;
+    }
+
+    public static final String toFmtYMd(Date date){
+        return new SimpleDateFormat(FMT_YMD).format(date);
+    }
+
+    public static final String toFmtYMdHms(Date date){
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
     }
 
 
@@ -163,6 +176,11 @@ public class DateUtil extends TimeUtil{
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
+
+    public static final int day(Date date){
+        return date(date);
+    }
+
     /**
      * 当前日
      * @return
@@ -176,7 +194,12 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date zeroDate(){
-        return new Date(0L);
+        if(zero.getTime() == 0L){
+            return zero;
+        }else{
+            zero.setTime(0L);
+            return zero;
+        }
     }
 
     /**
@@ -185,22 +208,61 @@ public class DateUtil extends TimeUtil{
      */
     public static final Date now(){
 
-        /**
-         * 发现了系统时间异常，加个日志监控 ！！
-         */
-        Date date =new Date();
-        if(date.getTime() -lastCallNowTime <0){
-            if(log.isWarnEnabled()){
-                log.warn("时间获取发现奇怪异常，上次获取now时间{}，本次获取now【{}】出现比之前更早的奇怪现象，请检查系统时间是否存在异常？？？"
-                        ,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(lastCallNowTime))
-                        ,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
-            }
+        long now =ThinkMilliSecond.currentTimeMillis();
+        if(now == lastCallNowTime){
+            return lastCallNowDate;
+        }else{
+            lastCallNowTime = now;
+            lastCallNowDate = new Date();
+            return lastCallNowDate;
         }
-        lastCallNowTime = date.getTime();
-
-        return date;
     }
 
+
+    public static final Date nowByNew(){
+        return new Date();
+    }
+
+
+//    public static void main(String[] args) {
+//        int max = 99999999;
+//        t1(max);
+//        t2(max);
+//
+//    result:
+//            99999999 of now ----73
+//            99999999 of nowtime  ----274
+
+//        System.exit(-1);
+//    }
+//
+//    static void t1(int max ){
+//        long start = System.currentTimeMillis();
+//        int x.log = 0;
+//        for(int i =0 ; i< max; i++){
+//            Date now = DateUtil.now();
+//            if (now.getTime() >10000) {
+//                x.log ++ ;
+//            }
+//        }
+//        long end = System.currentTimeMillis();
+//        System.out.println( x.log +" of now ----" + (end -start));
+//    }
+//
+//
+//    static void t2(int max ){
+//        long start = System.currentTimeMillis();
+//        int x.log = 0;
+//        for(int i =0 ; i< max; i++){
+//            Date now = DateUtil.nowTime();
+//            if (now.getTime() >10000) {
+//                x.log ++ ;
+//            }
+//        }
+//        long end = System.currentTimeMillis();
+//        System.out.println( x.log +" of nowtime  ----" + (end -start));
+//
+//    }
     /**
      * 通过年月日 解析一个时间
      * @param year
@@ -213,6 +275,12 @@ public class DateUtil extends TimeUtil{
         calendar.set(year,month -1 ,date);
         Date d =  calendar.getTime();
         return d;
+    }
+
+    public static final Date buildNewDate(int year,int month,int date,int hour,int minute,int second){
+        Calendar calendar = getCalendar();
+        calendar.set(year,month-1,date,hour,minute,second);
+        return calendar.getTime();
     }
 
     /**
@@ -371,7 +439,7 @@ public class DateUtil extends TimeUtil{
         c.set(Calendar.HOUR_OF_DAY,23);
         c.set(Calendar.MINUTE,59);
         c.set(Calendar.SECOND,59);
-        c.set(Calendar.MILLISECOND,999);
+        c.set(Calendar.MILLISECOND,0);
         return c.getTime();
     }
 
@@ -392,7 +460,7 @@ public class DateUtil extends TimeUtil{
         Date t = beginOfMonth(date);
         Calendar c = getCalendar(t);
         c.add(Calendar.MONTH,1);
-        c.add(Calendar.MILLISECOND,-1);
+        c.add(Calendar.SECOND,-1);
         return c.getTime();
     }
 
@@ -404,6 +472,16 @@ public class DateUtil extends TimeUtil{
         return endOfMonth(now());
     }
 
+
+    public static final int dayOfDay2SubtractDay1(Date day1 ,Date day2){
+        day1 = beginOfDate(day1);
+        day2 =beginOfDate(day2);
+        long sub = day2.getTime() - day1.getTime();
+        sub /=1000; // 秒
+        sub /=3600 ; //小时 = 60 *60 分*秒
+        sub /=24;
+        return Long.valueOf(sub).intValue();
+    }
 
     /**
      * date2比date1多的天数
@@ -587,6 +665,108 @@ public class DateUtil extends TimeUtil{
         return getWeek(DateUtil.now());
     }
 
+
+    public static final int dayOfYear(Date date){
+        Calendar calendar = getCalendar(date);
+        int i = calendar.get(Calendar.DAY_OF_YEAR);
+        return i;
+    }
+
+    public static final int dayOfYear(){
+        return dayOfYear(DateUtil.now());
+    }
+
+
+
+    public static final Date beginOfYear(Date date){
+        if(date == null){
+            date = DateUtil.now();
+        }
+        Calendar c = getCalendar(date);
+        c.set(Calendar.DAY_OF_YEAR,1);
+        c.set(Calendar.HOUR_OF_DAY,0);
+        c.set(Calendar.MINUTE,0);
+        c.set(Calendar.SECOND,0);
+        c.set(Calendar.MILLISECOND,0);
+        return c.getTime();
+    }
+
+    public static final Date beginOfCurrentYear(){
+        return beginOfYear(DateUtil.now());
+    }
+
+    @Deprecated
+    public static final Date endOfYear(Date date){
+        if(date == null){
+            date = DateUtil.now();
+        }        Date date1 = beginOfYear(date);
+        Date date2 = DateUtil.computeAddYears(date1, 1);
+        Date date3 = DateUtil.computeAddMinutes(date2, -1);
+        return endOfDate(date3);
+    }
+
+    public static final Date endOfCurrentYear(){
+        return endOfYear(DateUtil.now());
+    }
+
+
+    @Remark("是否普通工作日，即 周一至周五 ，大部分场景适用")
+    public static final boolean isSimpleWeekDay(Date date){
+        int week = DateUtil.getWeek();
+        if(week == 1 || week == 7){
+            return false;
+        }
+        return true;
+    }
+    @Remark("是否普通工作日，即 周一至周五 ，大部分场景适用")
+    public static final boolean isSimpleWeekDay(){
+        return isSimpleWeekDay(DateUtil.now());
+    }
+
+        @Remark("是否普通中国适用的休息日，大部分场景适用（周六，周日,10.1 -10，7 ，5.1 都为休息日）")
+    public static final boolean isSimpleChinesRestDay(Date date){
+        if(month(date) == 10 ){
+            //10.1 -7 标记未 休息日
+            return day(date) < 7;
+        }
+        if(month(date) == 5 ){
+            return  day(date) ==1;
+        }
+        return !isSimpleWeekDay(date);
+
+    }
+    @Remark("是否普通中国适用的休息日，大部分场景适用（周六，周日,10.1 -10，7 ，5.1 都为休息日）")
+    public static final boolean isSimpleChinesRestDay(){
+        return isSimpleChinesRestDay(DateUtil.now());
+    }
+
+
+    public static Date nextDay(){
+        return DateUtil.nextDay(DateUtil.now());
+    }
+    public static Date nextDay(Date date){
+        return DateUtil.computeAddDays(date,1);
+    }
+
+
+    public static Date nextMonday(Date date){
+        date = nextDay(date);
+//        System.out.println(toFmtString(date,FMT_YMD));
+        while (getWeek(date) !=2){
+//            System.out.println(getWeek(date) + " " + getWeekZhCN(date)  + " " + toFmtString(date,FMT_YMD) );
+            date= nextDay(date);
+        }
+        return date;
+    }
+
+    public static void main(String[] args) {
+        Date da =new Date();
+        System.out.println(DateUtil.toFmtYMdHms(DateUtil.computeAddMonths(da,2)));
+    }
+
+    public static Date nextMonday(){
+        return nextMonday(DateUtil.now());
+    }
 
 
 }

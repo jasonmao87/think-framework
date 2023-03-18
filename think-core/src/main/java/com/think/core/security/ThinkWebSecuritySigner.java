@@ -2,6 +2,7 @@ package com.think.core.security;
 
 import com.think.common.util.StringUtil;
 import com.think.common.util.security.SHAUtil;
+import com.think.core.security.token.ThinkSecurityToken;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -64,6 +65,12 @@ public class ThinkWebSecuritySigner {
     }
 
 
+    public static final String sign(ThinkSecurityToken token,Map<String,String> requestParams ,long time ,String uri){
+        String secretKey = ThinkSecurityManager.buildSignPrimaryKey(token);
+        return SHAUtil.sha256(buildSourceString(requestParams,time,uri,secretKey));
+
+    }
+
     /**
      * 比对 签名
      * @param token
@@ -105,4 +112,34 @@ public class ThinkWebSecuritySigner {
     }
 
 
+    public static final boolean checkSign( ThinkSecurityToken token ,Map<String,String> requestParams ,long time ,String uri ,String signStr){
+        try {
+            if(uri.contains("//")){
+                uri = uri.replaceAll("//","/");
+            }
+            if(uri.startsWith("/") == false){
+                uri = "/" + uri;
+            }
+            if (token == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("TOKEN 缺失，无法进行签名比对校验！");
+                }
+                return false;
+            }
+            if (StringUtil.isEmpty(signStr)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("缺少可比对得签名原文，无法进行签名比对校验");
+                }
+            }
+            String signReal = sign(token, requestParams, time, uri);
+            if (log.isDebugEnabled()) {
+                log.debug("准确的签名值= {}",signReal);
+                log.debug("当前的签名之= {}",signStr);
+
+            }
+            return signReal.equals(signStr);
+        }catch (Exception e){
+            return false;
+        }
+    }
 }

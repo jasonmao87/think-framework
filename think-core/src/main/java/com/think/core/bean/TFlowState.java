@@ -144,7 +144,7 @@ public class TFlowState implements Serializable {
 
 
     public boolean isAbleState(){
-        ableState = startState || completeState;
+        ableState = (startState || completeState);
         return ableState;
     }
 

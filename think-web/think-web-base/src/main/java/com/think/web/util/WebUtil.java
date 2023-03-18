@@ -1,9 +1,14 @@
 package com.think.web.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.think.common.util.DateUtil;
+import com.think.common.util.FastJsonUtil;
+import com.think.common.util.StringUtil;
 import com.think.common.util.security.Base64Util;
 import com.think.common.util.security.SHAUtil;
-import com.think.core.security.ThinkToken;
+import com.think.core.security.AccessKey;
+import com.think.core.security.WebSecurityUtil;
+import com.think.core.security.token.ThinkSecurityToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -27,7 +32,9 @@ public class WebUtil {
      * @return
      */
     public static final boolean isHttpRequest(){
-        return getRequest() !=null;
+        return fromRequest((request)->{
+            return request!=null;
+        },false);
     }
 
     /**
@@ -86,7 +93,21 @@ public class WebUtil {
         }catch (Exception e){
             return null;
         }
+    }
 
+    /**
+     * 通用处理方法，用于request 不存在时候的 默认值处理
+     * @param function
+     * @param defaultValueWhileRequestIsNull
+     * @return
+     * @param <T>
+     */
+    private static <T> T fromRequest(IRequestFunction<T> function,T defaultValueWhileRequestIsNull){
+        HttpServletRequest request = getRequest();
+        if(request == null){
+            return defaultValueWhileRequestIsNull;
+        }
+        return function.execute(request);
     }
     /**
      * 读取Header中的值
@@ -94,7 +115,17 @@ public class WebUtil {
      * @return
      */
     public static String headerValue(String k) {
-        return getRequest().getHeader(k);
+        return fromRequest((request)->{
+            try{
+                String value = request.getHeader(k);
+                if(StringUtil.isEmpty(value)){
+                    value = request.getHeader(k.toLowerCase());
+                }
+                return value;
+            }catch (Exception e){}
+            return "";
+        },"");
+
     }
 
 
@@ -106,7 +137,9 @@ public class WebUtil {
      * @return
      */
     public static String uri(){
-        return getRequest().getRequestURI().replaceAll("//","/");
+        return fromRequest((request)->{
+            return request.getRequestURI().replaceAll("//","/");
+        },null);
     }
 
     /**
@@ -114,7 +147,8 @@ public class WebUtil {
      * @return
      */
     public static String userAgent(){
-        return getRequest().getHeader("User-Agent");
+        return headerValue("User-Agent");
+//        return getRequest().getHeader("User-Agent");
     }
 
     /**
@@ -122,15 +156,20 @@ public class WebUtil {
      * @return
      */
     public static String ip(){
-        HttpServletRequest request = getRequest();
-        /**
-         * 使用了  RemoteIpFilter 直接使用即可
-         */
-        String ip = request.getRemoteAddr();
-        if(ip.contains("localhost") || ip.contains("0:0:0:0:0:0")){
-            ip = "127.0.0.1";
-        }
-        return ip;
+        return fromRequest((request -> {
+            String ip = WebIpUtil.getIpAddr(request);
+            if(StringUtil.isEmpty(ip)) {
+                /**
+                 * 使用了  RemoteIpFilter 直接使用即可
+                 */
+                ip = request.getRemoteAddr();
+                if (ip.contains("localhost") || ip.contains("0:0:0:0:0:0")) {
+                    ip = "127.0.0.1";
+                }
+            }
+            return ip;
+        }),"NO_WEB_REQUEST");
+
     }
 
     public static String clientId(){
@@ -190,12 +229,15 @@ public class WebUtil {
      * @return
      */
     public static boolean isAjax(){
-        String xRequestedWith = getRequest().getHeader("X-Requested-With");
-        if (xRequestedWith != null && xRequestedWith.indexOf("XMLHttpRequest") != -1)
-        {
-            return true;
-        }
-        return false;
+        return fromRequest((request)->{
+            String xRequestedWith =request.getHeader("X-Requested-With");
+            if (xRequestedWith != null && xRequestedWith.indexOf("XMLHttpRequest") != -1)
+            {
+                return true;
+            }
+            return false;
+
+        },false);
     }
 
 
@@ -206,7 +248,9 @@ public class WebUtil {
      * @return
      */
     public static final String httpMethod(){
-        return httpMethod(getRequest());
+        return fromRequest((r)->{
+            return httpMethod(r);
+        },"");
     }
 
     public static final String httpMethod(HttpServletRequest request){
@@ -229,7 +273,9 @@ public class WebUtil {
     }
 
     public static final Map requestParams(){
-        return requestParams(WebUtil.getRequest());
+        return fromRequest(request -> {
+            return requestParams(request);
+        },new HashMap());
     }
 
 
@@ -254,17 +300,20 @@ public class WebUtil {
     }
 
     public static final String getCookieValue(String key){
-        HttpServletRequest request = getRequest();
-        Cookie[] cks = request.getCookies();
-        if(cks == null || cks.length == 0){
-            return null;
-        }
-        for (Cookie ck: request.getCookies() ){
-            if(ck.getName().equalsIgnoreCase(key) ){
-                return ck.getValue();
+        return fromRequest(request -> {
+            Cookie[] cks = request.getCookies();
+            if (cks == null || cks.length == 0) {
+                return null;
             }
-        }
-        return null;
+            for (Cookie ck : request.getCookies()) {
+                if (ck.getName().equalsIgnoreCase(key)) {
+                    return ck.getValue();
+                }
+            }
+            return null;
+        }, null);
+
+
     }
 
 
@@ -282,17 +331,35 @@ public class WebUtil {
     }
 
 
+    public static final AccessKey getUserAccessKey(){
+        return fromRequest(request -> {
+            if(getToken()!=null){
+                return WebSecurityUtil.getInstance().getAccessKeyValueOfAkString(headerValue("accessKey"),WebUtil.userAgent());
+            }else{
+                return null;
+            }
+        },null);
 
-    public static Optional<ThinkToken> getToken(){
-        ThinkToken token ;
+    }
+
+    public static Optional<ThinkSecurityToken> getToken(){
+        ThinkSecurityToken token = null;
         String tokenString = WebUtil.headerValue("token");
-        if(tokenString == null){
+        if(StringUtil.isEmpty(tokenString)){
             return Optional.ofNullable(null);
         }
-
         try {
             tokenString = Base64Util.decodeToString(tokenString);
-            token = ThinkToken.parseOfJsonString(tokenString);
+            token = ThinkSecurityToken.valueOfJsonString(tokenString);
+            if(token!=null) {
+                final Map<String, String> sessionData = getSessionDataMapFromWebRequest();
+                if(sessionData!=null ){
+                    for (Map.Entry<String, String> entry : sessionData.entrySet()) {
+                        token.setSessionValue(entry.getKey(),entry.getValue());
+                    }
+                }
+                token.getSessionData();
+            }
 
         }catch (Exception e){
             token = null;
@@ -301,7 +368,24 @@ public class WebUtil {
                 log.debug("exception while try to catch header token :" ,e);
             }
         }
+
         return Optional.ofNullable(token);
+    }
+
+    private static final Map<String,String> getSessionDataMapFromWebRequest(){
+        String sessionData = WebUtil.headerValue("sessionData");
+        String jsonString = null;
+        try{
+            jsonString =Base64Util.decodeToString(sessionData);
+
+            final JSONObject jsonObject = FastJsonUtil.parseToJson(jsonString);
+            Map<String,String> sessionDataMap= new HashMap<>();
+            jsonObject.forEach((k,v)->{
+                sessionDataMap.put(k, (String) v);
+            });
+            return sessionDataMap;
+        }catch (Exception e){}
+        return new HashMap<String, String>();
     }
 
 

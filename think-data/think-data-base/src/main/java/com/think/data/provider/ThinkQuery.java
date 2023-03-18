@@ -1,15 +1,16 @@
 package com.think.data.provider;
 
-import com.think.common.data.mysql.IThinkResultFilter;
+import com.think.common.data.IThinkQueryFilter;
 import com.think.common.data.mysql.ThinkFilterBean;
 import com.think.common.data.ThinkFilterOp;
 import com.think.common.data.mysql.ThinkSqlFilter;
-import com.think.common.util.TVerification;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
+import com.think.data.ThinkDataRuntime;
 import com.think.data.model.ThinkColumnModel;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,8 @@ import java.util.*;
 public class ThinkQuery {
 
     private String queryStr;
+
+    private boolean maybyEmpty = false;
 
     private List<ThinkFilterBean>  perfectList ;
     private List<ThinkFilterBean> simpleList ;
@@ -39,16 +42,31 @@ public class ThinkQuery {
     private ThinkSqlFilter filter ;
 
     private ThinkQuery() {
+        /*这里可能不是唯一入口*/
+        if (ThinkThreadExecutor.isDataRegionChange()) {
+            String currentRegion =ThinkThreadExecutor.getChangedDataRagionAndRemove();
+            if (!ThinkDataRuntime.isNonePartitionRegion(currentRegion)) {
+                if (log.isDebugEnabled()) {
+
+                    log.debug("需要调整新的数据分区，原因应该异步任务的线程数据分区更新通知--- 调整为 ：：：{}" , currentRegion);
+                }
+                Manager.unsafeChangeDataSrv(currentRegion);
+            }
+        }
+
+
         this.perfectList = new ArrayList<>();
         this.simpleList = new ArrayList<>();
         this.badList = new ArrayList<>();
      }
     private void init(ThinkSqlFilter filter){
+        this.maybyEmpty = filter.mayBeEmptyResult();
         if(filter.getKeyCondition("enable")==null && filter.getEnableRequired()!=null){
             switch (filter.getEnableRequired()) {
                 case MATCH_ENABLE:  {
                     filter.eq("enable",true);
                     break;
+
                 }
                 case MATCH_DISABLE:{
                     filter.eq("enable",false);
@@ -64,6 +82,10 @@ public class ThinkQuery {
         this.filterSize = simpleList.size() + badList.size() + perfectList.size();
         this.buildQuery();
 
+    }
+
+    public boolean isMaybyEmpty() {
+        return maybyEmpty;
     }
 
     /**
@@ -173,6 +195,10 @@ public class ThinkQuery {
 
     public static ThinkQuery build(ThinkSqlFilter filter){
         ThinkQuery query = new ThinkQuery();
+        IThinkQueryFilter thinkQueryFilter = Manager.getThinkQueryFilter();
+        if(thinkQueryFilter !=null){
+            thinkQueryFilter.translateSqlFilter(filter);
+        }
         query.init(filter);
         return query;
     }
@@ -194,28 +220,113 @@ public class ThinkQuery {
         //append bad
         this.appendFilterParamList(badList,sb,paramValues.size()>0);
         sb.append(" ");
+        /**
+         * 处理KEY OR的逻辑
+         */
+        this._appendKeyOr(sb);
+        queryStr = sb.toString();
+    }
 
-        // 处理 key or 逻辑 ....
-        Map<String, Serializable> keyOrMap = this.filter.getKeyOrMap();
-        if(!keyOrMap.isEmpty() && keyOrMap.size()>1) {
+
+    private void _appendKeyOr(StringBuilder sb){
+        List<ThinkFilterBean> filterKeyOrBeans = filter.getKeyOrBeans();
+        if(!filterKeyOrBeans.isEmpty() && filterKeyOrBeans.size() >1){
             if(paramValues.size()>0){
-                sb.append(" AND ");
+                sb.append("AND ");
             }
-            sb.append(" (");
-            int index = 0;
+            int index = 0 ;
+            sb.append("( ");
 
-            for (Map.Entry<String, Serializable> kv : keyOrMap.entrySet()) {
+            for (ThinkFilterBean filterBean : filterKeyOrBeans) {
                 if(index>0){
                     sb.append("OR ");
                 }
-                sb.append(" ").append(kv.getKey()).append("=").append("? ");
-                paramValues.add(kv.getValue());
-                index++;
-            }
+                String k  = filterBean.getKey();
+                Serializable v =  filterBean.getValues()[0];
+
+
+
+
+                String sv = null;
+                try{
+                    ThinkColumnModel columnModel = Manager.getModelBuilder().get(filter.gettClass()).getKey(k);
+
+                    if(v instanceof String  && columnModel.isSensitive()){
+                        sv = (String) v;
+                        sv =DesensitizationUtil.encodeForSelectWithIgnore((String) v, '%');
+                    }else{
+                        sv = (String) v;
+                    }
+                }catch (Exception e){}
+                if(  v instanceof String  && filter.isKeyOrTypeUsingLike()){
+                    this.checkFastMatchAble(filterBean);
+                    sb.append(" ").append(k).append(" LIKE ? ");
+                    paramValues.add(sv);
+                    if (filterBean.isFastMatchAble()) {
+                        sb.append("OR fs_").append(k).append(" LIKE ? ");
+                        sb.append("OR fss_").append(k).append(" LIKE ? ");
+                        paramValues.add(reDoStringAsFastMatchForQuery((String) v,false));
+                        paramValues.add(reDoStringAsFastMatchForQuery((String) v,true));
+                    }
+                }else{
+                    sb.append(filterBean.getQueryPart());
+                    paramValues.add(v);
+                }
+
+
+                index ++ ;
+
+
+
+            }//end of for
             sb.append(") ");
+
+
+
         }
-        queryStr = sb.toString();
+
+
+
+//
+//        // 处理 key or 逻辑 ....
+//        Map<String, Serializable> keyOrMap = this.filter.getKeyOrMap();
+//        boolean op_keyOrLike = false;
+//        if(!keyOrMap.isEmpty() && keyOrMap.size()>1) {
+//
+//            if(paramValues.size()>0){
+//                sb.append(" AND ");
+//            }
+//            sb.append(" (");
+//            int index = 0;
+//
+//
+//
+//            for (Map.Entry<String, Serializable> kv : keyOrMap.entrySet()) {
+//
+//                if(index>0){
+//                    sb.append("OR ");
+//                }
+//                if( filter.isKeyOrTypeUsingLike()){
+//                    sb.append(" ").append(kv.getKey()).append(" LIKE ").append("? ");
+//                }else {
+//                    sb.append(" ").append(kv.getKey()).append("=").append("? ");
+//                }
+//                Serializable v = kv.getValue();
+//                try{
+//                    ThinkColumnModel columnModel = Manager.getModelBuilder().get(filter.gettClass()).getKey(kv.getKey());
+//                    if(columnModel.isSensitive()){
+//                        v =DesensitizationUtil.encodeWithIgnore((String) v, '%');
+//                    }
+//                }catch (Exception e){}
+//                paramValues.add(v);
+//
+//                index++;
+//            }
+//            sb.append(") ");
+//        }
+
     }
+
 
     private void appendFastMatchSupport(StringBuilder sb, boolean startWithAnd){
 
@@ -228,44 +339,49 @@ public class ThinkQuery {
                 String sqlPart =""+ keyCondition.getQueryPart();
                 sqlPart = sqlPart.replaceFirst(sourceKey,fastMatchKey);
                 if(index > 0 || startWithAnd){
-                    sb.append("AND ");
+                    sb.append("AND (");
+                }else{
+                    sb.append(" (");
                 }
                 index ++ ;
                 sb.append(sqlPart);
                 Serializable[] vaules = keyCondition.getValues();
                 for(int i=0 ;i < vaules.length; i++){
                     String v =(String) vaules[i];
-                    String redoValue ;
-                    if(true ==keyCondition.isSensitive()){
-                        //处理  sort 支持 值  ----
-                        redoValue = reDoStringAsFastMatchForQuery(DesensitizationUtil.encodeWithIgnore(v,'%'),false);
-                    }else {
-                        //处理  sort 支持 值  ----
-                        redoValue = reDoStringAsFastMatchForQuery(v,false);
-                    }
+                    String redoValue  = reDoStringAsFastMatchForQuery(v,false);
+                    //快排支持情况下，忽略  脱敏 ！
+//                    if(true ==keyCondition.isSensitive() ){
+//                        //处理  sort 支持 值  ----
+//                        redoValue = reDoStringAsFastMatchForQuery(DesensitizationUtil.encodeWithIgnore(v,'%'),false);
+//                    }else {
+//                        //处理  sort 支持 值  ----
+//                        redoValue = reDoStringAsFastMatchForQuery(v,false);
+//                    }
                     paramValues.add(redoValue);
-                }
+                }   // end of inner for
 
                 // secondary key append
                 String sqlPartSecondary  = sqlPart.replaceFirst("fs_","fss_");
-                sb.append("AND ").append(sqlPartSecondary);
+                sb.append("OR ").append(sqlPartSecondary);
+                sb.append(" ) ");
                 for(int i=0 ;i < vaules.length; i++){
                     String v =(String) vaules[i];
-                    String redoValue ;
-                    if(true ==keyCondition.isSensitive()){
-                        //处理  sort 支持 值  ----
-                        redoValue = reDoStringAsFastMatchForQuery(DesensitizationUtil.encodeWithIgnore(v,'%'),true);
-                    }else {
-                        //处理  sort 支持 值  ----
-                        redoValue = reDoStringAsFastMatchForQuery(v,true);
-                    }
+                    String redoValue = reDoStringAsFastMatchForQuery(v,true);
+//                    if(true ==keyCondition.isSensitive()){
+//                        //处理  sort 支持 值  ----
+//                        redoValue = reDoStringAsFastMatchForQuery(DesensitizationUtil.encodeWithIgnore(v,'%'),true);
+//                    }else {
+//                        //处理  sort 支持 值  ----
+//                        redoValue = reDoStringAsFastMatchForQuery(v,true);
+//                    }
                     paramValues.add(redoValue);
                 }
 
 
 
-            }
-        }
+            } // end of FOR
+        }//end of if
+//        /**清空 快速匹配 支持list */
     }
 
 
@@ -283,6 +399,7 @@ public class ThinkQuery {
 
             }
 
+            
             if(doAppendAble) {
                 if( startWithAnd  || ( appendIndex > 0)){
                     sb.append("AND ");
@@ -297,8 +414,8 @@ public class ThinkQuery {
                     if (bean.isSensitive()) {
                         Serializable v = values[i];
                         if (v instanceof String) {
-
-                            paramValues.add(DesensitizationUtil.encodeWithIgnore((String) v, '%'));
+                            //尝试 的
+                            paramValues.add(DesensitizationUtil.encodeForSelectWithIgnore((String) v, '%'));
                         } else {
                             paramValues.add(values[i]);
                         }
@@ -326,7 +443,7 @@ public class ThinkQuery {
                 .append( tableName(cls)).append(" ")
                 .append(queryStr);
         Serializable[] values = paramValues.toArray(new Serializable[paramValues.size()]);
-        return new ThinkExecuteQuery(sb.toString(),values,this.filter.getResultFilterList());
+        return new ThinkExecuteQuery(sb.toString(),values,this.filter.getResultFilterList(),isMaybyEmpty(),cls);
     }
 
     public <T extends _Entity> ThinkExecuteQuery selectFullKeys(Class cls){
@@ -392,19 +509,19 @@ public class ThinkQuery {
                 valueTempList.add(filter.getLimit());
             }
         }
-        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList());
+        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList(),isMaybyEmpty(),cls);
      }
 
 
     public <T extends _Entity> ThinkExecuteQuery selectCount(){
 
         StringBuilder sb = new StringBuilder("SELECT  ")
-                .append(" count(*) ")
+                .append(" COUNT(*) as COUNT_RESULT ")
                 .append("FROM ").append( tableName( null )).append(" ")
                 .append(queryStr).append(" ");
         List<Serializable> valueTempList = new ArrayList<>();
         valueTempList.addAll(this.paramValues);
-        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList());
+        return new ThinkExecuteQuery(sb.toString(),valueTempList.toArray(new Serializable[valueTempList.size()]),this.filter.getResultFilterList(),isMaybyEmpty(),filter!=null?filter.gettClass():null);
 
     }
 

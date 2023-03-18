@@ -5,7 +5,7 @@ import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
 import com.think.common.util.IdUtil;
-import com.think.common.util.StringUtil;
+import com.think.common.util.ThinkCollectionUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
@@ -82,24 +82,26 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
 
     @Override
     public List<String> showSplitTables() {
-//        log.info("检查 split 表清单  {} ， {}" ,ThinkMilliSecond.currentTimeMillis() , lastCheckDb );
+        final List<String> tables = this._showSplitTables(jdbcTemplate, targetClass);
+        return tables;
+        /*
         if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
-
             String showTablesSql = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
-//            log.info("{}",showTablesSql);
             List<String> list = jdbcTemplate.queryForList(showTablesSql, String.class);
             for (String t : list) {
                 if (Manager.isTableInitialized(t) == false) {
                     Manager.recordTableInit(t);
                 }
             }
-            if(!showTablesSql.contains("nonePart")) {
+            if(!showTablesSql.contains("ThinkDataRuntime.NONE_PART")) {
                 lastCheckDb = ThinkMilliSecond.currentTimeMillis();
             }
             return list;
         }else{
             return Manager.findInitializedTableNameList(_DaoSupport.baseTableName(  targetClass));
         }
+
+         */
     }
 
 
@@ -161,31 +163,39 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
 
     public List<Map<String,Object>> _autoMapList(ThinkSqlFilter<T> sqlFilter ,String... keys) {
         int[] possibleSplits = _DaoSupport.possibleSplitYears(sqlFilter ,this.showSplitTables());
-        if(possibleSplits.length == 0){
-            return new ArrayList<Map<String,Object>>();
-        }
-        int limit = sqlFilter.getLimit();
-        List<Map<String,Object>> results = new ArrayList<Map<String,Object>>( limit>0?limit:12 );
-        List<Map<String,Object>> list = this._simpleMapList(sqlFilter,possibleSplits[0],keys);
-        results.addAll(list);
+        if (possibleSplits.length >0) {
+            int limit = sqlFilter.getLimit();
+            boolean unLimitSize = limit < 0;
+            List<Map<String, Object>> results = new ArrayList<Map<String, Object>>(limit > 0 ? limit : 12);
+            Long lastResultId = null;
+            for (int possibleSplit : possibleSplits) {
+                limit -= results.size();
+                if (!unLimitSize && limit <= 0) {
+                    // 限制了 返回结果得条件下，如果 limit <=0 了退出循环
+                    break;
+                }
+                if(lastResultId !=null){
+                    if (sqlFilter.isDesc()) {
+                        sqlFilter.lessThan("id", lastResultId);
+                    } else {
+                        sqlFilter.largeThan("id", lastResultId);
+                    }
+                }
 
-        int loop = 1 ;
-        while (limit> results.size() && possibleSplits.length > loop ){
-            Long lastId = null;
-            if(results.size() > 0){
-                lastId = (Long) results.get(results.size() -1).get("id");
+                if (results.size() > 0) {
+                    lastResultId = (Long) results.get(results.size() - 1).get("id");
+                }
+                //更新limit 值
+                if (limit > 0) {
+                    sqlFilter.updateLimit(limit);
+                }
+                List<Map<String, Object>> maps = this._simpleMapList(sqlFilter, possibleSplit, keys);
+                results.addAll(maps);
             }
-            sqlFilter.updateLimit( limit - list.size());
-            if(sqlFilter.isDesc()){
-                sqlFilter.lessThan("id",lastId);
-            }else{
-                sqlFilter.largeThan("id",lastId);
-            }
-            List<Map<String,Object>> loopList = this._simpleMapList(sqlFilter,possibleSplits[loop],keys);
-            results.addAll(loopList);
-            loop ++ ;
+            return results;
+        } else {
+            return new ArrayList<Map<String, Object>>();
         }
-        return results;
     }
 
 
@@ -194,6 +204,9 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         List<Map<String,Object>> list = this._simpleMapList(sqlFilter,splitYear,"*");
         List<T> result = new ArrayList<T>(list.size());
         if(list.size() > 0){
+            list.parallelStream().forEachOrdered(t->{
+                result.add((T) ObjectUtil.beanToMap(t));
+            });
             for(Map<String,Object> map : list){
                 result.add((T) ObjectUtil.mapToBean(map,targetClass));
             }
@@ -202,6 +215,9 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     }
 
     public List<Map<String,Object>> _simpleMapList(ThinkSqlFilter<T> sqlFilter, int splitYear,String... keys){
+        if(sqlFilter.mayBeEmptyResult()){
+            return new ArrayList<>();
+        }
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.selectForKeys(targetClass ,keys ) ;
         List<Map<String,Object>> list = this.executeSelectList(executeQuery,finalTableName(splitYear));
@@ -212,19 +228,40 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     @Override
     public long autoCount(ThinkSqlFilter<T> sqlFilter)  {
         int[] possibleSplits = _DaoSupport.possibleSplitYears(sqlFilter,this.showSplitTables());
-        long total = 0L ;
-        for(int splitYear : possibleSplits){
-            total += simpleCount(sqlFilter,splitYear);
+//        long total = 0L ;
+        if(possibleSplits == null || possibleSplits.length == 0 ){
+            return 0L;
+        } else if( possibleSplits.length > 1) {
+            String partitionRegion = Manager.getDataSrvRuntimeInfo().getPartitionRegion();
+
+            return Arrays.stream(possibleSplits).parallel().mapToLong(t -> {
+                Manager.unsafeChangeDataSrv(partitionRegion);
+                return simpleCount(sqlFilter.copyNew(), t);
+            }).sum();
+        }else{
+            return simpleCount(sqlFilter,possibleSplits[0]);
         }
-        return total;
+//
+//        for(int splitYear : possibleSplits){
+//            total += simpleCount(sqlFilter,splitYear);
+//        }
+//        return total;
     }
 
     @Override
     public long simpleCount(ThinkSqlFilter<T> sqlFilter, int splitYear) {
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.countQuery(targetClass ) ;
-        Map map = this.executeOne(executeQuery,finalTableName(splitYear));
-        return (long) map.getOrDefault("COUNT_RESULT", 0L);
+        Map<String,Object> map = this.executeOne(executeQuery,finalTableName(splitYear));
+        if(map.containsKey("COUNT_RESULT")) {
+            return (long) map.getOrDefault("COUNT_RESULT", 0L);
+        }
+        if(map.keySet().size() == 1){
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                return (long) entry.getValue();
+            }
+        }
+        return 0L;
     }
 
     @Override
@@ -285,20 +322,30 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         //调用链已经有了  _DaoSupport.callUpdate(null,updaterMapper); ，所以无需再次调用
         int[] possibleSplits = _DaoSupport.possibleSplitYears(sqlFilter ,this.showSplitTables());
         Map<String,Object> voMap = ObjectUtil.beanToMap(v);
-        ThinkUpdateMapper<T> updateMapper = ThinkUpdateMapper.build(getTargetClass())
-                .putUpdateMap(voMap)
-                .setFilter(sqlFilter);
+        final String partitionRegion = Manager.getDataSrvRuntimeInfo().getPartitionRegion();
 
-        int  updateCount = 0 ;
-        for (int i = 0; i < possibleSplits.length; i++) {
-            int splitYear = possibleSplits[i];
-            ThinkResult<Integer> oneResult = this.update(updateMapper,splitYear);
-            if(oneResult.isSuccess()){
-                updateCount+= oneResult.getResultData();
-            }
+        Long sum = Arrays.stream(possibleSplits).parallel().mapToLong(
+                t -> {
+                    Manager.unsafeChangeDataSrv(partitionRegion);
+                    ThinkUpdateMapper<T> updateMapper = ThinkUpdateMapper.build(getTargetClass())
+                            .putUpdateMap(voMap)
+                            .setFilter(sqlFilter.copyNew());
+                    ThinkResult<Integer> oneResult = this.update(updateMapper, t);
+                    if (oneResult.isSuccess()) {
+                        return oneResult.getResultData();
+                    }
+                    return 0;
+                }
+        ).sum();
+        int updateCount =sum.intValue();
 
-
-        }
+//        for (int i = 0; i < possibleSplits.length; i++) {
+//            int splitYear = possibleSplits[i];
+//            ThinkResult<Integer> oneResult = this.update(updateMapper,splitYear);
+//            if(oneResult.isSuccess()){
+//                updateCount+= oneResult.getResultData();
+//            }
+//        }
         if(updateCount >0){
             return ThinkResult.success(updateCount);
         }
@@ -349,9 +396,13 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     }
 
     public ThinkResult<Integer> _batchInsert(List<T> list ,int splitYear){
-        if(list.size() >1) {
-            ThinkExecuteQuery query = ThinkUpdateQueryBuilder.batchInsertSQL(list);
-            return this.executeUpdate(query, finalTableName(splitYear));
+        if(list.size() >0) {
+            if(list.size() >1) {
+                ThinkExecuteQuery query = ThinkUpdateQueryBuilder.batchInsertSQL(list);
+                return this.executeUpdate(query, finalTableName(splitYear));
+            }else{
+                return this.insert(list.get(0)).intResult();
+            }
         }
         return ThinkResult.fail("无可插入数据", ResultCode.REQUEST_PARAM_ERROR);
     }
@@ -388,7 +439,8 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         if(total>0){
             return ThinkResult.success(total);
         }else {
-            return ThinkResult.fail("未匹配到任何数据，或其他错误",ResultCode.REQUEST_NO_RESOURCE);
+            return ThinkResult.success(0).appendMessage("未删除任何数据");
+            //return ThinkResult.fail("未匹配到任何数据，或其他错误",ResultCode.REQUEST_NO_RESOURCE);
         }
     }
 
@@ -445,7 +497,8 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         if(total>0){
             return ThinkResult.success(total);
         }else {
-            return ThinkResult.fail("未匹配到任何数据，或其他错误",ResultCode.REQUEST_NO_RESOURCE);
+            return ThinkResult.success(1).appendMessage("未删除任何数据");
+            //return ThinkResult.fail("未匹配到任何数据，或其他错误",ResultCode.REQUEST_NO_RESOURCE);
         }
     }
 
@@ -462,7 +515,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     public ThinkResult _physicalBatchDelete(List<Long> idList,int splitYear){
         ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
         if(idList.size() ==0){
-            return ThinkResult.success(0);
+            return ThinkResult.success(0).appendMessage("未删除任何数据");
 //            return ThinkResult.fail("非法的参数，必须指定id",ResultCode.SERVER_FORBIDDEN);
         }else if(idList.size()>1){
             sqlFilter.in("id",idList.toArray(new Long[idList.size()]));
@@ -472,4 +525,33 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         ThinkExecuteQuery query = ThinkUpdateQueryBuilder.physicalDeleteSql(sqlFilter);
         return this._update(query,splitYear);
     }
+
+
+//    static final void  doSleep(){
+//        try{
+//            Thread.sleep(100);
+//        }catch (Exception e){}
+//    }
+//
+//    public static void main(String[] args) {
+//        long x =0;
+//        int[] arr = {100,101,102,103,104};
+//        System.out.println("start ");
+//        long start = System.currentTimeMillis();
+////        x = Arrays.stream(arr).parallel().mapToLong(t->{
+////            doSleep();
+////            return (long) t + 100;
+////        }).sum();
+//        x = Arrays.stream(arr).mapToLong(t->{
+//            doSleep();
+//            return (long) t + 100;
+//        }).sum();
+////        for (int i : arr) {
+////            doSleep();
+////            x += (100+i);
+////        }
+//        long end = System.currentTimeMillis();
+//        System.out.println(x );
+//        System.out.println( end - start);
+//    }
 }

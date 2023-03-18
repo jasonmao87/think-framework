@@ -58,11 +58,24 @@ public class ThinkMongoDao {
 //
 //    }
 
+    public <T extends SimpleMongoEntity> T  findOne(ThinkMongoQueryFilter<T> filter){
+        filter.updateLimit(1);
+        List<T> list = list(filter);
+        if(list.size() > 0){
+            return list.get(0);
+        }
+        return  null;
+
+    }
+
 
 
 
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter ){
         Query query = ThinkMongoQueryBuilder.build(filter,false);
+        if(!filter.containsUpdate()){
+            return this.findOne(filter);
+        }
         Update update = new Update();
         filter.getModifyUpdateMapper().forEach((k, v)->{
             update.set(k,v);
@@ -77,6 +90,9 @@ public class ThinkMongoDao {
 
     @Remark("只能处理匹配到的第一条记录")
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter ,boolean returnNew){
+        if(!filter.containsUpdate()){
+            return this.findOne(filter);
+        }
         Query query = ThinkMongoQueryBuilder.build(filter,false);
         Update update = new Update();
         filter.getModifyUpdateMapper().forEach((k, v)->{
@@ -108,22 +124,40 @@ public class ThinkMongoDao {
         this.checkAndInitIndex(t.getClass());
         IdFixTool.dataInit(t);
 //        Update update = new Update();
-        Map<String,Object> map = ObjectUtil.beanToMap(t);
         ThinkMongoQueryFilter<? extends SimpleMongoEntity> filter = ThinkMongoQueryFilter.build(t.getClass()).eq("id", t.getId()).eq("thinkUpdateKey",t.getThinkUpdateKey());
-        map.keySet().forEach(k->{
-            if(!k.equalsIgnoreCase("id") ){
-                if(k.equalsIgnoreCase("thinkUpdateKey")){
-                   filter.findAndModifyUpdate(k, IdUtil.nextId());
-                }else{
-                    filter.findAndModifyUpdate(k,map.get(k));
-                }
-            }
-        });
-         t = (T) findOneAndModify(filter,true);
-         if(t ==null){
-             return ThinkResult.error("修改失败，可能涉及脏写被拦截！",new ThinkException("可能涉及脏写被拦截"));
-         }
-         return ThinkResult.successIfNoNull(t);
+        filter
+                .findAndModifyUpdate("thinkUpdateKey",IdUtil.nextId());
+        List<Map<String, Object>> findResult  = this.listForKeys(filter, "thinkUpdateKey" ,"_id");
+        if(findResult.size() > 0 ){
+            t.setThinkUpdateKey(IdUtil.nextId());
+            t = this.getMongoTemplate().save(t);
+            return ThinkResult.successIfNoNull(t);
+        }else{
+            return ThinkResult.error("修改失败，可能涉及脏写被拦截！",new ThinkException("可能涉及脏写被拦截"));
+        }
+
+//
+//        Map<String,Object> map = ObjectUtil.beanToMap(t);
+//
+//
+//        ThinkMongoQueryFilter<? extends SimpleMongoEntity> filter = ThinkMongoQueryFilter.build(t.getClass()).eq("id", t.getId()).eq("thinkUpdateKey",t.getThinkUpdateKey());
+//
+//        map.keySet().forEach(k->{
+//            if(!k.equalsIgnoreCase("id") ){
+//                if(k.equalsIgnoreCase("thinkUpdateKey")){
+//                   filter.findAndModifyUpdate(k, IdUtil.nextId());
+//                }else{
+//                    filter.findAndModifyUpdate(k,map.get(k));
+//                }
+//            }
+//        });
+//
+//
+//         t = (T) findOneAndModify(filter,true);
+//         if(t ==null){
+//             return ThinkResult.error("修改失败，可能涉及脏写被拦截！",new ThinkException("可能涉及脏写被拦截"));
+//         }
+//         return ThinkResult.successIfNoNull(t);
     }
 
 
@@ -221,6 +255,8 @@ public class ThinkMongoDao {
     }
 
 
+
+
     public ThinkResult<Long> delete(String id , Class targetClass){
         DeleteResult deleteResult = getMongoTemplate().remove(Query.query(Criteria.where("_id").is(id)), targetClass);
         if(deleteResult.getDeletedCount()>0){
@@ -228,6 +264,17 @@ public class ThinkMongoDao {
         }
         return ThinkResult.fastFail();
     }
+
+    @Remark("通过long类型的Id获取较为简短的StringId，即直接使用Long HexString的字符串形式")
+    public String defaultShortIdByLongId(long longId){
+        return Long.toHexString(longId);
+    }
+
+    @Remark("通过long类型的Id获取转换后的StringId，即直接使用Long的字符串形式")
+    public String defaultIdByLongId(long longId){
+        return Long.toString(longId);
+    }
+
 
 //
 //    public <T extends SimpleMongoEntity> List<T> page(int page,Class<T> tClass ){

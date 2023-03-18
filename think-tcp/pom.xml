@@ -5,7 +5,7 @@
     <parent>
         <artifactId>think-framework</artifactId>
         <groupId>com.think</groupId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.5.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -21,18 +21,18 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-server</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-client</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-common</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

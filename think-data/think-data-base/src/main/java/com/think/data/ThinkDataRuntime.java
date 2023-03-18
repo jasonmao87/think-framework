@@ -1,5 +1,6 @@
 package com.think.data;
 
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.structure.ThinkFastList;
 
@@ -12,6 +13,8 @@ public class ThinkDataRuntime implements Serializable {
      * 数据分区region ，如果是 分表 对象，那么需要引用这个参数作为 分表 后缀
      */
     private String partitionRegion = null;
+
+    public static final String NONE_PART = "nonePart";
 
     /**
      * 线程id
@@ -90,7 +93,18 @@ public class ThinkDataRuntime implements Serializable {
     }
 
     public String getPartitionRegion() {
+        if (StringUtil.isEmpty(this.partitionRegion)) {
+            return ThinkDataRuntime.NONE_PART;
+        }
         return partitionRegion;
+    }
+
+    public static final boolean isNonePartitionRegion(String regionValue){
+        if ( StringUtil.isEmpty(regionValue) ||ThinkDataRuntime.NONE_PART.equals(regionValue)) {
+            return true;
+        }
+
+        return false;
     }
 
     public RuntimeQuerysEntry fireUpdate(String updateSql,boolean success ,int affectedCount ,long duration , Serializable[] paramsValues ){

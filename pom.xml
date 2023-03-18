@@ -7,7 +7,7 @@
     <groupId>com.think</groupId>
     <artifactId>think-framework</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.5.1-SNAPSHOT</version>
     <modules>
         <module>think-core</module>
         <module>think-mongo-spring</module>
@@ -15,15 +15,19 @@
         <module>think-data</module>
         <module>think-tcp</module>
         <module>think-simple-redis</module>
+        <module>think-tcp2</module>
+        <module>think-service-bus</module>
     </modules>
 
     <properties>
+<!--        <spring-boot.version>2.5.8</spring-boot.version>-->
         <spring-boot.version>2.3.2.RELEASE</spring-boot.version>
+
         <junit-version>4.12</junit-version>
         <druid-version>1.1.12</druid-version>
         <mysql-driver-version>6.0.6</mysql-driver-version>
         <okhtt-version>3.12.0</okhtt-version>
-        <fastjson-version>1.2.54</fastjson-version>
+        <fastjson-version>1.2.68</fastjson-version>
         <mongodb-driver-version>3.8.2</mongodb-driver-version>
         <apache-common-codec-version>1.11</apache-common-codec-version>
         <apache-poi-version>4.0.1</apache-poi-version>
@@ -47,7 +51,6 @@
             <id>nexus-snapshots</id>
             <name>nexus-snapshots</name>
             <url>https://nexus.x-service.cn/repository/maven-snapshots/</url>
-<!--            <url>http://8.136.215.26:8088/repository/maven-snapshots/</url>-->
         </snapshotRepository>
 
     </distributionManagement>
@@ -56,7 +59,6 @@
             <id>think-nexus</id>
             <name>think-nexus</name>
             <url>https://nexus.x-service.cn/repository/maven-public/</url>
-<!--            <url>http://8.136.215.26:8088/repository/maven-public/</url>-->
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -72,50 +74,66 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-core</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data-base</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data-spring</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-data</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-simple-redis</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-client</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-tcp-server</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-tcp2-common</artifactId>
+                <version>1.0.5.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-tcp2-client</artifactId>
+                <version>1.0.5.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.think</groupId>
+                <artifactId>think-tcp2-server</artifactId>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-mongo-spring</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
@@ -145,18 +163,18 @@
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-base</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-auth-support</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.think</groupId>
                 <artifactId>think-web-service</artifactId>
-                <version>1.0.3-SNAPSHOT</version>
+                <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <!-- think framework -dependencies -->
@@ -309,6 +327,11 @@
                 <artifactId>protostuff-runtime</artifactId>
                 <version>${protostuff-version}</version>
             </dependency>
+            <dependency>
+                <groupId>net.sourceforge.tess4j</groupId>
+                <artifactId>tess4j</artifactId>
+                <version>4.3.1</version>
+            </dependency>
 
         </dependencies>
 
@@ -318,14 +341,14 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <generateBackupPoms>false</generateBackupPoms>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.mojo</groupId>-->
+<!--                <artifactId>versions-maven-plugin</artifactId>-->
+<!--                <version>2.3</version>-->
+<!--                <configuration>-->
+<!--                    <generateBackupPoms>false</generateBackupPoms>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -333,6 +356,9 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>

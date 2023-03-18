@@ -4,6 +4,7 @@ import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.core.annotations.Remark;
+import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 
 import java.util.List;
@@ -19,6 +20,14 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      */
     T get(long id);
 
+    /**
+     * 读取自定义的视图对象
+     * @param id
+     * @param vClass
+     * @param <V>
+     */
+    <V extends BaseVo<T>> V getView(long id ,Class<V> vClass);
+
     T findDeleted(long id) ;
 
 
@@ -33,13 +42,17 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
 
 
     @Remark("使用updateMappe更新")
-    ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper, long id );
+    ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper,@Remark("对象的Id值") long id );
     /**
      * 获取list ，会自动匹配 跨表 等复杂逻辑， 无需过多考虑，性能上略微会逊色一些
      * @param sqlFilter
      * @return
      */
     List<T> list(ThinkSqlFilter<T> sqlFilter);
+
+
+    <V extends BaseVo<T>> List<V> voList(ThinkSqlFilter<T> sqlFilter, Class<V> vo);
+
 
     /**
      * 获取count ，会自动匹配 跨表 等复杂逻辑， 无需过多考虑，性能上略微会逊色一些
@@ -54,7 +67,8 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      * @param splitYear
      * @return
      */
-    List<T> list(ThinkSqlFilter<T> sqlFilter,int splitYear);
+    @Deprecated
+    List<T> list(ThinkSqlFilter<T> sqlFilter, int splitYear);
 
     /**
      * 指定年份得count
@@ -62,7 +76,9 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      * @param splitYear
      * @return
      */
+    @Deprecated
     long count(ThinkSqlFilter<T> sqlFilter,int splitYear);
+
 
     /**
      * 非必须， 启用
@@ -128,6 +144,8 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
     @Remark(value = "目标对象的流程状态重置" )
     ThinkResult<Integer> tFlowResultChangeToClearState(long id , String mainKey );
 
+    ThinkSqlFilter<T> emptySqlFilter(int limit);
 
-
+    @Remark("通过id计算年份")
+    int computeIdYear(long id );
 }

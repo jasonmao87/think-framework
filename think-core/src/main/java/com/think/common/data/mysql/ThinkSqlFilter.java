@@ -3,6 +3,8 @@ package com.think.common.data.mysql;
 import com.alibaba.fastjson.JSONObject;
 import com.think.common.data.IFilterChecker;
 import com.think.common.data.ThinkFilterOp;
+import com.think.common.util.DateUtil;
+import com.think.common.util.StringUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
 import com.think.core.annotations.bean.ThinkStateColumn;
@@ -45,19 +47,37 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     @Remark("筛选记录数，limit ，-1代表不分页  ")
     private int limit  = 10 ;
 
-    @Remark("限制查询年份，仅对按年切分表有效")
-    private int filterSplitYear ;
+//    @Remark("限制查询年份，仅对按年切分表有效")
+//    private int filterSplitYear ;
+//
+
+    @Remark("限制查询开始年份，大于0有效")
+    private int filterSplitYearFrom ;
+
+    @Remark("限制查询结束年份，大于0有效")
+    private int filterSplitYearEnd ;
+
+    @Remark("可能为空结果")
+    private boolean mayBeEmptyResult = false;
 
 
     @Remark(value = "支持快速匹配的严格模式",description = "true 时候为严格匹配，如果 false，不知道 可以 匹配到 不指导")
     private boolean strictFastMatch = false;
+
 
     @Remark("Group key")
     private String[] groupByKeys ;
 
     private List<ThinkFilterBean> beans = new ArrayList<>();
 
-    private Map<String,Serializable> keyOrMap = new HashMap<>();
+
+    private List<ThinkFilterBean> keyOrBeans = new ArrayList<>();
+
+
+    @Remark("key or 使用 LIKE 模式，默认未 EQ")
+    private boolean keyOrTypeUsingLike  = false;
+
+
 
     public ThinkSqlFilter<T> resultFilter(IThinkResultFilter filter){
         if (this.resultFilterList==null) {
@@ -100,6 +120,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         this.strictFastMatch = strictFastMatch;
     }
 
+
     public static <T extends _Entity> ThinkSqlFilter<T> parseFromJSON(String filterJson , Class<T> tClass){
         JSONObject jsonObject = null;
         try{
@@ -109,7 +130,9 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         ThinkSqlFilter filter = new ThinkSqlFilter(tClass);
         if(jsonObject.containsKey("filterSplitYear")){
-            filter.filterSplitYear = jsonObject.getInteger("filterSplitYear");
+            int filterSplitYear = jsonObject.getInteger("filterSplitYear");
+            filter.filterSplitYearFrom = filterSplitYear;
+            filter.filterSplitYearEnd = filterSplitYear;
         }
         if (jsonObject.containsKey("limit")) {
             filter.limit = jsonObject.getInteger("limit");
@@ -154,7 +177,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
                     }else{
                         realKey = k;
                     }
-                    if (filterChecker.checkKey(realKey,tClass)) {
+                    if (filter.check(realKey)) {
                         ThinkFilterBean bean = ThinkFilterBean.parseFromJSON(realKey,filterMap.getJSONObject(k)) ;
                         if(bean !=null){
                             filter.beans.add(bean);
@@ -168,17 +191,53 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
                 }
             }
         }
+        if(jsonObject.containsKey("keyOrBody")) {
+            JSONObject keyOrBody = jsonObject.getJSONObject("keyOrBody");
+            String[] keys = keyOrBody.keySet().toArray(new String[keyOrBody.size()]);
+            if(keys.length ==2 ){
+                filter.keyOr( keys[0],(Serializable) keyOrBody.get(keys[0]) ,keys[1],(Serializable)keyOrBody.get(keys[1]));
+            }else if(keys.length ==3){
+                filter.keyOr( keys[0],(Serializable) keyOrBody.get(keys[0]) ,keys[1],(Serializable)keyOrBody.get(keys[1]) ,  keys[2],(Serializable) keyOrBody.get(keys[2]) );
+            }else if(keys.length ==4 ){
+                filter.keyOr( keys[0],(Serializable) keyOrBody.get(keys[0]) ,keys[1],(Serializable)keyOrBody.get(keys[1]) ,  keys[2],(Serializable) keyOrBody.get(keys[2]) ,  keys[3],(Serializable) keyOrBody.get(keys[3]) );
+            }
+            // 检查 使用key or 的方式 ！
+            String keyOrType = (String) jsonObject.getOrDefault("keyOrType", "EQ");
+            if(keyOrType.equalsIgnoreCase("like")){
+                filter.keyOrUsingLike();
+            }
+        }
+
         return filter;
     }
 
+
+    public ThinkSqlFilter<T> keyOrUsingLike(){
+        this.keyOrTypeUsingLike = true;
+        List<ThinkFilterBean> newArrayList = new ArrayList<>();
+        this.keyOrBeans.forEach(t->{
+            ThinkFilterBean bean = ThinkFilterBean.LIKE(t.getKey(), (String) t.getValues()[0]);
+            newArrayList.add(bean);
+        });
+        this.keyOrBeans  = newArrayList;
+        return this;
+    }
+
+    public boolean isKeyOrTypeUsingLike() {
+        return keyOrTypeUsingLike;
+    }
+
     public ThinkSqlFilter<T> enableRequired(TEnableRequired required){
+        if(required == null){
+            required = TEnableRequired.MATCH_ALL;
+        }
+
         if (this.getKeyCondition("enable")!=null) {
             log.warn("已经再ThinkSQLFilter中指定了enable的需求属性，该操作可能引起不必要的误解,但您的调用仍然被接受");
         }
         if(this.enableRequired!=null){
             log.warn("已经指定了EnableRequired为{}，由于本次操作被替换为：{}" ,this.enableRequired,required );
         }
-
         this.enableRequired = required;
         return this;
     }
@@ -192,6 +251,34 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         this._append(k, ThinkFilterOp.EQ,v);
         return this;
     }
+
+
+    public ThinkSqlFilter<T> eqIfNotNull(String k ,Serializable v){
+        if(v!=null){
+            return this.eq(k,v);
+        }
+        return this;
+    }
+
+    public ThinkSqlFilter<T> eqIfNotEmpty(String k ,String v){
+        if(StringUtil.isNotEmpty(v)){
+            return this.eq(k,v);
+        }
+        return this;
+    }
+
+    public ThinkSqlFilter<T> eqIfNumberGreaterThanZero(String k ,Number v){
+        if(v !=null && v.intValue()>0){
+            return this.eq(k,v);
+        }
+        return this;
+    }
+
+
+
+
+
+
 
     public ThinkSqlFilter<T> notEq(String k ,Serializable v){
         this._append(k,ThinkFilterOp.NOT_EQ,v);
@@ -247,8 +334,24 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
+    /**
+     * 在 指定的 这一天里面
+     * @param k
+     * @param d
+     * @return
+     */
+    public ThinkSqlFilter<T> inThatDay(String k, Date d){
+        this.betweenAnd(k, DateUtil.beginOfDate(d),DateUtil.endOfDate(d));
+        return this;
+    }
+
     public ThinkSqlFilter<T> in(String k , Serializable... v){
-        if(v==null || v.length == 1){
+        if(v == null || v.length == 0){
+            if (log.isWarnEnabled()) {
+                log.warn(" {} in 语法未包含任何 值，这样查询结果必然无法匹配到任何数据 ！" ,k);
+            }
+            this.mayBeEmptyResult = true;
+        }else if( v.length == 1){
             return eq(k,v[0]);
         }else{
             this._append(k,ThinkFilterOp.IN,v);
@@ -258,7 +361,11 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
 
     public ThinkSqlFilter<T> notIn(String k , Serializable... v){
-        if(v==null || v.length == 1){
+        if(v == null){
+            return this;
+        }else if(v.length == 0){
+            return this;
+        }else if( v.length == 1){
             return notEq(k,v[0]);
         }else{
             this._append(k,ThinkFilterOp.NOT_IN,v);
@@ -278,34 +385,68 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
 
+    private void keyOrAppend(String k ,Serializable v){
+        if (this.check(k)) {
+            if(this.keyOrTypeUsingLike) {
+                this.keyOrBeans.add(ThinkFilterBean.LIKE(k, (String) v));
+            }else{
+                this.keyOrBeans.add(ThinkFilterBean.EQ(k,v));
+            }
+        }else{
+            log.warn("key " +k +" 不包含再模型对象中，将被忽略OR查询" );
+        }
+
+
+
+    }
+
+
     @Remark("转换成SQL >> ... where ... and  ( k1 =v1 or k2 =v2) ")
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2){
+        this.keyOrAppend(k1,v1);
+        this.keyOrAppend(k2,v2);
+        /*
         if(!this.keyOrMap.isEmpty() ){
             throw new ThinkRuntimeException("ThinkSqlFilter 中只允许调用一次keyOr方法");
         }
-        keyOrMap.put(k1,v1);
-        keyOrMap.put(k2,v2);
+//
+        if (check(k1) && check(k2)) {
+            this.keyOrMap.put(k1,v1);
+            this.keyOrMap.put(k2,v2);
+        }else{
+        }
+        */
+
+
         return this;
     }
 
     @Remark("转换成SQL >> ... where ... and  ( k1 =v1 or k2 =v2 or k3 =v3) ")
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2,String k3, Serializable v3){
-       this.keyOr(k1,v1,k2,v2);
-       this.keyOrMap.put(k3,v3);
-       return this;
+        if (check(k3)) {
+            this.keyOr(k1,v1,k2,v2);
+            //this.keyOrMap.put(k3,v3);
+            this.keyOrAppend(k3,v3);
+        }
+
+        return this;
      }
 
     @Remark("转换成SQL >> ... where ... and  ( k1 =v1 or k2 =v2 or k3 =v3 or k4 =v4) ")
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2,String k3, Serializable v3,String k4, Serializable v4){
-        this.keyOr(k1,v1,k2,v2,k3,v3);
-        keyOrMap.put(k4,v4);
+        if(check(k4)){
+            this.keyOr(k1,v1,k2,v2,k3,v3);
+//            this.keyOrMap.put(k4,v4);
+            this.keyOrAppend(k4,v4);
+        }
         return this;
     }
 
     @Remark("转换成SQL >> ... where ... and  ( k1 =v1 or k2 =v2 or k3 =v3 or k4 =v4 or k5 = v5 ) ")
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2,String k3, Serializable v3,String k4, Serializable v4,String k5, Serializable v5){
         this.keyOr(k1,v1,k2,v2,k3,v3,k4,v4);
-        keyOrMap.put(k5,v5);
+//        keyOrMap.put(k5,v5);
+        this.keyOrAppend(k5,v5);
         return this;
     }
 
@@ -374,6 +515,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
 
     /**
+     * 检查是否已经包含key
      * @param key
      * @param op
      * @return
@@ -388,6 +530,11 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
 
+    /**
+     * 从 filter中获取 keyCondition
+     * @param key
+     * @return
+     */
     public ThinkFilterBean getKeyCondition(String key){
         for(ThinkFilterBean bean : beans){
             if(bean.getKey().equals(key)){
@@ -399,19 +546,6 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
 
     public ThinkSqlFilter removeKeyConditions(String key){
-//        Iterator<ThinkFilterBean> iterator = beans.iterator();
-//        if(iterator!=null){
-//            List<ThinkFilterBean> removeBeans = new ArrayList<>();
-//            while (iterator.hasNext()) {
-//                ThinkFilterBean next = iterator.next();
-//                if (next.getKey().equals(key)) {
-//                    removeBeans.add(next);
-//                }
-//            }
-//            for(ThinkFilterBean remove : removeBeans){
-//                beans.remove(remove);
-//            }
-//        }
         if(beans.size() > 0){
             beans.removeIf(bean -> bean.getKey().equals(key));
         }
@@ -483,6 +617,11 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
 
 
+    public ThinkSqlFilter<T> setFilterSelectYearLimit(@Remark("filterSplitYearFrom 查询限制开始年份") int filterSplitYearFrom,@Remark("filterSplitYearEnd 查询限制结束年份")int filterSplitYearEnd){
+        this.filterSplitYearFrom =  filterSplitYearFrom;
+        this.filterSplitYearEnd = filterSplitYearEnd ;
+        return this;
+    }
 
 
     public Class<T> gettClass() {
@@ -493,8 +632,16 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return limit;
     }
 
-    public int getFilterSplitYear() {
-        return filterSplitYear;
+//    public int getFilterSplitYear() {
+//        return filterSplitYear;
+//    }
+
+    public int getFilterSplitYearEnd() {
+        return filterSplitYearEnd;
+    }
+
+    public int getFilterSplitYearFrom() {
+        return filterSplitYearFrom;
     }
 
     public int getStart() {
@@ -521,7 +668,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
      *
      */
 
-    public ThinkSqlFilter<T> in(String k , long... v){
+    public ThinkSqlFilter<T> in(String k , long[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -534,7 +681,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
-    public ThinkSqlFilter<T> in(String k , int... v){
+    public ThinkSqlFilter<T> in(String k , int[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -546,7 +693,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> in(String k , float... v){
+    public ThinkSqlFilter<T> in(String k , float[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -558,7 +705,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> in(String k , double... v){
+    public ThinkSqlFilter<T> in(String k , double[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -571,7 +718,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
-    public ThinkSqlFilter<T> in(String k , short... v){
+    public ThinkSqlFilter<T> in(String k , short[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -583,7 +730,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> in(String k , boolean... v){
+    public ThinkSqlFilter<T> in(String k , boolean[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -598,7 +745,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
     /** --------------------------OR --------------------------------------*/
 
-    public ThinkSqlFilter<T> or(String k , long... v){
+    public ThinkSqlFilter<T> or(String k , long[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -611,7 +758,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
-    public ThinkSqlFilter<T> or(String k , int... v){
+    public ThinkSqlFilter<T> or(String k , int[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -623,7 +770,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> or(String k , float... v){
+    public ThinkSqlFilter<T> or(String k , float[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -635,7 +782,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> or(String k , double... v){
+    public ThinkSqlFilter<T> or(String k , double[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -648,7 +795,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return this;
     }
 
-    public ThinkSqlFilter<T> or(String k , short... v){
+    public ThinkSqlFilter<T> or(String k , short[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -660,7 +807,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         }
         return this;
     }
-    public ThinkSqlFilter<T> or(String k , boolean... v){
+    public ThinkSqlFilter<T> or(String k , boolean[] v){
         if(v==null || v.length == 1){
             return eq(k,v[0]);
         }else{
@@ -674,14 +821,67 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
 
+    /**
+     * 该方法过于 简单，即将废弃
+     * @return
+     */
+    @Remark("该方法过于简单，即将废弃")
+    @Deprecated
     public Map<String, Serializable> getKeyOrMap() {
-        if(this.keyOrMap.isEmpty()){
+        if(this.keyOrBeans.isEmpty()){
             return new HashMap<>();
         }
         Map<String, Serializable> returnMap = new HashMap<>();
-        for (Map.Entry<String, Serializable> entry : returnMap.entrySet()) {
-            returnMap.put(entry.getKey(),entry.getValue());
-        }
+        keyOrBeans.forEach(t->{
+            returnMap.put( t.getKey(),t.getValues()[0]);
+        });
+
+//        for (Map.Entry<String, Serializable> entry : keyOrMap.entrySet()) {
+//            returnMap.put(entry.getKey(),entry.getValue());
+//        }
         return returnMap;
     }
+
+
+    public List<ThinkFilterBean> getKeyOrBeans() {
+        return keyOrBeans;
+    }
+
+    public boolean mayBeEmptyResult() {
+        return mayBeEmptyResult;
+    }
+
+
+//    public static void main(String[] args) {
+//
+//        doss(null);
+//    }
+//
+//    public static final void doss(String... x){
+//        System.out.println(x );
+//    }
+
+
+    public final ThinkSqlFilter<T> copyNew(){
+        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(gettClass(), getLimit());
+        if(this.isDesc()){
+            sqlFilter.sortDesc(this.getSortKey());
+        }else{
+            sqlFilter.sortAsc(this.getSortKey());
+        }
+
+        for (ThinkFilterBean bean : this.beans) {
+            sqlFilter._append(bean.getKey(),bean.getOp(),bean.getValues());
+        }
+
+        sqlFilter.keyOrTypeUsingLike = this.keyOrTypeUsingLike;
+        for (ThinkFilterBean keyOrBean : this.keyOrBeans) {
+            sqlFilter.keyOrBeans.add(keyOrBean);
+        }
+        sqlFilter.mayBeEmptyResult = this.mayBeEmptyResult;
+
+        return sqlFilter;
+    }
+
+
 }

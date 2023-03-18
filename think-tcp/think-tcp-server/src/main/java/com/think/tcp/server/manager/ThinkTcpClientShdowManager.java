@@ -1,17 +1,21 @@
 package com.think.tcp.server.manager;
 
-import com.sun.javafx.collections.UnmodifiableObservableMap;
 import com.think.common.util.ThinkMilliSecond;
+import com.think.common.util.TimeUtil;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author JasonMao
+ */
 @Slf4j
 public class ThinkTcpClientShdowManager {
-    private static final Map<String, ThinkTcpClientShadowModel> clientHolder = new HashMap<>();
+    private static final Map<String, ThinkTcpClientShadowModel> clientHolder = new ConcurrentHashMap<>();
     private static long lastCheck = 0L ;
-    private static boolean lockCkeck = false;
+    private static volatile boolean lockCheck = false;
 
 
     public static final List<ThinkTcpClientShadowModel> allClient(){
@@ -50,12 +54,14 @@ public class ThinkTcpClientShdowManager {
 
 
     /**
-     * 心跳超时事件
+     * 心跳超时事件 ？
+     *  每隔开50分中 会检查一次
      * @param channel
      */
     public static final void idle(Channel channel){
         long now = ThinkMilliSecond.currentTimeMillis();
-        if(now -lastCheck > (1000*60*50)){
+        long _45Minutes = TimeUtil.MILLIS_OF_MINUTES(45);
+        if(now -lastCheck >_45Minutes){
             try{
                 callCheckAll();
             }catch (Exception e){}
@@ -75,9 +81,7 @@ public class ThinkTcpClientShdowManager {
 
     public static  final void callCheckAll(){
         lastCheck = ThinkMilliSecond.currentTimeMillis();
-        if(lockCkeck == false) {
-            lockCheck();
-
+        if (tryLockCheck()) {
             Iterator<Map.Entry<String, ThinkTcpClientShadowModel>> iterator = clientHolder.entrySet().iterator();
             while (iterator.hasNext()){
                 Map.Entry<String, ThinkTcpClientShadowModel> next = iterator.next();
@@ -105,19 +109,28 @@ public class ThinkTcpClientShdowManager {
 
     }
 
-    private synchronized static void lockCheck(){
-        lockCkeck = true;
+//    private synchronized static void lockCheck(){
+//        lockCheck = true;
+//    }
+//
 
+    private synchronized static boolean tryLockCheck(){
+        if(!lockCheck){
+            lockCheck = true;
+            return true;
+        }else{
+            return false;
+        }
     }
 
     private synchronized static void unlockCheck(){
-        lockCkeck = false;
+        lockCheck = false;
     }
 
 
     /**
      * 关闭并移除客户端
-     * @param channelId
+     * @param channelId channelId
      */
     public static final void closeAndRemoveClient(String channelId){
         if(clientHolder.containsKey(channelId)) {
@@ -128,32 +141,6 @@ public class ThinkTcpClientShdowManager {
         }
         clientHolder.remove(channelId);
     }
-
-
-
-
-
-
-//    /**
-//     * 绑定 链客户端对象
-//     * @param id
-//     * @param channelId
-//     * @throws ThinkRuntimeException
-//     */
-//    protected static final void bindId(String id ,String channelId) throws ThinkRuntimeException {
-//        if(idHolder.containsKey(id)) {
-//            if(idHolder.get(id).equalsIgnoreCase(channelId)) {
-//                idHolder.put(id, channelId);
-//            }else{
-//                throw new ThinkRuntimeException("id["+id+"]已经绑定了一个连接，请无重复绑定其他！");
-//            }
-//        }
-//    }
-
-
-
-
-
 
 
 }

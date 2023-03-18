@@ -2,9 +2,12 @@ package com.think.common.util;
 
 import com.github.stuxuhai.jpinyin.PinyinFormat;
 import com.github.stuxuhai.jpinyin.PinyinHelper;
+import com.think.core.annotations.Remark;
 import lombok.extern.slf4j.Slf4j;
 //import com.sun.istack.internal.NotNull;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -13,7 +16,10 @@ import java.util.regex.Pattern;
 @Slf4j
 public class StringUtil {
 
-    public static final String UTF8 = "UTF-8";
+    public static final String UTF8 =  new String("UTF-8").intern();
+
+    public static final String EMPTY_JSON = new String("{}").intern();
+    public static final String EMPTY_STRING = new String("").intern();
 
 
     private static char[] allCharDic = {
@@ -422,7 +428,7 @@ public class StringUtil {
      * @return
      */
     public static final String buildStringAppend( Object... appends){
-        TAssert.isNull(appends,"构建String的入参不能为NULL");
+        TVerification.valueOf(appends).throwIfNull("传入参数不能为NULL");
         if(appends.length == 1 && appends[0] !=null){
             if(appends[0] instanceof Appendable){
                 throw new RuntimeException("不能使用Append作为参数中的内容");
@@ -442,5 +448,161 @@ public class StringUtil {
 
     }
 
+    public static final String getEmptyJsonStr(){
+        return EMPTY_JSON;
+    }
+    public static final String getEmptyStr(){
+        return EMPTY_STRING;
+    }
 
+
+    public static final String delHTMLTag(String htmlStr){
+        String regEx_script="<script[^>]*?>[\\s\\S]*?<\\/script>"; //定义script的正则表达式
+        String regEx_style="<style[^>]*?>[\\s\\S]*?<\\/style>"; //定义style的正则表达式
+        String regEx_html="<[^>]+>"; //定义HTML标签的正则表达式
+
+        Pattern p_script=Pattern.compile(regEx_script,Pattern.CASE_INSENSITIVE);
+        Matcher m_script=p_script.matcher(htmlStr);
+        htmlStr=m_script.replaceAll(""); //过滤script标签
+
+        Pattern p_style=Pattern.compile(regEx_style,Pattern.CASE_INSENSITIVE);
+        Matcher m_style=p_style.matcher(htmlStr);
+        htmlStr=m_style.replaceAll(""); //过滤style标签
+
+        Pattern p_html=Pattern.compile(regEx_html,Pattern.CASE_INSENSITIVE);
+        Matcher m_html=p_html.matcher(htmlStr);
+        htmlStr=m_html.replaceAll(""); //过滤html标签
+
+        return htmlStr.trim(); //返回文本字符串
+    }
+
+    public static final String toHexString(Number v ){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("0x");
+        String hex = Long.toHexString(v.longValue());
+
+        int appendLength = 0 ;
+
+
+        if(hex.length() <2){
+            appendLength = 2 - hex.length();
+        }else if(hex.length() < 4){
+           appendLength = 4- hex.length();
+        }else if(hex.length()<8){
+            appendLength = 8 - hex.length();
+        }
+        while (appendLength  > 0){
+            appendLength --;
+            stringBuilder.append("0");
+        }
+
+        stringBuilder.append(hex);
+        return stringBuilder.toString();
+    }
+
+
+    public String format(String template,Object... params){
+        final String s = template.replaceAll("\\{}", "%s");
+
+        return String.format(s, params);
+
+    }
+
+
+    public static String fixStringIfNullAsEmpty(String str){
+        return str!=null?str:getEmptyStr();
+    }
+
+
+    /**
+     * 进制 转换
+     * @param source
+     * @param sourceRadix
+     * @param targetRadix
+     * @return
+     */
+    public static final String radixChange(String source ,int sourceRadix ,int targetRadix) throws RuntimeException{
+        BigInteger bg = new BigInteger(source,sourceRadix);
+        return bg.toString(targetRadix);
+    }
+
+
+    @Remark("约束String 的长度")
+    public final static String fixedStrLenForPrintAndLogger(String source , int len){
+        if(len ==0){
+            return "";
+        }
+        StringBuilder sb ;
+        if(source==null){
+            sb =new StringBuilder("");
+            while (sb.length()<len){
+                sb.append(" ");
+            }
+            return sb.toString();
+        }
+
+
+        byte[] bytes = source.getBytes();
+        byte[] target =new byte[len];
+        int maxIndex = (target.length>bytes.length?bytes.length:target.length);
+        for (int i = 0; i < maxIndex; i++) {
+            target[i] = bytes[i];
+        }
+        String fixedString = new String(target);
+        return fixedString;
+
+
+
+
+        /**
+
+        if(len == source.length() ){
+            return source;
+        }else if(len > source.length()){
+            sb= new StringBuilder("");
+            while ( (sb.length() + source.length() )< len){
+                sb.append(" ");
+            }
+            return sb.append(source).toString();
+        } else{
+            byte[] bytes = source.getBytes();
+            byte[] target =new byte[len*2];
+            int maxIndex = (target.length>bytes.length?bytes.length:target.length);
+            for (int i = 0; i < maxIndex; i++) {
+                target[i] = bytes[i];
+            }
+            if(maxIndex<target.length){
+                sb.append(new String())
+            }
+
+
+
+
+
+            sb = new StringBuilder();
+            sb.append(source.substring(0,len));
+            if(sb.length()>5){
+                sb.replace(sb.length()-4,sb.length()-1,"...");
+            }
+            return sb.toString();
+        }
+         **/
+    }
+
+    public static void main(String[] args) throws UnsupportedEncodingException {
+
+        String s = "我爱茜茜";
+
+
+        byte[] bytes = s.getBytes("GB2312");
+
+        System.out.println(s);
+
+
+        String s2 = new String(bytes, "ISO-8859-1");
+
+
+        System.out.println(s2);
+
+    }
 }

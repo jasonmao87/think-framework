@@ -7,10 +7,12 @@ import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean._Entity;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
+import com.think.data.extra.StructAlterSqlLogger;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -18,6 +20,8 @@ import java.util.*;
 
 @Slf4j
 public abstract class _JdbcExecutor {
+    private StructAlterSqlLogger dbTableAlterLogger;
+
     public abstract <T extends _Entity> Class getTargetClass();
     public abstract JdbcTemplate getJdbcTemplate();
 
@@ -27,36 +31,60 @@ public abstract class _JdbcExecutor {
         return Optional.ofNullable(Manager.getDataSrvRuntimeInfo()) ;
     }
 
-    public <T extends _Entity> void tableInit(String tableName){
 
+    public  <T extends _Entity>  List<String> _showSplitTables(JdbcTemplate jdbcTemplate, Class<T> targetClass){
+        ThinkTableModel model = Manager.getModelBuilder().get(targetClass);
+        long lastCheckDb = 0L;
+        if(model != null){
+            lastCheckDb = model.getLastSplitCheckTime();
+        }
+        if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
+            String showTablesSql = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
+            List<String> list = jdbcTemplate.queryForList(showTablesSql, String.class);
+            for (String t : list) {
+                this.executeTableInit(targetClass,t);
+            }
+
+            if(!showTablesSql.contains(ThinkDataRuntime.NONE_PART)) {
+            }
+            if(model != null){
+                model.setLastSplitCheckTime(ThinkMilliSecond.currentTimeMillis());
+            }
+            return list;
+        }else{
+            return Manager.findInitializedTableNameListFromCache(_DaoSupport.baseTableName(  targetClass));
+        }
+    }
+
+
+    public <T extends _Entity> void executeTableInit(Class<T> targetClass ,String tableName){
+        this.checkTransactionAndLogPrint();
         if (Manager.isTableInitialized(tableName) == false) {
             try {
-
                 String showTableExitsSql = "show tables like '" +tableName +"'";
-
                 Map<String, Object> showTableExitsMap = new HashMap<>();
                 try {
                     showTableExitsMap =getJdbcTemplate().queryForMap(showTableExitsSql);
                 }catch (Exception r){
-
+                    showTableExitsMap = new HashMap<>();
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("检查表{}是否存在  --> {}::{}", tableName,showTableExitsSql ,showTableExitsMap);
+                if (log.isTraceEnabled()) {
+                    log.trace("检查表{}是否存在  --> {}::{}", tableName,showTableExitsSql ,showTableExitsMap);
                 }
                 if(showTableExitsMap.isEmpty()){
-                    if(log.isDebugEnabled()){
-                        log.debug("确定表{}不存在..",tableName);
+                    if(log.isTraceEnabled()){
+                        log.trace("确定表{}不存在..",tableName);
                     }
                     String sql;
                     if (Manager.getModelBuilder().get(getTargetClass()).isYearSplitAble()) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("即将创建表【时间拆分】 {}", tableName);
+                        if (log.isTraceEnabled()) {
+                            log.trace("即将创建表【时间拆分】 {}", tableName);
                         }
                         int splitYear = Integer.parseInt(tableName.split("_split_")[1]);
                         sql = ThinkDataDDLBuilder.createSpiltSQL(Manager.getModelBuilder().get(getTargetClass()), splitYear);
                     } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("即将创建普通表 {} ", tableName);
+                        if (log.isTraceEnabled()) {
+                            log.trace("即将创建普通表 {} ", tableName);
                         }
                         sql = ThinkDataDDLBuilder.createSQL(Manager.getModelBuilder().get(getTargetClass()));
                     }
@@ -70,12 +98,18 @@ public abstract class _JdbcExecutor {
                     if (rt().isPresent()) {
                         rt().get().fireDDL(sql, duration);
                     }
-                    if (log.isDebugEnabled()) {
-                        log.debug("表结构构建完成....");
+                    if (log.isTraceEnabled()) {
+                        log.trace("表结构构建完成....");
                     }
                 }else{
+                    //同步 ----表结构
+                    try{
+                        log.info("检查 {}表结构 并自动 新增 新字段 ",tableName );
+                        _SyncTableStructureUtil.syncUtil.doExecuteSync(targetClass,tableName,getJdbcTemplate());
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                     Manager.recordTableInit(tableName);
-
                     /*
                     //是否需要关联id支持
                     if(Manager.isThinkLinkedIdSupportAble()){
@@ -147,15 +181,39 @@ public abstract class _JdbcExecutor {
 //        }
     }
 
+    public void checkTransactionAndLogPrint(){
+        if (log.isDebugEnabled()) {
+            boolean actualTransactionActive = TransactionSynchronizationManager.isActualTransactionActive();
+            if(actualTransactionActive){
+                String currentTransactionName = TransactionSynchronizationManager.getCurrentTransactionName();
+
+                log.debug("**********************本次执有事务 -- {}********************************" ,currentTransactionName );
+            }
+        }
+    }
+
+
     public Map<String,Object> executeOne( ThinkExecuteQuery executeQuery, String finalTableName){
-        this.tableInit(finalTableName);
+        this.executeTableInit(executeQuery.getTargetClass(),finalTableName);
+
         Map<String,Object> result = null;
+        if(executeQuery.isMayByEmpty()){
+            result= new HashMap<>();
+            if(executeQuery.getSql(finalTableName).toUpperCase().contains(" COUNT(*) ")){
+                result.put("COUNT_RESULT",0L);
+            }
+            log.warn("SQL FILTER 存在 IN 空数据内容，不执行实际查询，直接返回 0 或者 空值 ");
+            return result;
+        }
+
         long duration = 0L;
         long start =0L;
         int affectedCount = 0;
         boolean success = false;
         Throwable throwable = null;
         String sql = executeQuery.getSql(finalTableName);
+
+
         try{
             start = ThinkMilliSecond.currentTimeMillis();
             result = getJdbcTemplate().queryForMap(sql,executeQuery.getValues());
@@ -171,7 +229,7 @@ public abstract class _JdbcExecutor {
                 rt().get().fireSelect(sql,success,affectedCount,duration,executeQuery.getValues()).throwInfo(throwable);
             }
             if(log.isDebugEnabled()){
-                this.outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
+                outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
                 //log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
             }
         }
@@ -189,7 +247,12 @@ public abstract class _JdbcExecutor {
 
 
     public List<Map<String,Object>> executeSelectList( ThinkExecuteQuery executeQuery, String finalTableName){
-        this.tableInit(finalTableName);
+        if(executeQuery.isMayByEmpty()){
+            log.warn("SQL FILTER 存在 IN 空数据内容，不执行实际查询，直接返回 0 或者 空值 ");
+            return new ArrayList<>();
+        }
+
+        this.executeTableInit(getTargetClass(),finalTableName);
         List<Map<String,Object>> result = null;
         long duration = 0L;
         long start =0L;
@@ -212,7 +275,7 @@ public abstract class _JdbcExecutor {
                 rt().get().fireSelect(sql,success,affectedCount,duration,executeQuery.getValues()).throwInfo(throwable);
             }
             if(log.isDebugEnabled()){
-                this.outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
+                outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
                 //log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
             }
         }
@@ -230,11 +293,16 @@ public abstract class _JdbcExecutor {
     }
 
     public ThinkResult executeUpdate(ThinkExecuteQuery executeQuery, String finalTableName){
-        this.tableInit(finalTableName);
+        this.executeTableInit(getTargetClass(),finalTableName);
         long duration = 0 ;
         int result = 0;
         boolean success = false;
         Throwable throwable = null;
+        if(executeQuery.isMayByEmpty()){
+            return DaoExceptionTranslater.updateFilterEmpty().setData(0);
+        }
+
+
         long start =0L;
         String sql = executeQuery.getSql(finalTableName);
         try{
@@ -259,7 +327,7 @@ public abstract class _JdbcExecutor {
                 }
             }
             if(log.isDebugEnabled()){
-                this.outputSQLInfo(sql,executeQuery.getValues(),success,result,duration);
+                outputSQLInfo(sql,executeQuery.getValues(),success,result,duration);
                 /*
                 log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
 
@@ -348,7 +416,9 @@ public abstract class _JdbcExecutor {
                 reportSqlTemplate = reportForPrint.toString().intern();
             }
             sql = sql.replaceFirst("where", "WHERE").replaceFirst("WHERE", "WHERE\n\t\t\t");
-            log.debug(reportSqlTemplate, sql, successState , affectedCount , duration);
+            if (log.isDebugEnabled()) {
+                log.debug(reportSqlTemplate, sql, successState , affectedCount , duration);
+            }
         }
 
     }

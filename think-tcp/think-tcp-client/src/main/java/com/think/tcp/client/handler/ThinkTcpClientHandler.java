@@ -41,7 +41,7 @@ public class ThinkTcpClientHandler extends SimpleChannelInboundHandler<TcpTransM
         }
 
         try {
-            //当注完成时候，发送一条心跳 ！
+            //当注完成时候，发  送一条心跳 ！
             TcpMessageTransmissionUtil.transmission(ctx.channel(), heartBeat, 1);
         }catch (Exception e){}
 

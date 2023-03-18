@@ -10,5 +10,9 @@ import com.think.core.bean.TEnumExplain;
 //@ThinkEnum
 public interface  TEnum {
 
-    TEnumExplain explain(String keyName);
+    TEnumExplain explain();
+
+    default void remark(String remark,EnumExplainMapper mapper){
+        mapper.mapping((Enum) this,remark);
+    }
 }

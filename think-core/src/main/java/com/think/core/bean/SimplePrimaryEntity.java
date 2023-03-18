@@ -17,8 +17,11 @@ import lombok.experimental.Accessors;
 @Remark("主表基础类")
 @Data
 @Accessors(chain = true)
-public abstract class SimplePrimaryEntity extends _Entity {
+public abstract class SimplePrimaryEntity<T extends SimplePrimaryEntity> extends _Entity<T> {
     private static final long serialVersionUID = -3855081976206446802L;
+
+
+
 
 
     /**
@@ -35,24 +38,29 @@ public abstract class SimplePrimaryEntity extends _Entity {
     }
 
 
+    @Override
     @Remark("构建一个空的filter")
-    public <T extends SimplePrimaryEntity> ThinkSqlFilter<T> buildEmptyFilter(int limit){
-        return (ThinkSqlFilter<T>) ThinkSqlFilter.build(getClass(),limit);
+    public ThinkSqlFilter<T> buildEmptyFilter(int limit){
+        return   ThinkSqlFilter.build(getSelfClass(),limit);
     }
 
+    @Override
     @Remark("构建一个空的filter")
-    public <T extends SimplePrimaryEntity> ThinkSqlFilter<T> buildEmptyFilter(int limit,Class<T> tClass){
-        return (ThinkSqlFilter<T>) ThinkSqlFilter.build(tClass,limit);
+    public ThinkSqlFilter<T> buildEmptyFilter(int limit,Class<T> tClass){
+        return  ThinkSqlFilter.build(tClass,limit);
     }
 
+    @Override
     @Remark("构建一个空的updateMapper")
-    public <T extends SimplePrimaryEntity> ThinkUpdateMapper<T> buildEmptyUpdateMapper(){
-        return (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(getClass());
+    public ThinkUpdateMapper<T> buildEmptyUpdateMapper(){
+        ThinkUpdateMapper<T> build = ThinkUpdateMapper.build(getSelfClass());
+        return build;
     }
 
+    @Override
     @Remark("构建一个空的updateMapper")
-    public <T extends SimplePrimaryEntity> ThinkUpdateMapper<T> buildEmptyUpdateMapper(Class<T> tClass){
-        return (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(tClass);
+    public ThinkUpdateMapper<T> buildEmptyUpdateMapper(Class<T> tClass){
+        return ThinkUpdateMapper.build(tClass);
     }
 
 
@@ -60,9 +68,10 @@ public abstract class SimplePrimaryEntity extends _Entity {
      * 构建包含当前id的 updateMapper ，无法在设置 filter
      * @return
      */
+    @Override
     @Deprecated
     @Remark(value = " 构建包含当前id的 updateMapper ，无法在设置 filter",description = "如果id不存在，返回空的updateMapper")
-    public  <T extends SimplePrimaryEntity> ThinkUpdateMapper<T>  buildUpdateMapperWithCurrentId(){
+    public ThinkUpdateMapper<T>  buildUpdateMapperWithCurrentId(){
         if(this.getId() !=null && this.getId()>0) {
             return (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(getClass()).setTargetDataId(this.getId());
         }

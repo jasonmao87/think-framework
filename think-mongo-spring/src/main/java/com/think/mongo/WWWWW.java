@@ -36,7 +36,7 @@ public class WWWWW {
 //
 //            long finish = System.currentTimeMillis();
 //            long start = System.currentTimeMillis();
-//            int x = dao.saveAll(list).size();
+//            int x.log = dao.saveAll(list).size();
 //            long end = System.currentTimeMillis();
 //
 //            Map map = new HashMap();

@@ -24,5 +24,8 @@ public class RandomUtil {
         int_index ++ ;
         return int_array[int_index -1 ];
     }
+    public static boolean nextBoolean(){
+        return nextInt()%2==0;
+    }
 
 }

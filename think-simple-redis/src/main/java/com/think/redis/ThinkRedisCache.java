@@ -19,5 +19,7 @@ public class ThinkRedisCache {
 //    redisTemplate.opsForValue().
 
 
+
+
     }
 }

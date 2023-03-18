@@ -46,4 +46,7 @@ public class ThinkHashUtil {
         return "000000_000000".intern();
     }
 
+
+
+
 }

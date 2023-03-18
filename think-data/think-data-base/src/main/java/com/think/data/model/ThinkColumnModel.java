@@ -57,7 +57,7 @@ public class ThinkColumnModel implements Serializable {
     private boolean fastMatchAble = false;
 
     @Remark("默认值")
-    private String defaultValue;
+    private String defaultValue =null;
 
     @Remark("Date类型不要设置默认值")
     private boolean noSetDateDefaultValue =false;
@@ -254,6 +254,9 @@ public class ThinkColumnModel implements Serializable {
     }
 
     public String getComment() {
+        if(comment!=null){
+            comment = comment.replaceAll("'","^").replaceAll("\"","^");
+        }
         return comment;
     }
 
@@ -293,8 +296,30 @@ public class ThinkColumnModel implements Serializable {
 //    }
 
     public String getDefaultValue() {
-        return defaultValue;
+
+        if (isNullable()) {
+            return this.defaultValue;
+        }
+        /*>>>>>>>>>>>>>>>>>>>>>>-edit here ！ you must check later !-<<<<<<<<<<<<<<<<<<<<<<<*/
+        String valueString = ThinkJdbcTypeConverter.defaultValueString(ThinkJdbcTypeConverter.getType(type), defaultValue);
+        if (valueString == null) {
+            valueString = ThinkJdbcTypeConverter.sqlDefaultValueString(type);
+        }
+        return valueString;
     }
+
+    public String getDefaultValueForAlterAndCreate(){
+        String defValue = getDefaultValue();
+        if (ThinkJdbcTypeConverter.isUsingStringInSqlDefaultValue(ThinkJdbcTypeConverter.getType(type))) {
+            if(defValue!=null) {
+                return "'" + defValue + "'";
+            }
+            return "''";
+        }
+        return defValue;
+    }
+
+
 
     public boolean isUsingText() {
         return usingText;

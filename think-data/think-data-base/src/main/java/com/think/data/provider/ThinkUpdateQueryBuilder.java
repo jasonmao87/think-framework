@@ -17,6 +17,7 @@ import com.think.data.model.ThinkTableModel;
 import com.think.data.verification.ThinkDataValidator;
 
 import java.io.Serializable;
+import java.sql.SQLData;
 import java.util.*;
 
 public class ThinkUpdateQueryBuilder {
@@ -138,17 +139,17 @@ public class ThinkUpdateQueryBuilder {
                     //值 校验
                     ThinkDataValidator.verification(t.getClass(), cm.getKey(), v);
                 }
+
+
                 /**
-                 * 脱敏处理
+                 * 处理脱敏，并 添加 到valueList ，
                  */
                 if(cm.isSensitive() && v instanceof String ){
-                    v = DesensitizationUtil.encode((String) v);
+                    values.add(DesensitizationUtil.encode((String) v));
+                }else{
+                    values.add(v);
                 }
-                /**
-                 * 脱敏处理
-                 */
 
-                values.add(v);
                 i++;
 
                 if(cm.isFastMatchAble()){
@@ -193,7 +194,7 @@ public class ThinkUpdateQueryBuilder {
 
 
         sql.append(") ");
-        return  new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null);
+        return  new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null,false,t.getSelfClass());
     }
 
 
@@ -262,7 +263,7 @@ public class ThinkUpdateQueryBuilder {
                 sql.append(",");
             }
             sql.append("(");
-            for (int x = 0; x < i; x++) {
+            for (int x = 0; x < clms.length; x++) {
 
 
                 if (x > 0) {
@@ -341,7 +342,7 @@ public class ThinkUpdateQueryBuilder {
             sql.append(") ");
             outIndex ++ ;
         }
-        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null);
+        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null ,false,t.getClass());
     }
 
     protected static <T extends _Entity> ThinkExecuteQuery updateSql(T t){
@@ -368,22 +369,25 @@ public class ThinkUpdateQueryBuilder {
                         ThinkDataValidator.verification(t.getClass(),columnModal.getKey(),v);
                     }
 
-                    /**
-                     * 脱敏处理
-                     */
-                    if(columnModal.isSensitive() && v instanceof String ){
-                        v = DesensitizationUtil.encode((String) v);
-                    }
-                    /**
-                     * 脱敏处理
-                     */
 
 
                     if(index > 0){
                         sql.append(",");
                     }
                     sql.append(" ").append(columnModal.getKey()).append(" = ?");
-                    valuesList.add((Serializable)v);
+                    /**
+                     * 脱敏处理 并 添加值 到list
+                     */
+                    if(columnModal.isSensitive() && v instanceof String ){
+                        valuesList.add(DesensitizationUtil.encode((String) v));
+                    }else{
+                        valuesList.add((Serializable)v);
+                    }
+                    /**
+                     * 脱敏处理
+                     */
+
+
                     index ++ ;
 
                     //如果支持排序支持 开始
@@ -406,7 +410,7 @@ public class ThinkUpdateQueryBuilder {
         }
         sql.append(" WHERE id = ?");
         valuesList.add(t.getId());
-        return new ThinkExecuteQuery(sql.toString(),valuesList.toArray(new Serializable[valuesList.size()]),null);
+        return new ThinkExecuteQuery(sql.toString(),valuesList.toArray(new Serializable[valuesList.size()]),null,false,t.getClass());
     }
 
 
@@ -417,16 +421,18 @@ public class ThinkUpdateQueryBuilder {
 
         ThinkTableModel tableModal = Manager.getModelBuilder().get(updaterMapper.getTargetClass());
         int setIndex = 0 ;
-        Map<String, Object> incMap = updaterMapper.getIncMapper();
-        Map<String, Object> setMapper = updaterMapper.getSetMapper();
-        Map<String, String> setKeyMapper = updaterMapper.getSetKeyMapper();
+        final Map<String, Object> incMap = updaterMapper.getIncMapper();
+        final Map<String, Object> setMapper = updaterMapper.getSetMapper();
+        final Map<String, String> setKeyMapper = updaterMapper.getSetKeyMapper();
+        final Map<String, Map<String, Double>> divMapper = updaterMapper.getDivMapper();
+        final Map<String, Map<String, Double>> multiplyMapper = updaterMapper.getMultiplyMapper();
+        final Map<String, Map<String, String>> keyDivKeyMapper = updaterMapper.getKeyDivKeyMapper();
+        final Map<String, Map<String, String>> keyMultiplyKeyMapper = updaterMapper.getKeyMultiplyKeyMapper();
         for(String k : incMap.keySet() ){
             ThinkColumnModel columnModal = tableModal.getKey(k);
             if(columnModal== null || columnModal.isEditAble()==false ){
                 continue;
             }
-
-
             if(setIndex >0){
                 sql.append(", ");
             }
@@ -449,20 +455,24 @@ public class ThinkUpdateQueryBuilder {
                 //值 校验
                 ThinkDataValidator.verification(updaterMapper.getTargetClass(),k,v);
             }
-            /**
-             * 脱敏处理
-             */
-            if(columnModal!=null && columnModal.isSensitive() && v instanceof String ){
-                v = DesensitizationUtil.encode((String) setMapper.get(k) );
-            }
-            /**
-             * 脱敏处理
-             */
+
             if(setIndex >0){
                 sql.append(", ");
             }
             sql.append( k).append(" = ").append(" ? ");
-            values.add( v );
+
+            /**
+             * 脱敏处理
+             */
+            if(columnModal!=null && columnModal.isSensitive() && v instanceof String ){
+                values.add( DesensitizationUtil.encode((String) setMapper.get(k) ));
+            }else{
+                values.add( v );
+            }
+            /**
+             * 脱敏处理
+             */
+
             setIndex ++ ;
 
             //如果支持排序支持 开始
@@ -490,15 +500,88 @@ public class ThinkUpdateQueryBuilder {
             sql.append( k).append(" = ").append(setKeyMapper.get(k)).append(" ");
             setIndex ++ ;
         }
+
+
+        for (String k :divMapper.keySet()) {
+            ThinkColumnModel columnModal = tableModal.getKey(k);
+            if(columnModal== null || columnModal.isEditAble()==false ){
+                continue;
+            }
+            if(setIndex >0){
+                sql.append(", ");
+            }
+            final Map<String, Double> stringDoubleMap = divMapper.get(k);
+            for (Map.Entry<String, Double> entry : stringDoubleMap.entrySet()) {
+                sql.append(k).append("=").append(entry.getKey()).append(" / ").append(entry.getValue()).append(" ");
+                break;
+            }
+        }
+        for (String k :multiplyMapper.keySet()) {
+            ThinkColumnModel columnModal = tableModal.getKey(k);
+            if(columnModal== null || columnModal.isEditAble()==false ){
+                continue;
+            }
+            if(setIndex >0){
+                sql.append(", ");
+            }
+            final Map<String, Double> stringDoubleMap = multiplyMapper.get(k);
+            for (Map.Entry<String, Double> entry : stringDoubleMap.entrySet()) {
+                sql.append(k).append("=").append(entry.getKey()).append(" * ").append(entry.getValue()).append(" ");
+                break;
+            }
+        }
+
+        for (String k :keyDivKeyMapper.keySet()) {
+            ThinkColumnModel columnModal = tableModal.getKey(k);
+            if(columnModal== null || columnModal.isEditAble()==false ){
+                continue;
+            }
+            if(setIndex >0){
+                sql.append(", ");
+            }
+            final Map<String, String> stringDoubleMap = keyDivKeyMapper.get(k);
+            for (Map.Entry<String, String> entry : stringDoubleMap.entrySet()) {
+                sql.append(k).append("=").append(entry.getKey()).append(" / ").append(entry.getValue()).append(" ");
+                break;
+            }
+
+        }
+
+        for (String k :keyMultiplyKeyMapper.keySet()) {
+            ThinkColumnModel columnModal = tableModal.getKey(k);
+            if(columnModal== null || columnModal.isEditAble()==false ){
+                continue;
+            }
+            if(setIndex >0){
+                sql.append(", ");
+            }
+            final Map<String, String> stringDoubleMap = keyDivKeyMapper.get(k);
+            for (Map.Entry<String, String> entry : stringDoubleMap.entrySet()) {
+                sql.append(k).append("=").append(entry.getKey()).append(" * ").append(entry.getValue()).append(" ");
+                break;
+            }
+
+        }
+
+
+
         ThinkQuery query = ThinkQuery.build(updaterMapper.sqlFilter());
         sql.append(" ")
                 .append(query.filterQuery());
         values.addAll(query.filterParamValues());
         if(query.filterParamValues().size() ==0){
             throw new ThinkDataRuntimeException("update 语句未指定任何条件，拒绝构建执行Query");
+        }
+        if( updaterMapper.getUpdateLimit() >0){
+
+            sql.append(" ORDER BY ").append(updaterMapper.sqlFilter().getSortKey()).append( updaterMapper.sqlFilter().isDesc()?" DESC" :" ASC");
+            sql.append( " LIMIT ?") ;//.append( updaterMapper.getUpdateLimit());
+            values.add(updaterMapper.getUpdateLimit());
 
         }
-        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null);
+
+
+        return new ThinkExecuteQuery(sql.toString(),values.toArray(new Serializable[values.size()]),null, query.isMaybyEmpty(), tableModal.getBeanClass());
     }
 
 
@@ -507,7 +590,7 @@ public class ThinkUpdateQueryBuilder {
                 .append(tableName(sqlFilter.gettClass())).append(" ");
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         sql.append(query.filterQuery());
-        return new ThinkExecuteQuery(sql.toString(),query.filterParamValueArray(),null);
+        return new ThinkExecuteQuery(sql.toString(),query.filterParamValueArray(),null, query.isMaybyEmpty(),sqlFilter.gettClass());
     }
 
 

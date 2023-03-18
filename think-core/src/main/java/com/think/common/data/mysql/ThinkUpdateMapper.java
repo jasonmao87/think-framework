@@ -3,12 +3,15 @@ package com.think.common.data.mysql;
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.common.util.TVerification;
+import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
 import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.TFlowBuilder;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.exception.ThinkDataVerificationException;
 import com.think.exception.ThinkRuntimeException;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -24,21 +27,44 @@ public class ThinkUpdateMapper<T extends _Entity> {
     private Map<String,Object> incMapper ;
     private Map<String,String> setKeyMapper ;
 
+    @Remark("key 除法")
+    private Map<String,Map<String,Double>> divMapper ;
+    @Remark("key乘法")
+    private Map<String,Map<String,Double>> multiplyMapper ;
+
+    private Map<String,Map<String,String>> keyMultiplyKeyMapper ;
+    private Map<String,Map<String,String>> keyDivKeyMapper ;
+
+    @Remark("更新条数限制 ")
+    private int updateLimit ;
+
+    private Set<String> keySet = new HashSet<>();
+
     private  ThinkUpdateMapper(Class<T> targetClass) {
         this.targetClass = targetClass;
         //this.filter = ThinkSqlFilter.build(tClass);
         this.incMapper = new HashMap<>();
         this.setMapper = new HashMap<>();
         this.setKeyMapper = new HashMap<>();
+        this.multiplyMapper = new HashMap<>();
+        this.divMapper = new HashMap<>();
+        this.keyDivKeyMapper = new HashMap<>();
+        this.keyMultiplyKeyMapper = new HashMap<>();
     }
 
     public static <T extends _Entity> ThinkUpdateMapper<T> build(Class<T> tClass){
-
         List<String > emn =Collections.EMPTY_LIST;
 
         return (ThinkUpdateMapper<T>)new ThinkUpdateMapper<T>(tClass);
     }
 
+    public void ambiguityErrorCheck(String key){
+        if(this.keySet.contains(key)){
+            throw new ThinkDataVerificationException("已经存在对" +key +"的修改参数，重复修改或设置产生歧义。");
+        }else{
+            this.keySet.add(key);
+        }
+    }
 
     public ThinkSqlFilter<T> sqlFilter(){
         if(this.filter == null){
@@ -55,6 +81,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
      */
     public ThinkUpdateMapper<T> updateToKeyValue(String k , String sourceKey){
       if(this.checkKey(k,false) && this.checkKey(sourceKey,true)){
+          this.ambiguityErrorCheck(k);
           this.setKeyMapper.put(k,sourceKey);
       }
       return this;
@@ -62,6 +89,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public ThinkUpdateMapper<T> updateValue(String k, Serializable v){
         if(this.checkKey(k,false)) {
+            this.ambiguityErrorCheck(k);
             this.setMapper.put(k, v);
         }
         return this;
@@ -69,6 +97,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public ThinkUpdateMapper<T> updateInc(String k , int inc){
         if(this.checkKey(k,false)) {
+            this.ambiguityErrorCheck(k);
             this.incMapper.put(k, inc);
         }
         return this;
@@ -76,19 +105,68 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public ThinkUpdateMapper<T> updateInc(String k,double inc){
         if(this.checkKey(k,false)) {
+            this.ambiguityErrorCheck(k);
             this.incMapper.put(k, inc);
         }
         return this;
     }
 
+
+    @Remark("执行 除法")
+    public ThinkUpdateMapper<T> updateKeyDivValue(@Remark("需要修改的key") String targetKey ,@Remark("源数据的key") String sourceKey,@Remark("sourceKey 要除的值") double div){
+        if(this.checkKey(targetKey,false) && this.checkKey(sourceKey,true)){
+            this.ambiguityErrorCheck(targetKey);
+            Map<String,Double> map = new HashMap<>();
+            map.put(sourceKey,div);
+            this.divMapper.put(targetKey, map);
+        }
+        return this;
+    }
+
+
+    public ThinkUpdateMapper<T> updateKeyDivKey(@Remark("需要修改的key") String targetKey ,@Remark("源数据的key") String sourceKey1,@Remark(" 要除的值的sourceKey") String sourcekey2){
+        if(this.checkKey(targetKey,false) && this.checkKey(sourceKey1,true)){
+            this.ambiguityErrorCheck(targetKey);
+            Map<String,String> map = new HashMap<>();
+            map.put(sourceKey1,sourcekey2);
+            this.keyDivKeyMapper.put(targetKey, map);
+        }
+        return this;
+    }
+
+
+    @Remark("执行 key  * value 的乘法")
+    public ThinkUpdateMapper<T> updateKeyMultiplyValue(@Remark("需要修改的key") String targetKey ,@Remark("源数据的key") String sourceKey,@Remark("sourceKey 要乘的值") double multiply){
+        if(this.checkKey(targetKey,false) && this.checkKey(sourceKey,true)){
+            this.ambiguityErrorCheck(targetKey);
+            Map<String,Double> map = new HashMap<>();
+            map.put("sourceKey",multiply);
+            this.multiplyMapper.put(targetKey, map);
+        }
+        return this;
+    }
+
+    public ThinkUpdateMapper<T> updateKeyMultiplyKey(@Remark("需要修改的key") String targetKey ,@Remark("源数据的key") String sourceKey,@Remark(" 要乘的值的sourceKey") String sourceKey2){
+        if(this.checkKey(targetKey,false) && this.checkKey(sourceKey,true)){
+            this.ambiguityErrorCheck(targetKey);
+            Map<String,String> map = new HashMap<>();
+            map.put(sourceKey,sourceKey2);
+            this.keyMultiplyKeyMapper.put(targetKey, map);
+        }
+        return this;
+    }
+
+
     public ThinkUpdateMapper<T> updateDateAsNow(String key){
         if (this.checkKeyIsDateType(key) ) {
+//            this.ambiguityErrorCheck(key);
             this.updateValue(key, DateUtil.now());
         }
         return this;
     }
 
 
+    @Deprecated
     public ThinkUpdateMapper<T> updateTFlowState(TFlowStateUpdate update){
 
         if(StringUtil.isNotEmpty(update.getTimeKey())) {
@@ -127,13 +205,43 @@ public class ThinkUpdateMapper<T extends _Entity> {
      * @throws ThinkRuntimeException
      */
     public ThinkUpdateMapper<T> setTargetDataId(long id) throws ThinkRuntimeException {
-        if(this.filter != null){
-            throw new ThinkRuntimeException("已经为UpdateMapper设置了Filter，再设置Id值将会引起过滤筛选条件的混乱！");
-        }
-        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
-        sqlFilter.eq("id",id);
-        return this.setFilter(sqlFilter);
+        this.getFilter().removeKeyConditions("id");
+        this.getFilter().eq("id",id);
+        return this;
     }
+    public ThinkUpdateMapper<T> setTargetDataIds(long[] idArray) throws ThinkRuntimeException {
+        this.getFilter().removeKeyConditions("id");
+        this.getFilter().in("id",idArray);
+        return this;
+    }
+    public ThinkUpdateMapper<T> setTargetDataIds(Long[] idArray) throws ThinkRuntimeException {
+        this.getFilter().removeKeyConditions("id");
+        this.getFilter().in("id",idArray);
+        return this;
+    }
+
+
+
+
+
+
+
+
+    public ThinkUpdateMapper<T> setTargetDataIdAndClearOtherCondition(long id) throws ThinkRuntimeException {
+        /**
+         if(this.filter != null){
+         throw new ThinkRuntimeException("已经为UpdateMapper设置了Filter，再设置Id值将会引起过滤筛选条件的混乱！");
+         }
+         **/
+        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
+        this.filter = sqlFilter;
+        return setTargetDataId(id);
+
+//        sqlFilter.eq("id",id);
+//        return this.setFilter(sqlFilter);
+    }
+
+
 
 
     public ThinkSqlFilter<T> getFilter() {
@@ -151,10 +259,21 @@ public class ThinkUpdateMapper<T extends _Entity> {
         this.filter = sqlFilter;
         return this;
 
-
     }
 
-//    /**
+
+    @Remark("限制匹配的更新条目数")
+    public ThinkUpdateMapper<T> updateLimitSet(int limit){
+        this.updateLimit = limit;
+        return this;
+    }
+
+    public int getUpdateLimit() {
+        return updateLimit;
+    }
+
+
+    //    /**
 //     * 检查字段是否允许被设置
 //     * @param keys
 //     * @param allowNegative  允许 key前面出现负号
@@ -240,6 +359,22 @@ public class ThinkUpdateMapper<T extends _Entity> {
 
     public Map<String, String> getSetKeyMapper() {
         return setKeyMapper;
+    }
+
+    public Map<String, Map<String, Double>> getDivMapper() {
+        return divMapper;
+    }
+
+    public Map<String, Map<String, Double>> getMultiplyMapper() {
+        return multiplyMapper;
+    }
+
+    public Map<String, Map<String, String>> getKeyDivKeyMapper() {
+        return keyDivKeyMapper;
+    }
+
+    public Map<String, Map<String, String>> getKeyMultiplyKeyMapper() {
+        return keyMultiplyKeyMapper;
     }
 
     /**

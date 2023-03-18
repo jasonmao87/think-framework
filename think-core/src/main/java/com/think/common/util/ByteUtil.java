@@ -4,7 +4,11 @@ import java.math.BigInteger;
 
 public class ByteUtil {
 
+    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
+    public static final boolean isEmptyArray(byte[] array){
+        return  array ==null || array.length ==0;
+    }
 
     public static byte[] ofBinaryString(String binaryString){
         int length = binaryString.length();

@@ -3,12 +3,14 @@ package com.think.core.executor;
 import com.think.core.security.ThinkToken;
 import lombok.extern.slf4j.Slf4j;
 
+
 /**
  * @Date :2021/3/24
  * @Name :ThinkExecuteThreadSharedMessage
  * @Description : 请输入
  */
 @Slf4j
+@Deprecated
 public class ThinkExecuteThreadSharedTokenManager {
 
 

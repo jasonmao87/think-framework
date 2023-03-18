@@ -5,7 +5,7 @@ import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
-import com.think.core.annotations.Remark;
+import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean.util.ObjectUtil;
 import com.think.data.Manager;
@@ -47,6 +47,11 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
         return dao.findDeleted(id);
     }
 
+    @Override
+    public <V extends BaseVo<T>> V getView(long id, Class<V> vClass) {
+
+        return dao.findOne(id,vClass);
+    }
 
     @Override
     public ThinkResult<T> create(T t) {
@@ -103,6 +108,11 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter) {
         return dao.autoList(sqlFilter);
+    }
+
+    @Override
+    public <V extends BaseVo<T>> List<V> voList(ThinkSqlFilter<T> sqlFilter, Class<V> vo) {
+        return dao.autoVoList(sqlFilter,vo);
     }
 
     @Override
@@ -193,9 +203,9 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
         if(action!=null) {
             action.action(sqlFilter);
         }
-        if(sqlFilter.getFilterSplitYear() >0){
-            return this.list(sqlFilter,sqlFilter.getFilterSplitYear());
-        }
+//        if(sqlFilter.getFilterSplitYear() >0){
+//            return this.list(sqlFilter,sqlFilter.getFilterSplitYear());
+//        }
         return this.list(sqlFilter);
     }
 
@@ -212,9 +222,9 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
         if(action!=null) {
             action.action(sqlFilter);
         }
-        if(sqlFilter.getFilterSplitYear() >0){
-            return this.count(sqlFilter,sqlFilter.getFilterSplitYear());
-        }
+//        if(sqlFilter.getFilterSplitYear() >0){
+//            return this.count(sqlFilter,sqlFilter.getFilterSplitYear());
+//        }
         return this.count(sqlFilter);
     }
 
@@ -252,5 +262,15 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
         updateMapper.setTargetDataId(id)
                 .updateTFlowState(update);
         return this.update(updateMapper,dao.computeSplitYearById(id));
+    }
+
+    @Override
+    public ThinkSqlFilter<T> emptySqlFilter(int limit) {
+        return ThinkSqlFilter.build(targetClass(),limit);
+    }
+
+    @Override
+    public int computeIdYear(long id) {
+        return this.dao.computeSplitYearById(id);
     }
 }

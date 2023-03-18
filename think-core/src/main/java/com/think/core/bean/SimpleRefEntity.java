@@ -3,6 +3,7 @@ package com.think.core.bean;
 
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
+import com.think.common.result.ThinkResult;
 import com.think.common.util.DateUtil;
 import com.think.common.util.IdUtil;
 import com.think.core.annotations.Remark;
@@ -16,9 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 @Remark("从表基础类")
 @Data
 @Accessors(chain = true)
-public abstract class SimpleRefEntity extends _Entity {
+public abstract class SimpleRefEntity<T extends SimplePrimaryEntity> extends _Entity<T> {
     private static final long serialVersionUID = -6512682758436782849L;
 
+    @ApiModelProperty(hidden = true)
     @Remark("关联业务主表的id，主表只允许是顶级的，即使是从表的关联数据，也应该输入顶级表的主键Id")
     @ThinkColumn(nullable = false)
     private long rootPrimaryId =-1;
@@ -49,14 +51,16 @@ public abstract class SimpleRefEntity extends _Entity {
     }
 
 
+    @Override
     @Remark("构建一个空的filter")
-    public <T extends SimpleRefEntity> ThinkSqlFilter<T> buildEmptyFilter(int limit){
-        return (ThinkSqlFilter<T>) ThinkSqlFilter.build(getClass(),limit);
+    public ThinkSqlFilter<T> buildEmptyFilter(int limit){
+        return ThinkSqlFilter.build(getSelfClass(),limit);
     }
 
+    @Override
     @Remark("构建一个空的updateMapper")
-    public <T extends SimpleRefEntity> ThinkUpdateMapper<T> buildEmptyUpdateMapper(){
-        ThinkUpdateMapper<T> updateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(getClass());
+    public ThinkUpdateMapper<T> buildEmptyUpdateMapper(Class<T> tClass){
+        ThinkUpdateMapper<T> updateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(tClass);
         if(this.rootPrimaryId >0) {
             updateMapper.getFilter().eq("rootPrimaryId", this.rootPrimaryId);
         }
@@ -68,15 +72,46 @@ public abstract class SimpleRefEntity extends _Entity {
      * @return
      */
     @Remark(value = " 构建包含当前id的 updateMapper ，无法在设置 filter",description = "如果id不存在，返回空的updateMapper")
-    public  <T extends SimpleRefEntity> ThinkUpdateMapper<T>  buildUpdateMapperWithCurrentId(){
+    public ThinkUpdateMapper<T>  buildUpdateMapperWithCurrentId(Class<T> tClass){
         if(this.getId() !=null && this.getId()>0) {
-            ThinkUpdateMapper<T> tThinkUpdateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(getClass()).setTargetDataId(this.getId());
+            ThinkUpdateMapper<T> tThinkUpdateMapper = (ThinkUpdateMapper<T>) ThinkUpdateMapper.build(tClass).setTargetDataId(this.getId());
             if(this.rootPrimaryId >0) {
                 tThinkUpdateMapper.getFilter().eq("rootPrimaryId", this.rootPrimaryId);
             }
             return tThinkUpdateMapper;
         }
-        return this.buildEmptyUpdateMapper();
+        return this.buildEmptyUpdateMapper(tClass);
     }
 
+
+    @Override
+    public ThinkSqlFilter<T> buildEmptyFilter(int limit, Class<T> tClass) {
+        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(tClass, limit);
+        sqlFilter.eq("rootPrimaryId" ,rootPrimaryId);
+        return sqlFilter;
+    }
+
+    @Override
+    public ThinkUpdateMapper<T> buildEmptyUpdateMapper() {
+        ThinkSqlFilter<T> sqlFilter = buildEmptyFilter(-1,getSelfClass());
+        ThinkUpdateMapper<T> thinkUpdateMapper = ThinkUpdateMapper.build(getSelfClass());
+        thinkUpdateMapper.setFilter(sqlFilter);
+        return thinkUpdateMapper;
+    }
+
+
+    @Override
+    public ThinkUpdateMapper<T> buildUpdateMapperWithCurrentId() {
+        ThinkUpdateMapper<T> tThinkUpdateMapper = buildEmptyUpdateMapper();
+        tThinkUpdateMapper.getFilter().eq("id",this.getId());
+        return tThinkUpdateMapper;
+    }
+
+//    public static void main(String[] args)  {
+//
+//        try {
+//            final Class aClass = currentClassForStatic();
+//            System.out.println(aClass);
+//        }catch (Exception e){}
+//    }
 }

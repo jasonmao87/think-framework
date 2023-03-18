@@ -4,14 +4,11 @@ import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
-import com.think.common.util.DateUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimpleRefEntity;
 import com.think.core.bean._Entity;
-import com.think.core.bean.util.ClassUtil;
 import com.think.core.bean.util.ObjectUtil;
-import com.think.data.Manager;
 import com.think.data.dao.ThinkSplitRefDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,19 +66,24 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public List<String> showSplitTables() {
-        if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
-            String showtables = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
-            List<String> list = jdbcTemplate.queryForList(showtables, String.class);
-            for (String t : list) {
-                if (Manager.isTableInitialized(t) == false) {
-                    Manager.recordTableInit(t);
-                }
-            }
-            lastCheckDb =ThinkMilliSecond.currentTimeMillis();
-            return list;
-        }else{
-            return Manager.findInitializedTableNameList(_DaoSupport.baseTableName(targetClass));
-        }
+        List<String> showSplitTables = _showSplitTables(jdbcTemplate, targetClass);
+        return showSplitTables;
+
+//
+//
+//        if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
+//            String showtables = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
+//            List<String> list = jdbcTemplate.queryForList(showtables, String.class);
+//            for (String t : list) {
+//                if (Manager.isTableInitialized(t) == false) {
+//                    Manager.recordTableInit(t);
+//                }
+//            }
+//            lastCheckDb =ThinkMilliSecond.currentTimeMillis();
+//            return list;
+//        }else{
+//            return Manager.findInitializedTableNameList(_DaoSupport.baseTableName(targetClass));
+//        }
     }
     @Override
     public Class<T> targetClass() {
@@ -133,6 +135,7 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter, long rootPrimaryId) {
+        sqlFilter.eq("rootPrimaryId" ,rootPrimaryId);
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         int splitYear = _DaoSupport.computeSpiltYearById(rootPrimaryId);
         ThinkExecuteQuery executeQuery = query.selectFullKeys(targetClass);
@@ -211,9 +214,13 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
     @Override
     public ThinkResult<Integer> delete(long id, long rootPrimaryId) {
         ThinkUpdateMapper<T> updaterMapper = ThinkUpdateMapper.build(targetClass)
-                .updateValue("id",-id)  ;        //id 调整为 -id
+                .updateValue("id",-id)  ;
+        /*
+        //id 调整为 -id
 //                .updateValue("deleteState",true)
 //                .updateValue("deleteTime" , DateUtil.now());
+
+         */
         ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass)
                 .eq("id",id)
                 .eq("rootPrimaryId",rootPrimaryId)
@@ -262,4 +269,29 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
         }
         return physicalDelete(longIds,rootPrimaryId);
     }
+//
+//    public static void main(String[] args) {
+//
+//        String sqlFilter = "filter: {\n" +
+//                "\t\"limit\": 10,\n" +
+//                "\t\"sortQuery\": {\"key\": \"id\" ,\"sort\": \"desc\"}," +
+//                "   keyOrBody:{" +
+//                "      id : 1 , id2 : 2 " +
+//                "   }\n" +
+//                "\t\"filterBody\": {\n" +
+//                "\t\t\"id\": {\n" +
+//                "\t\t\t\"op\": \"LG\",\n" +
+//                "\t\t\t\"type\": \"number\",\n" +
+//                "\t\t\t\"v\": 0\n" +
+//                "\t\t}\n" +
+//                "\t} \n" +
+//                "}";
+//
+//        System.out.println("xx");
+//        ThinkSqlFilter<SimplePrimaryEntity> simplePrimaryEntityThinkSqlFilter = ThinkSqlFilter.parseFromJSON(sqlFilter, SimplePrimaryEntity.class);
+//
+//        System.out.println(simplePrimaryEntityThinkSqlFilter.toString());
+//        System.out.println("Xx");
+//    }
+
 }

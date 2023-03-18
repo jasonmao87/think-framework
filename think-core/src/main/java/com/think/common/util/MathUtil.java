@@ -174,6 +174,24 @@ public class MathUtil {
         return b1.divide(b2, scale, BigDecimal.ROUND_HALF_UP);
     }
 
+    /**
+     * 判读是否可以整除除尽！
+     * @param v1
+     * @param v2
+     * @param scale
+     * @return
+     */
+    public static boolean isDivisible(Number v1 ,Number v2 ,int scale){
+        int x = 1;
+        for(int i=0 ;i < scale;i++){
+            x *=10;
+        }
+        v1 = multiply(v1,x);
+        v2 = multiply(v2,x);
+        return v1.longValue() % v2.longValue() == 0;
+
+    }
+
 
     /**
      * 精确减法运算
@@ -210,6 +228,8 @@ public class MathUtil {
         BigDecimal b2 = new BigDecimal(v2.trim());
         return String.valueOf(multiply(b1, b2));
     }
+
+
 
     /**
      * ( 相对 )精确除法运算 , 当发生除不尽情况时 , 精确到 小数点以后2位 , 以后数字四舍五入
@@ -466,5 +486,9 @@ public class MathUtil {
     public static BigDecimal customScaleSet(BigDecimal bigDecimal,int scale){
         return bigDecimal.setScale(scale,BigDecimal.ROUND_HALF_UP);
     }
+
+
+
+
 
 }

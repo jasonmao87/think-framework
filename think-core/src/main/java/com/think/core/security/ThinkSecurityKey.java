@@ -6,6 +6,7 @@ import com.think.exception.ThinkException;
 import java.util.Random;
 
 /**
+ * Think Security Key
  *
  */
 public class ThinkSecurityKey {

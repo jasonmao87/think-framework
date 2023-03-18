@@ -51,8 +51,21 @@ public class ThinkMongoCustomDao {
         ThinkMongoIndexBuilder.checkAndInitIndex(targetClass,customCollectionName,mongoTemplate);
     }
 
+    public <T extends SimpleMongoEntity> T  findOne(ThinkMongoQueryFilter<T> filter){
+        filter.updateLimit(1);
+        List<T> list = list(filter);
+        if(list.size() > 0){
+            return list.get(0);
+        }
+        return  null;
+
+    }
+
     @Remark("只能处理匹配到的第一条记录")
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter){
+        if(!filter.containsUpdate()){
+            return findOne(filter);
+        }
         Query query = ThinkMongoQueryBuilder.build(filter,false);
         Update update = new Update();
         update.set("thinkUpdateKey",IdUtil.nextId());
@@ -68,6 +81,9 @@ public class ThinkMongoCustomDao {
 
     @Remark("只能处理匹配到的第一条记录")
     public <T extends SimpleMongoEntity> T findOneAndModify(ThinkMongoQueryFilter<T> filter ,boolean returnNew){
+        if(!filter.containsUpdate()){
+            return findOne(filter);
+        }
         Query query = ThinkMongoQueryBuilder.build(filter,false);
         Update update = new Update();
         filter.getModifyUpdateMapper().forEach((k, v)->{
@@ -92,22 +108,37 @@ public class ThinkMongoCustomDao {
         this.checkAndInitIndex(t.getClass());
         IdFixTool.dataInit(t);
 //        Update update = new Update();
-        Map<String,Object> map = ObjectUtil.beanToMap(t);
+
         ThinkMongoQueryFilter<? extends SimpleMongoEntity> filter = ThinkMongoQueryFilter.build(t.getClass()).eq("id", t.getId()).eq("thinkUpdateKey",t.getThinkUpdateKey());
-        map.keySet().forEach(k->{
-            if(!k.equalsIgnoreCase("id") ){
-                if(k.equalsIgnoreCase("thinkUpdateKey")){
-                    filter.findAndModifyUpdate(k, IdUtil.nextId());
-                }else{
-                    filter.findAndModifyUpdate(k,map.get(k));
-                }
-            }
-        });
-        t = (T) findOneAndModify(filter,true );
-        if(t ==null){
+        filter.findAndModifyUpdate("thinkUpdateKey",IdUtil.nextId());
+        List<Map<String, Object>> findResult  = this.listForKeys(filter, "thinkUpdateKey" ,"_id");
+        if(findResult.size() > 0 ){
+            t.setThinkUpdateKey(IdUtil.nextId());
+            t = this.getMongoTemplate().save(t,customCollectionName);
+            return ThinkResult.successIfNoNull(t);
+        }else{
             return ThinkResult.error("修改失败，可能涉及脏写被拦截！",new ThinkException("可能涉及脏写被拦截"));
         }
-        return ThinkResult.successIfNoNull(t);
+
+
+
+
+//        Map<String,Object> map = ObjectUtil.beanToMap(t);
+//        ThinkMongoQueryFilter<? extends SimpleMongoEntity> filter = ThinkMongoQueryFilter.build(t.getClass()).eq("id", t.getId()).eq("thinkUpdateKey",t.getThinkUpdateKey());
+//        map.keySet().forEach(k->{
+//            if(!k.equalsIgnoreCase("id") ){
+//                if(k.equalsIgnoreCase("thinkUpdateKey")){
+//                    filter.findAndModifyUpdate(k, IdUtil.nextId());
+//                }else{
+//                    filter.findAndModifyUpdate(k,map.get(k));
+//                }
+//            }
+//        });
+//        t = (T) findOneAndModify(filter,true );
+//        if(t ==null){
+//            return ThinkResult.error("修改失败，可能涉及脏写被拦截！",new ThinkException("可能涉及脏写被拦截"));
+//        }
+//        return ThinkResult.successIfNoNull(t);
     }
 
 
@@ -233,4 +264,7 @@ public class ThinkMongoCustomDao {
         }
         return ThinkResult.fastFail();
     }
+
+
+
 }

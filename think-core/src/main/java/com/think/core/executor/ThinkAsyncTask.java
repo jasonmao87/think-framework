@@ -9,5 +9,5 @@ import com.think.core.annotations.Remark;
  */
 public interface ThinkAsyncTask {
     @Remark("需要异步执行的实现方法")
-    void execute();
+    void execute() throws Exception;
 }

@@ -4,6 +4,7 @@ package com.think.data.model;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.TFlowBuilder;
+import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.exception.ThinkDataModelException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.util.Comparator;
 @Remark("表模型")
 public class ThinkTableModel implements Serializable {
 
+    private long lastSplitCheckTime = 0L;
 
 //    public static final String[] flowStateSuffixes =new String[]{
 //            flowStateSuffix_Result,
@@ -189,10 +191,26 @@ public class ThinkTableModel implements Serializable {
     }
 
     public String getTableName() {
+        if (ThinkThreadExecutor.isDataRegionChange()) {
+            String currentRegion =ThinkThreadExecutor.getChangedDataRagionAndRemove();
+
+            if (log.isDebugEnabled()) {
+
+                log.debug("需要调整新的数据分区，原因应该异步任务的线程数据分区更新通知--- 调整为 ：：：{}" , currentRegion);
+            }
+            Manager.unsafeChangeDataSrv(currentRegion);
+        }
+
+
+
+
         return tableName;
     }
 
     public String getTableComment() {
+        if(tableComment!=null){
+            tableComment = tableComment.replaceAll("'","^").replaceAll("\"","^");
+        }
         return tableComment;
     }
 
@@ -265,10 +283,12 @@ public class ThinkTableModel implements Serializable {
      * @return
      */
     public ThinkColumnModel getKey(String key){
+
         String realKey = null;
-         if(columnModels == null){
+        if(columnModels == null){
             throw new ThinkDataModelException("尚未初始化列模型");
         }
+
         boolean stateColumn = false;
         if(key.contains(ThinkStateColumn.splitFlag)) {
             String[] ksplit = key.split(ThinkStateColumn.splitFlag);
@@ -278,7 +298,13 @@ public class ThinkTableModel implements Serializable {
             stateColumn = true;
             realKey = ksplit[0];
         }else{
-            realKey = key;
+            if(key.startsWith("fs_")){
+                realKey = key.replaceFirst("fs_","");
+            } else if(key.startsWith("fss_")){
+                realKey = key.replaceFirst("fss_","");
+            }else {
+                realKey = key;
+            }
         }
 
         for(ThinkColumnModel modal : columnModels){
@@ -322,5 +348,14 @@ public class ThinkTableModel implements Serializable {
 
     public boolean isPartitionAble() {
         return partitionAble;
+    }
+
+
+    public long getLastSplitCheckTime() {
+        return lastSplitCheckTime;
+    }
+
+    public void setLastSplitCheckTime(long lastSplitCheckTime) {
+        this.lastSplitCheckTime = lastSplitCheckTime;
     }
 }

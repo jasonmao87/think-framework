@@ -17,10 +17,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Accessors(chain = true)
-public abstract class _Entity implements Serializable {
+public abstract class _Entity<T extends _Entity> implements IThinkFilterAndUpdateMapperBuilder<T> {
     private static final long serialVersionUID = 8257751739282533823L;
 
 
@@ -75,11 +76,18 @@ public abstract class _Entity implements Serializable {
     private String createUserId ="";
 
     @ThinkColumn(nullable = false,length = 32)
-    @ApiModelProperty(value = "最后人UserId",hidden = true)
+    @ApiModelProperty(value = "最后人修改人UserId",hidden = true)
     private String updateUserId = "";
+
+    @ApiModelProperty(value = "创建人名称",hidden = true)
+    private String createUserName = "";
+
+    @ApiModelProperty(value = "最后人修改人名称",hidden = true)
+    private String updateUserName  ="";
 
     @ApiModelProperty(value = "数据版本号",hidden = true)
     private int version = 0 ;
+
 
 
     @ThinkIgnore
@@ -101,8 +109,41 @@ public abstract class _Entity implements Serializable {
         return dbPersistent;
     }
 
+//    public _Entity setId(Long id){
+//        if(this.id == null || this.id < 1) {
+//            this.id = id;
+//        }else{
+//            Logger log = LoggerFactory.getLogger(getClass());
+//            if (log.isWarnEnabled()) {
+//                log.warn("拒绝动态修改Id！");
+//            }
+//        }
+//        return this;
+//    }
+
+
+
+//    @Remark("枚举解释器")
+//    @ThinkIgnore
+//    @ApiModelProperty(hidden = true)
+//    private  ThinkExplainList EnumsValueExplain = null;
+//
+
+    @ApiModelProperty(value = "枚举解释" ,hidden = true)
+    public ThinkExplainList getThinkTEnumsValueExplain() {
+        return ThinkEnumsExplainHolder.getThinkExplainList(this);
+    }
+
+
+    @ApiModelProperty(value = "模型对象类型（可快速通过数据字典获取详情）" ,hidden = true)
+    public String getThinkModelType(){
+        return this.getClass().getSimpleName();
+    }
+
+
+
     @Remark(value = "只允许ID未设置的 情况下设置id，不然不会有任何作用！！！",description = "")
-    public _Entity setId(Long id){
+    public <T extends _Entity> T setId(Long id ){
         if(this.id == null || this.id < 1) {
             this.id = id;
         }else{
@@ -111,28 +152,94 @@ public abstract class _Entity implements Serializable {
                 log.warn("拒绝动态修改Id！");
             }
         }
-        return this;
+        return (T) this;
     }
 
-
-    @Remark("枚举解释器")
-    @ThinkIgnore
-    @ApiModelProperty(hidden = true)
-    private static ThinkExplainList EnumsValueExplain = null;
-
-
-    @ApiModelProperty(value = "枚举解释" ,hidden = true)
-    public ThinkExplainList getThinkTEnumsValueExplain() {
-        if (EnumsValueExplain ==null) {
-            EnumsValueExplain = new ThinkExplainList();
-            ObjectUtil.doThinkEntityTEnumExplain(this);
+    public <T extends _Entity> T  setCreateUserName(String createUserName) {
+        if(createUserName == null){
+            createUserName = "";
         }
-        return EnumsValueExplain;
+        this.createUserName = createUserName;
+        return (T) this;
+    }
+
+    public <T extends _Entity> T setUpdateUserName(String updateUserName) {
+        if(updateUserName ==null){
+            updateUserName = "";
+        }
+        this.updateUserName = updateUserName;
+        return (T) this;
+    }
+
+    public <T extends _Entity> T setUpdateUserId(String updateUserId) {
+        if(updateUserId == null){
+            updateUserId ="";
+        }
+        this.updateUserId = updateUserId;
+        return (T) this;
+    }
+
+    public <T extends _Entity> T setCreateUserId(String createUserId) {
+        if(createUserId == null){
+            createUserId = "";
+        }
+        this.createUserId = createUserId;
+        return (T) this;
+    }
+
+    public <T extends _Entity> T setCreateTime(Date createTime) {
+        if(createTime == null){
+            createTime = DateUtil.zeroDate();
+        }
+        this.createTime = createTime;
+        return (T) this;
     }
 
 
-    @ApiModelProperty(value = "模型对象类型（可快速通过数据字典获取详情）" ,hidden = true)
-    public String getThinkModelType(){
-        return this.getClass().getSimpleName();
+    public  <T extends _Entity> T setLastUpdateTime(Date lastUpdateTime) {
+        if(lastUpdateTime == null){
+            lastUpdateTime = DateUtil.zeroDate();
+        }
+        this.lastUpdateTime = lastUpdateTime;
+        return (T) this;
     }
+
+
+    public Date getCreateTime() {
+        return returnDateValue(this.createTime);
+    }
+
+    public Date getLastUpdateTime() {
+        return returnDateValue(lastUpdateTime);
+    }
+
+
+    private Date returnDateValue(Date date){
+        if(date == null){
+            return DateUtil.zeroDate();
+        }
+        return date;
+    }
+
+
+    @ApiModelProperty(hidden = true)
+    public <T extends _Entity> Class<T> getSelfClass(){
+        return (Class<T>) this.getClass();
+    }
+
+
+
+    public static final Class currentClassForStatic() {
+        String s =null;
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            s =element.getClassName();
+            System.out.println(s );
+        }
+        try{
+            return Class.forName(s );
+        }catch (Exception e){
+            return  null;
+        }
+    }
+
 }

@@ -26,7 +26,7 @@ public class ObjectUtilTest {
             byte[] x = protostufSerializeObject(tbX);
             listPro.add(x);
 
-//            L.print(x.length + "完成");
+//            L.print(x.log.length + "完成");
         }
 
         long end = System.currentTimeMillis();
@@ -35,7 +35,7 @@ public class ObjectUtilTest {
 
         begin = System.currentTimeMillis();
         for (TbX_FOR_TEST tbX : list) {
-//            L.print(x.length + "完成");
+//            L.print(x.log.length + "完成");
             byte[] x = serializeObject(tbX);
             listJdk.add(x);
         }

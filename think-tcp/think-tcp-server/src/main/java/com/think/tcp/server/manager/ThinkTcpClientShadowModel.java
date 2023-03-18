@@ -1,6 +1,7 @@
 package com.think.tcp.server.manager;
 
 import com.think.common.util.ThinkMilliSecond;
+import com.think.common.util.TimeUtil;
 import com.think.exception.ThinkRuntimeException;
 import com.think.tcp.TMessage;
 import com.think.tcp.TcpTransModel;
@@ -46,7 +47,10 @@ public class ThinkTcpClientShadowModel {
 
     public boolean isExpire(){
         long now =ThinkMilliSecond.currentTimeMillis();
-        if(now - lastActiveTime > (1000 * 30 )){
+        /*
+            超过三十秒视为 超时
+         */
+        if(now - lastActiveTime > TimeUtil.MILLIS_OF_30_SECONDS){
             return true;
         }
         return false;

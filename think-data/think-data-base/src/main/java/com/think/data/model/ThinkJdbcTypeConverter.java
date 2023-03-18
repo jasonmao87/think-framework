@@ -1,6 +1,8 @@
 package com.think.data.model;
 
 import com.think.common.util.ByteUtil;
+import com.think.common.util.DateUtil;
+import com.think.common.util.StringUtil;
 import com.think.core.annotations.bean.ThinkColumn;
 import com.think.core.bean.util.ClassUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,93 @@ import java.util.Map;
 
 @Slf4j
 public class ThinkJdbcTypeConverter {
+
+    /**
+     * 是否需要在 sql中使用string 描述 默认值
+     *  如 bit 不需要   >>> BIT(1) NOT NULL DEFAULT 0
+     *  varchar 需要   >>> VARCHAR(12) NOT NULL DEFAULT 'AC'
+     * @param sqlType
+     * @return
+     */
+    public static boolean isUsingStringInSqlDefaultValue(ThinkSqlType sqlType){
+        switch (sqlType){
+            case NONE:{
+                return false;
+            }
+            case BIT:{
+                return false;
+            }
+            case FLOAT:{
+                return false;
+            }
+            case BIGINT:{
+                return false;
+            }
+            case DOUBLE:{
+                return false;
+            }
+            case INTEGER:{
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static String defaultValueString(ThinkSqlType sqlType ,String defaultValue){
+//        if(defaultValue!=null){
+//            return defaultValue;
+//        }
+        String t = null;
+        switch (sqlType){
+            case TEXT:{
+                return null;
+            }
+            case NONE:{
+                return null;
+            }
+            case VARCHAR:{
+
+                return sqlStringDefaultValue(defaultValue);
+            }
+            case BIT:{
+                return null;
+            }
+            case CHAR:{
+                return sqlStringDefaultValue(defaultValue);
+            }
+            case DATE:{
+
+                return  sqlDateValue(defaultValue);
+            }
+            case TIME:{
+                return "00:00:00";
+            }
+            case FLOAT:{
+                return "0.0";
+            }
+            case BIGINT:{
+                return "0";
+            }
+            case DOUBLE:{
+                return "0.0";
+            }
+            case INTEGER:{
+                return "0";
+            }
+            case DATETIME:{
+                return sqlDateTimeValue(defaultValue);
+            }
+            case ENUM:{
+                t = "";
+                break;
+            }
+            default:{
+                t = null;
+            }
+        }
+        return t;
+    }
+
 
     public static String toJdbcTypeAsString(ThinkSqlType sqlType ,int len , boolean nullAble){
         String t = "" ;
@@ -156,7 +245,7 @@ public class ThinkJdbcTypeConverter {
         }
     }
 
-    private static final ThinkSqlType getType(Type type){
+    protected static final ThinkSqlType getType(Type type){
         return typeMap.getOrDefault( type, ThinkSqlType.NONE);
     }
 
@@ -211,6 +300,68 @@ public class ThinkJdbcTypeConverter {
 
     }
 
+    private static final String sqlDateTimeValue(String def){
+        return sqlDateTimeValue( DateUtil.valueOfString(def));
+    }
 
-    byte[] nn = new byte[2];
+    private static final String sqlDateTimeValue(Date def){
+        return DateUtil.toFmtString( def,"yyyy-MM-dd HH:mm:ss") ;
+    }
+
+    private static final String sqlDateValue(String def){
+        return sqlDateValue(DateUtil.valueOfString(def));
+    }
+
+    private static final String sqlDateValue(Date def){
+        return  DateUtil.toFmtString(def,"yyyy-MM-dd");
+    }
+
+
+    private static String sqlStringDefaultValue(String def){
+        if(StringUtil.isEmpty(def)){
+            return "";
+        }
+        return def;
+    }
+
+
+    public static final String sqlDefaultValueString(Type type){
+        return sqlDefaultValueString(getType(type));
+    }
+
+    /**>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     *  you hace to check here later !
+     *<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+    public static final String sqlDefaultValueString(ThinkSqlType thinkSqlType){
+        switch (thinkSqlType){
+            case ENUM: return "";
+            case BIT: return  "0";
+            case INTEGER: return "0";
+            case BIGINT: return "0";
+            case CHAR: return "";
+            case VARCHAR: return "";
+            case TEXT: return "";
+            case TIME: return "00:00:00";
+            case DATE:  return sqlDateValue(DateUtil.zeroDate());
+            case DATETIME:  return  sqlDateTimeValue(DateUtil.zeroDate()) ;
+            case FLOAT: return "0.0";
+            case DOUBLE: return "0.0";
+            default: {
+                return null;
+            }
+
+        }
+//            pdca 命名 ：  动词 + 名次 + 指标
+
+
+    }
+
+
+
+    public static void main(String[] args) {
+        System.out.println(DateUtil.valueOfString("2021-1-1"));
+        System.out.println(sqlDateValue(""));
+        System.out.println(sqlStringDefaultValue("dadda'dadad'"));
+
+    }
 }

@@ -2,6 +2,7 @@ package com.think.core.bean.util;
 
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
+import com.think.core.annotations.bean.ThinkAlias;
 import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.TFlowBuilder;
@@ -58,7 +59,7 @@ public class ObjectUtil  {
     public static final <T> void mapSetValueToBean(Map<String, Object> map,T t ,Field field,String key){
 //        Field field = ClassUtil.getField(t.getClass(),key);
         if( (t instanceof _Entity || t instanceof BaseVo ) && field.getType() == TFlowState.class){
-            log.info("状态类的逻辑  TFlowState 。。。");
+//            log.info("状态类的逻辑  TFlowState 。。。");
             //处理 状态类的逻辑 。。。。
             String stateKeyName  =null;
             String comment = "";
@@ -76,13 +77,17 @@ public class ObjectUtil  {
             TFlowState state = TFlowBuilder.build(stateKeyName,comment,value,startTime,completeTime,cancelTime,tryCount,resultMessage);
             field.setAccessible(true);
             ClassUtil.setValue(field,t,state);
-            log.info("设置值 {}" ,state);
+//            log.info("设置值 {}" ,state);
         }else{
+
+
 //            Field field = ClassUtil.getField(t.getClass(), key);
             if(field.getType().getSuperclass()!=null && field.getType().getSuperclass().equals(Enum.class)){
-                Object x = enumValue(field.getType(), (String) map.get(key));
-                field.setAccessible(true);
-                ClassUtil.setValue(field, t, x);
+                if(map.get(key)!=null) {
+                    Object x = enumValue(field.getType(), map.get(key).toString());
+                    field.setAccessible(true);
+                    ClassUtil.setValue(field, t, x);
+                }
             }else{
                 field.setAccessible(true);
                 ClassUtil.setValue(field,t,map.get(key));
@@ -90,11 +95,24 @@ public class ObjectUtil  {
 
 
         }
-
-
-
-
     }
+
+
+    public static final  <T extends BaseVo> T voInit(Map<String, Object> map,T t ,Field field){
+        if(t instanceof BaseVo){
+            ThinkAlias annotation = field.getAnnotation(ThinkAlias.class);
+            String key = null;
+            if(annotation!=null &&  StringUtil.isNotEmpty(annotation.sourceColumnName())){
+                key = annotation.sourceColumnName();
+            }else{
+                key = field.getName();
+            }
+
+
+        }
+        return null;
+    }
+
 
     public static final <T> T mapToBean( Map<String, Object> map,Class<T> targetClass ,String...  ignoreKeys  ){
         T t = null;
@@ -122,7 +140,7 @@ public class ObjectUtil  {
                     try{
                         mapSetValueToBean(map,t,field,key);
                     }catch (Exception e){
-                        log.error("赋值未成功，相关KEY = {}" ,key);
+                        //log.error("赋值未成功，相关KEY = {}" ,key);
                     }
                     ignores.add(key);
                 }
@@ -148,8 +166,8 @@ public class ObjectUtil  {
     }
 
 
-    public static final<T extends _Entity>  void doThinkEntityTEnumExplain(T t ){
-        ThinkExplainList thinkExplainList = t.getThinkTEnumsValueExplain();
+    public static final<T extends _Entity>  ThinkExplainList doThinkEntityTEnumExplain(T t ){
+        ThinkExplainList thinkExplainList = new ThinkExplainList();
         if (!thinkExplainList.isInit()) {
             List<Field> fieldList = ClassUtil.getFieldList(t.getClass());
             for (Field field : fieldList) {
@@ -157,10 +175,11 @@ public class ObjectUtil  {
 //                field.getType()
                     TEnum tEnum = (TEnum) ClassUtil.getProperty(t,field.getName());
 //                    tEnum.explain(field.getName());
-                    thinkExplainList.add(tEnum.explain(field.getName()));
+                    thinkExplainList.add(tEnum.explain());
                 }
             }
         }
+        return thinkExplainList;
 
     }
 

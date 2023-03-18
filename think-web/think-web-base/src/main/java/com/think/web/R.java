@@ -3,7 +3,12 @@ package com.think.web;
 import com.think.common.result.ThinkResult;
 import com.think.common.result.state.ResultCode;
 import com.think.common.result.state.ThinkResultState;
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
+import com.think.core.security.AccessKey;
+import com.think.core.security.WebSecurityUtil;
+import com.think.core.security.token.ThinkSecurityToken;
+import com.think.exception.ThinkRuntimeException;
 import com.think.web.util.WebUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,13 +16,18 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @Slf4j
 @Accessors(chain = true)
 public class R<T>  implements Serializable {
+    private static final long serialVersionUID = 2298131129668199468L;
+
+    private static IThinkWebResultInterceptor inteceptor = null;
+    public static void bindWebResultInterceptor(IThinkWebResultInterceptor impl){
+        inteceptor = impl;
+    }
 
     private static String defaultServiceId = null ;
     private static String defaultServiceName = null;
@@ -48,10 +58,28 @@ public class R<T>  implements Serializable {
     @ApiModelProperty("服务Id")
     private String serviceId  ;
 
-    private R(){
+    @ApiModelProperty("动态最新的ACCESS KEY，每隔一段会更新1次，ACCESS KEY更新后，原ACCESS KEY 依然可以使用15分钟左右")
+    private String nextAccessKey;
 
+    @ApiModelProperty("是否是新的AK")
+    private boolean newAk = true;
+
+
+    private R(){
     }
 
+    public void setNextAccessKey(String nextAccessKey ) {
+        this.nextAccessKey = nextAccessKey;
+    }
+
+    public void setNextAccessKey(boolean isNew ,String nextAccessKey){
+        this.setNextAccessKey(nextAccessKey);
+        this.newAk = isNew;
+    }
+
+    public boolean isNewAk() {
+        return newAk;
+    }
 
     private static R _init(ResultCode code){
         R webResult = new R();
@@ -65,6 +93,9 @@ public class R<T>  implements Serializable {
                 .setThreadId(Thread.currentThread().getId())
                 .setState(ThinkResultState.get(code))
                 .setUri(WebUtil.uri());
+        if(R.inteceptor!=null){
+            inteceptor.afterInit(webResult);
+        }
         return webResult;
     }
 
@@ -125,8 +156,8 @@ public class R<T>  implements Serializable {
      * 请求资源不存在
      * @return
      */
-    public static R REQUEST_NO_RESOURCE(){
-        R webResult = _init(ResultCode.REQUEST_NO_RESOURCE);
+    public static R<Object> REQUEST_NO_RESOURCE(){
+        R<Object> webResult = _init(ResultCode.REQUEST_NO_RESOURCE);
         webResult.setMessage(webResult.getState().getDescription());
         return webResult;
     }
@@ -138,6 +169,11 @@ public class R<T>  implements Serializable {
     }
 
     public static R SUCCESS(Object result){
+        if(result instanceof ThinkResult){
+            log.error("SUCCESS 不能使用 ThinkResult 对象作为参数 ");
+            throw new ThinkRuntimeException("错误的调用，R.SUCCESS 不能使用 ThinkResult 作为参数！");
+        }
+
         R webResult = _init(ResultCode.SUCCESS);
         webResult.setMessage(webResult.getState().getDescription())
                 .setResult(result);
@@ -201,7 +237,42 @@ public class R<T>  implements Serializable {
 
     }
 
+    public List<String> getErrorMessageStacks(){
+        if(this.getThrowable()!=null){
+            List<String> message = new ArrayList<>();
+            for (Throwable throwable : this.getThrowable().getSuppressed()) {
+                String eMessage = throwable.getMessage();
+                message.add(eMessage);
+            }
+            return message;
+        }
+        return Collections.EMPTY_LIST;
+    }
 
+    public String getNextAccessKey() {
+        if(StringUtil.isEmpty(this.nextAccessKey)){
+            AccessKey accessKey = WebUtil.getUserAccessKey();
+            if(accessKey == null){
+                if (WebUtil.getRequest()!=null) {
+                    final Optional<ThinkSecurityToken> token = WebUtil.getToken();
+                    if (token.isPresent()) {
+                        accessKey = WebSecurityUtil.getInstance().buildAccessKey(token.get().getId(),WebUtil.userAgent());
+                        this.setNextAccessKey(false,accessKey.getAccessKeyString());
+                    }
+                }
+            }else{
+                //如果accessKey 存在，那么检查是否需要renew
+                if (accessKey.canRenew()) {
+                    accessKey.renewAccessKey();
+                    this.setNextAccessKey(true,accessKey.getAccessKeyString());
+                }
+
+            }
+
+        }
+
+        return nextAccessKey;
+    }
 
     public Map<String,Object> toMap(){
         Map map = new HashMap();
@@ -214,12 +285,8 @@ public class R<T>  implements Serializable {
         map.put("threadId",threadId);
         map.put("serviceName",serviceName);
         map.put("serviceId",serviceId);
+        map.put("nextAccessKey" ,getNextAccessKey());
         return map;
 
     }
-
-
-
-
-
 }

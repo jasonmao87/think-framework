@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _JdbcExecutor  implements ThinkDao<T>  {
@@ -73,15 +74,8 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
 
     @Override
     public boolean exists(long id) {
-
-        return findOne(id)!=null;
-//
-//        ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(this.targetClass)
-//                .eq("id",id);
-//        ThinkQuery  query = ThinkQuery.build(sqlFilter);
-//
-//        Map<String,Object> result =  executeOne(query.selectForKeys(targetClass,"id"),finalTableName());
-//        return  !result.isEmpty() ;
+        Map<String, Object> map = findOne(id, "id");
+        return map!=null && (!map.isEmpty()) ;
     }
 
     @Override
@@ -94,6 +88,47 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
             }
         }
         return this.list(sqlFilter).size() > 0 ;
+     }
+
+     public ThinkResult<Integer> checkIdBeforeBatchInsert(List<T> list) {
+
+         if (list.size() > 100) {
+             List<T> tempList = new ArrayList<>();
+             for (T t : list) {
+                 tempList.add(t);
+                 if (tempList.size() == 50) {
+                     ThinkResult<Integer> tempResult = this.checkIdBeforeBatchInsert(tempList);
+                     if (tempResult.isNotSuccess()) {
+                         return tempResult;
+                     }
+                     tempList.clear();
+                 }
+             }
+             if (tempList.isEmpty() == false) {
+                 return this.checkIdBeforeBatchInsert(tempList);
+             }
+         } else {
+             //检查 id 是否 冲突
+             Long[] idArray = _DaoSupport.getIdArray(list);
+             if (idArray.length > 0) {
+                 ThinkSqlFilter<T> checkIdSqlFilter = ThinkSqlFilter.build(targetClass, -1).in("id", idArray);
+                 List<Map<String, Object>> findExistIdList = this.list(checkIdSqlFilter, "id");
+                 if (findExistIdList.size() > 0) {
+                     StringBuilder idErrorInfo = new StringBuilder("以下id可能存在冲突：");
+                     int i = 0;
+                     for (Map<String, Object> map : findExistIdList) {
+                         if (i > 0) {
+                             idErrorInfo.append(",");
+                         }
+                         idErrorInfo.append(map.get("id"));
+                         i++;
+                     }
+                     idErrorInfo.append("操作被拒绝");
+                     return ThinkResult.forbidden(idErrorInfo.toString());
+                 }
+             }
+         }
+         return ThinkResult.success();
      }
 
 
@@ -111,9 +146,8 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
             ObjectUtil.setDbPersistent(t);
             return ThinkResult.success(t);
         }
-
         return result;
-     }
+    }
 
     @Override
     public ThinkResult<Integer> batchInsert(List<T> list) {
@@ -129,9 +163,62 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
                 }
             }
         }
+//        ThinkResult<Integer> checkIdBeforeBatchInsertResult = this.checkIdBeforeBatchInsert(list);
+//        if(checkIdBeforeBatchInsertResult.isNotSuccess()){
+//            return checkIdBeforeBatchInsertResult;
+//        }
+
+
+        int size = list.size();
+        if(size > 60) {
+            Queue<T> queue = new LinkedList<>();
+            for (T t : list) {
+                queue.offer(t);
+            }
+            List<T> tempList = new ArrayList<T>();
+            while (queue.peek() != null) {
+                tempList.add(queue.poll());
+                if (tempList.size() == 50) {
+                    ThinkResult<Integer> result =this.batchInsert(tempList);
+                    if ( result.isNotSuccess() ) {
+                        return this.rollbackInsert(list,result);
+                    }
+                    tempList.clear();
+                }
+            }
+            if(tempList.size()>0) {
+                if (tempList.size() > 1) {
+                    ThinkResult<Integer> result = this.batchInsert(tempList);
+                    if ( result.isNotSuccess() ) {
+                        return this.rollbackInsert(list,result);
+                    }
+                } else {
+                    ThinkResult<T> result = this.insert(tempList.get(0));
+                    if ( result.isNotSuccess()) {
+                        return this.rollbackInsert(list,result);
+                    }
+                }
+            }
+            return ThinkResult.success(size);
+        }
+
         ThinkExecuteQuery query = ThinkUpdateQueryBuilder.batchInsertSQL(list);
         return executeUpdate(query,finalTableName());
     }
+
+
+
+
+
+    public ThinkResult<Integer> rollbackInsert(List<T> list ,ThinkResult result){
+        Long[] idArray = list.stream()
+                .map(T::getId)
+                .collect(Collectors.toList())
+                .toArray(new Long[list.size()]);
+        this.physicalDelete(idArray);
+        return result;
+    }
+
 
 
     @Override
@@ -177,7 +264,7 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
     public ThinkResult<Integer> delete(Long[] ids) {
         ThinkSqlFilter<T> sqlFilter = ThinkSqlFilter.build(targetClass);
         if(ids.length ==0){
-            return ThinkResult.success(0);
+            return ThinkResult.success(0).appendMessage("未删除任何数据");
             //return ThinkResult.fail("非法的参数，必须指定id",ResultCode.REQUEST_NO_RESOURCE);
         }else if(ids.length>1){
             sqlFilter.in("id",ids);
@@ -209,13 +296,14 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
     @Override
     public ThinkResult<Integer> physicalDelete(long id) {
         if(log.isWarnEnabled()) {
-            T t = this.findOne(id);
+            Map t = this.findOne(id ,"id");
             if(t == null){
                 log.warn("不存在id = {}的数据，放弃物理删除！" ,id );
-                return ThinkResult.fail("不存在指定数据,放弃执行物理删除",ResultCode.REQUEST_NO_RESOURCE);
+                return ThinkResult.success(0).appendMessage("未删除任何数据");
+//                return ThinkResult.fail("不存在指定数据,放弃执行物理删除",ResultCode.REQUEST_NO_RESOURCE);
             }else {
                 if(log.isWarnEnabled()) {
-                    log.warn("即将物理删除数据 class ={} ，id ={} ,DATA : {} ", targetClass.getName(), id, t.toString());
+                    log.warn("即将物理删除数据 class ={} ，id ={} ,TABLE =  {} ", targetClass.getName(), id, finalTableName());
                 }
             }
         }
@@ -245,9 +333,10 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
         if(log.isWarnEnabled()) {
             List<T> list = this.list(sqlFilter);
 
-            if(list.size()<0){
+            if(list.size()==0){
                 log.warn("不存在id在{}内的数据，放弃物理删除！" ,  Arrays.toString(ids));
-                return ThinkResult.fail("不存在指定数据,放弃执行物理删除",ResultCode.REQUEST_NO_RESOURCE);
+                return ThinkResult.success(0).appendMessage("未删除任何数据");
+//                return ThinkResult.fail("不存在指定数据,放弃执行物理删除",ResultCode.REQUEST_NO_RESOURCE);
             }else {
                 if(log.isWarnEnabled()) {
                     for (int i = 0; i < list.size(); i++) {
@@ -322,6 +411,10 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
 
     @Override
     public List<Map<String, Object>> list(ThinkSqlFilter<T> sqlFilter, String... keys) {
+        if(sqlFilter.mayBeEmptyResult()){
+            return new ArrayList<>();
+        }
+
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.selectForKeys(targetClass,keys) ;
         return executeSelectList(executeQuery,finalTableName());

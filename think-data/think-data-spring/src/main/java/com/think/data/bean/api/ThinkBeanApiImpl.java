@@ -13,9 +13,7 @@ import com.think.data.dao.ThinkDao;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Date :2021/8/18
@@ -48,16 +46,27 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
     }
 
     @Override
+    public <V extends BaseVo<T>> V getView(long id,Class<V> vClass) {
+        return dao.findOne(id,vClass);
+    }
+
+    @Override
     public T findDeleted(long id) {
         return dao.findDeleted(id);
     }
 
     @Override
     public T findFirstOneByKey(String key, Serializable value) {
-        ThinkSqlFilter sqlFilter = ThinkSqlFilter.build(targetClass())
+        List<T> list = this.findListByKey(key, value, 1);
+        return list.size()>0?(T)list.get(0):null;
+    }
+
+    @Override
+    public List<T> findListByKey(String key, Serializable value, int limit) {
+        ThinkSqlFilter sqlFilter = ThinkSqlFilter.build(targetClass(),limit)
                 .eq(key,value);
         List<T> list = dao.list(sqlFilter);
-        return list.size()>0?(T)list.get(0):null;
+        return list;
     }
 
     @Override
@@ -66,9 +75,19 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
     }
 
     @Override
-    public ThinkResult<Integer> createMany(List<T> t) {
-        return dao.batchInsert(t);
+    public ThinkResult<Integer> createMany(List<T> list)  {
+        if (list.size() == 1) {
+            ThinkResult<T> result = this.create(list.get(0));
+            if(result.isSuccess()){
+                return ThinkResult.success(1);
+            }else{
+                return result.intResult();
+            }
+        }
+        return dao.batchInsert(list);
     }
+
+
 
     //    @Override
     @Deprecated
@@ -167,6 +186,11 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
 
 
     @Override
+    public ThinkResult<Integer> delete(ThinkSqlFilter<T> sqlFilter) {
+        return this.dao.delete(sqlFilter);
+    }
+
+    @Override
     public ThinkResult<Integer> physicalDelete(Long[] ids) {
         return dao.physicalDelete(ids);
     }
@@ -247,5 +271,18 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
         updateMapper.setTargetDataId(id)
                 .updateTFlowState(update);
         return this.update(updateMapper);
+    }
+
+
+    @Override
+    public ThinkSqlFilter<T> emptySqlFilter(int limit) {
+        return ThinkSqlFilter.build(targetClass(),limit);
+    }
+
+    @Override
+    public List<T> listByIds(Long[] ids) {
+        ThinkSqlFilter<T> sqlFilter= ThinkSqlFilter.build(targetClass(),ids.length)
+                .in("id",ids);
+        return list(sqlFilter);
     }
 }

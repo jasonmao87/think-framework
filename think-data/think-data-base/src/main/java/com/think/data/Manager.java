@@ -1,11 +1,13 @@
 package com.think.data;
 
+import com.think.FrameForceMatchFlag;
 import com.think.common.data.IFilterChecker;
+import com.think.common.data.IThinkQueryFilter;
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.core.annotations.Remark;
 import com.think.core.bean.SimplePrimaryEntity;
-import com.think.core.executor.ThinkExecuteThreadSharedTokenManager;
-import com.think.core.security.ThinkToken;
+import com.think.core.security.token.ThinkSecurityToken;
+import com.think.core.security.token.ThinkSecurityTokenTransferManager;
 import com.think.data.filter.DefaultThinkDataFilter;
 import com.think.data.filter.ThinkDataFilter;
 import com.think.data.model.DataModelBuilder;
@@ -70,6 +72,11 @@ public class Manager {
     }
 
     static {
+        try{
+            FrameForceMatchFlag.justMatch();
+        }catch (Exception e){
+
+        }
         /**
          * 注入默认的 filter ，避免dao层无法获得到filter,避免 NULL的错误
          */
@@ -85,8 +92,22 @@ public class Manager {
                 }
                 return false;
             }
+
+
         });
         log.warn("ThinkData默认开启了thinkLinkedIdSupportAble得支持，进而会支持针对所有MYSQL表thinkLinkedId建立索引和默认赋值，如果不需要，请在配置文件中指定：think.data.thinkLinkedId.able =false,或手动调用Manage.disAbleThinkLinkedIdSupport() 禁用！");
+    }
+
+    private static IThinkQueryFilter iThinkQueryFilter;
+
+    public static synchronized final void setThinkQueryFilter(IThinkQueryFilter queryFilter){
+        if(iThinkQueryFilter == null){
+            iThinkQueryFilter = queryFilter;
+        }
+    }
+
+    public static IThinkQueryFilter getThinkQueryFilter() {
+        return iThinkQueryFilter;
     }
 
     public static final void endDataSrv(){
@@ -103,16 +124,45 @@ public class Manager {
         }
     }
     public static final boolean beginDataSrv(String splitRegion){
-        if(dataRuntimeThreadLocal.get() == null) {
+        final ThinkDataRuntime localDataRuntime = dataRuntimeThreadLocal.get();
+        if(  localDataRuntime == null ||
+                ThinkDataRuntime.isNonePartitionRegion(localDataRuntime.getPartitionRegion())) {
+            if (log.isTraceEnabled()) {
+                log.trace("线程 指定数据分区 --- {}" ,splitRegion);
+            }
             dataRuntimeThreadLocal.set(new ThinkDataRuntime(splitRegion));
             return true;
         }else{
+            String currentP = null;
+            ThinkDataRuntime runtime = getDataSrvRuntimeInfo() ;
+            if(runtime !=null ){
+                currentP = runtime.getPartitionRegion();
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("指定数据分区未成功,当前已经有分区--- {}" ,currentP);
+            }
             return false;
         }
     }
+
+    /**
+     * 强制修改 dataRegion ，可能会引起一些 非正常的现象！！！
+     * @param splitRegion
+     */
+    public static final void unsafeChangeDataSrv(String splitRegion){
+       if(!beginDataSrv(splitRegion)){
+           if (log.isDebugEnabled()) {
+               log.debug("线程 强制切换指定数据分区 --- {}" ,splitRegion);
+           }
+           dataRuntimeThreadLocal.remove();
+           dataRuntimeThreadLocal.set(new ThinkDataRuntime(splitRegion));
+       }
+    }
+
     public static final ThinkDataRuntime getDataSrvRuntimeInfo(){
         if(dataRuntimeThreadLocal.get() == null) {
-            ThinkToken token = ThinkExecuteThreadSharedTokenManager.get();
+            final ThinkSecurityToken token = ThinkSecurityTokenTransferManager.getToken();
+
             if( token!=null){
                 beginDataSrv(token.getCurrentRegion());
             }
@@ -179,7 +229,7 @@ public class Manager {
      * @param preStr
      * @return
      */
-    public static final List<String> findInitializedTableNameList(String preStr){
+    public static final List<String> findInitializedTableNameListFromCache(String preStr){
         Iterator<String> iterable =initTables.iterator();
         List<String> list =new ArrayList<>();
         while (iterable.hasNext()){
@@ -214,7 +264,7 @@ public class Manager {
      */
     public  static final <T> void registerBeanValidator(Class<T> targetBeanClass , ThinkKeyValidator validator){
         if (log.isDebugEnabled()) {
-            log.debug("为对象[{}]注册指定的值校验器",targetBeanClass);
+            log.debug("为对象[{}]注册指定的值校验器",targetBeanClass!=null?targetBeanClass.getName():"NULL CLASS");
         }
         ThinkDataValidator.registerBeanValidator(targetBeanClass,validator);
     }

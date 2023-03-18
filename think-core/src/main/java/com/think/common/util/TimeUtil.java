@@ -3,11 +3,34 @@ package com.think.common.util;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 时间工具类
+ * @author JASONMAO
  */
 public class TimeUtil {
+
+
+    public static final long MILLIS_OF_15_SECONDS   =15000L;
+    /** 30 秒的 毫秒值 */
+    public static final long MILLIS_OF_30_SECONDS   =30000L;
+
+
+    public static final long MILLIS_OF_SECONDS(int seconds){
+        return 1000L * seconds;
+    }
+
+    public static final long MILLIS_OF_MINUTES(int minutes){
+        return 60000L* minutes  ;
+    }
+
+    public static final long MILLIS_OF_HOURS(int hours){
+        return 3600000L* hours;
+    }
+
+
+
 
     /**
      * @param date
@@ -137,8 +160,125 @@ public class TimeUtil {
         return !isAM(datetime);
     }
 
+    public static void sleepForSeconds(int durationSeconds){
+        sleep(durationSeconds,TimeUnit.SECONDS);
+    }
+
+    public static void sleep(int duration,TimeUnit unit){
+        try{
+            switch (unit){
+                case MILLISECONDS:{
+                    TimeUnit.MILLISECONDS.sleep(duration);
+                    break;
+                }
+                case SECONDS:{
+                    TimeUnit.SECONDS.sleep(duration);
+                    break;
+                }
+                case MINUTES:{
+                    TimeUnit.MINUTES.sleep(duration);
+                    break;
+                }
+                case HOURS:{
+                    TimeUnit.HOURS.sleep(duration);
+                    break;
+                }
+                case DAYS:{
+                    TimeUnit.DAYS.sleep(duration);
+                    break;
+                }
+                case NANOSECONDS:{
+                    TimeUnit.NANOSECONDS.sleep(duration);
+                    break;
+                }
+                case MICROSECONDS:{
+                    TimeUnit.MICROSECONDS.sleep(duration);
+                    break;
+                }
+            }
+        }catch (Exception e){}
+
+    }
+
+
+    public static void main(String[] args) {
+
+        Thread t =new Thread(()->{
+            try{
+                while (true){
+
+                }
+
+            }catch (Exception e){
+
+            }
+            int i = 0;
+           while (true){
+               TimeUtil.sleepForSeconds(1);
+               System.out.println("run  " + i );
+               i++;
+           }
+        });
+        t.start();
+        int i = 0;
+        while (true){
+
+            TimeUtil.sleepForSeconds(3);
+            System.out.println("hello" + i );
+            i ++ ;
+            if(i % 5==0){
+                if (t.isAlive()) {
+                    t.interrupt();
+                    System.out.println("to interrupt ");
+                }
+            }
+        }
+
+    }
 
 
 
 
 }
+//
+//class ThinkTimer{
+//
+//    private long begin ;
+//
+//    protected ThinkTimer(){
+//        begin = ThinkMilliSecond.currentTimeMillis();
+//    }
+//
+//    public long duration(TimeUnit unit){
+//
+//        long duration = ThinkMilliSecond.currentTimeMillis() - begin;
+//        switch (unit){
+//            case MILLISECONDS:{
+//                return duration;
+//            }
+//            case NANOSECONDS:{
+//                return TimeUnit.MILLISECONDS.toNanos(duration);
+//            }
+//            case MICROSECONDS:{
+//                return TimeUnit.MILLISECONDS.toMicros(duration);
+//            }
+//            case SECONDS:{
+//                return TimeUnit.MILLISECONDS.toSeconds(duration);
+//            }
+//            case MINUTES:{
+//                return TimeUnit.MILLISECONDS.toMinutes(duration);
+//            }
+//            case HOURS:{
+//                return TimeUnit.MILLISECONDS.toHours(duration);
+//            }
+//            case DAYS:{
+//                return TimeUnit.MILLISECONDS.toDays(duration);
+//            }
+//        }
+//        return duration;
+//    }
+//
+//}
+
+
+

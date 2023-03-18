@@ -1,12 +1,15 @@
 package com.think.common.result;
 
 import com.think.common.result.state.ResultCode;
+import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.annotations.Remark;
 import com.think.core.bean.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * 通用复杂结果返回类
@@ -79,8 +82,8 @@ public class ThinkResult<T> implements Serializable {
         this.threadId = Thread.currentThread().getId();
         this.code =code;
         if(success == false){
-            if (log.isDebugEnabled()) {
-                log.debug("ThinkResult Not Success , message ： {}" ,this.message);
+            if (log.isTraceEnabled()) {
+                log.trace("ThinkResult Not Success , message ： {}" ,this.message);
             }
         }
         if(throwable!=null){
@@ -90,12 +93,42 @@ public class ThinkResult<T> implements Serializable {
     }
 
 
+    public <T> ThinkResult<T> appendMessage(String message){
+        if (StringUtil.isEmpty(message)) {
+            this.message= message;
+        }else{
+            this.message += " "+message;
+        }
+        return (ThinkResult<T>) this;
+    }
 
-    public static final <T> ThinkResult<T> successIfNoNull(T data){
+
+
+
+
+    public static final <T> ThinkResult successIfCollectionNotEmpty(Collection<T> collections){
+        if (collections!=null && !collections.isEmpty()) {
+            return ThinkResult.success(collections);
+        }else {
+            return ThinkResult.fastFail();
+        }
+    }
+
+
+    public static final <T>  ThinkResult<T> successIfNotNull(T data){
         if (data!=null) {
             return ThinkResult.success(data);
-        }else return ThinkResult.fastFail();
+        }else {
+            return ThinkResult.fastFail();
+        }
     }
+
+
+    @Deprecated
+    public static final <T> ThinkResult<T> successIfNoNull(T data){
+        return successIfNotNull(data);
+    }
+
 
     public static final <T> ThinkResult<T> success(){
         return new ThinkResult(true,false,"",null,null,ResultCode.SUCCESS);
@@ -121,6 +154,14 @@ public class ThinkResult<T> implements Serializable {
         return notSupport("");
     }
 
+
+    public static final <T> ThinkResult<T> notYet(T t){
+        return new ThinkResult(false,false,"尚未完成",t,null,ResultCode.REQUIRED_NOT_YET);
+    }
+
+    public static final <T> ThinkResult<T> notYet(){
+        return notYet(null);
+    }
 
 
 
