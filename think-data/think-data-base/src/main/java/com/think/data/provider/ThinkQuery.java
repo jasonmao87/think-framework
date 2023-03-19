@@ -1,8 +1,8 @@
 package com.think.data.provider;
 
 import com.think.common.data.IThinkQueryFilter;
-import com.think.common.data.mysql.ThinkFilterBean;
 import com.think.common.data.ThinkFilterOp;
+import com.think.common.data.mysql.ThinkFilterBean;
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean.BaseVo;

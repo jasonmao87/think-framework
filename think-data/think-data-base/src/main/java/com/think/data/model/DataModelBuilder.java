@@ -10,7 +10,6 @@ import com.think.core.bean.util.ClassUtil;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
 import com.think.data.exception.ThinkDataModelException;
-import com.think.data.exception.ThinkDataRuntimeException;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;

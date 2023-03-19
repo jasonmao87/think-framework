@@ -1,9 +1,5 @@
 package com.think.core.executor.stream;
 
-import java.util.ArrayList;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-
 /**
  * @author : JasonMao
  * @version : 1.0

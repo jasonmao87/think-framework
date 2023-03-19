@@ -1,7 +1,6 @@
 package com.think.common.data.mysql;
 
 import com.think.core.annotations.Remark;
-import com.think.core.bean._Entity;
 
 import java.util.Map;
 

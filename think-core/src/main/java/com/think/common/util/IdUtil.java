@@ -4,10 +4,7 @@ import com.think.common.util.rt.ThinkMachineUtil;
 import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * ID工具类

@@ -3,7 +3,6 @@ package com.think.data.filter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.core.annotations.Remark;
 import com.think.core.bean.SimplePrimaryEntity;
-import com.think.core.bean._Entity;
 
 @Remark("控制版本记录器")
 public interface ThinkVersionRecorder {

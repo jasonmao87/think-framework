@@ -2,10 +2,11 @@ package com.think.core.bean;
 
 import com.think.common.util.BinaryUtil;
 import com.think.common.util.TAssert;
-import com.think.core.annotations.Remark;
-import org.apache.poi.xwpf.usermodel.BreakType;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import static com.think.core.annotations.bean.ThinkStateColumn.*;
 

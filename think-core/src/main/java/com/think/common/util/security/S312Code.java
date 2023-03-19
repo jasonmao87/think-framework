@@ -1,8 +1,5 @@
 package com.think.common.util.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author : JasonMao
  * @version : 1.0

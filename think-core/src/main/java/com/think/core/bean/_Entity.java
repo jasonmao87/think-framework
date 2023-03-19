@@ -4,8 +4,6 @@ import com.think.common.util.DateUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkColumn;
 import com.think.core.annotations.bean.ThinkIgnore;
-import com.think.core.bean.util.ClassUtil;
-import com.think.core.bean.util.ObjectUtil;
 import com.think.structure.ThinkExplainList;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,11 +11,7 @@ import lombok.experimental.Accessors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Data
 @Accessors(chain = true)

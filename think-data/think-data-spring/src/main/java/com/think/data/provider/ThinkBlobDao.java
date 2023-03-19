@@ -1,14 +1,11 @@
 package com.think.data.provider;
 
 import com.think.core.bean.BlobEntity;
-import com.think.core.enums.TEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * @author : JasonMao

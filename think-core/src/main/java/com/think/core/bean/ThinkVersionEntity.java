@@ -2,6 +2,7 @@ package com.think.core.bean;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 
 @Data

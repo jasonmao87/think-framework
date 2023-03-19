@@ -1,11 +1,6 @@
 package com.think.core.security.token;
 
-import com.think.common.util.PasswordUtil;
 import com.think.moudles.auth.UserAccountModel;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author : JasonMao

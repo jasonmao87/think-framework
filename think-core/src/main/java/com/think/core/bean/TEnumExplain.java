@@ -2,12 +2,9 @@ package com.think.core.bean;
 
 import com.think.core.enums.EnumExplainMapper;
 import com.think.core.enums.IEnumInterpreter;
-import com.think.core.enums.TEnum;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

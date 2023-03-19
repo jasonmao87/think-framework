@@ -1,6 +1,5 @@
 package com.think.core.bean;
 
-import com.think.core.annotations.bean.ThinkColumn;
 import com.think.core.annotations.bean.ThinkTable;
 
 import java.io.Serializable;

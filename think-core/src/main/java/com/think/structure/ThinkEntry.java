@@ -1,7 +1,5 @@
 package com.think.structure;
 
-import java.io.Serializable;
-
 /**
  * @author : JasonMao
  * @version : 1.0

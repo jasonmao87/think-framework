@@ -7,7 +7,6 @@ import com.think.data.dao.ThinkDaoFactory;
 import com.think.data.dao.ThinkSplitPrimaryDao;
 import com.think.data.dao.ThinkSplitRefDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 

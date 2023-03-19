@@ -6,11 +6,7 @@ import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkColumn;
 import com.think.core.annotations.bean.ThinkTable;
 import com.think.core.bean.SimplePrimaryEntity;
-import com.think.core.bean._Entity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author : JasonMao

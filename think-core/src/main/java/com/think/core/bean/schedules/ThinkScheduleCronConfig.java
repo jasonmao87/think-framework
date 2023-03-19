@@ -9,7 +9,6 @@ import com.think.core.annotations.bean.TScheduleCron;
 import com.think.exception.ThinkNotSupportException;
 import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;

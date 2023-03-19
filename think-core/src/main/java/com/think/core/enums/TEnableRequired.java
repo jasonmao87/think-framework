@@ -3,7 +3,6 @@ package com.think.core.enums;
 import com.think.common.util.FastJsonUtil;
 import com.think.core.bean.TEnumExplain;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

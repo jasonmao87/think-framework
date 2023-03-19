@@ -4,8 +4,6 @@ import com.think.common.util.L;
 import com.think.common.util.security.SHAUtil;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class UserAccountModelTest {
 
     @Test

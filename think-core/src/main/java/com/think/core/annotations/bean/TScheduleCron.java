@@ -2,7 +2,6 @@ package com.think.core.annotations.bean;
 
 
 import com.think.core.annotations.Remark;
-import io.swagger.annotations.ApiModelProperty;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

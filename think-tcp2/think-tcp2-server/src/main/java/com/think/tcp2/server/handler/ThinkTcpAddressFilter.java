@@ -3,14 +3,12 @@ package com.think.tcp2.server.handler;
 import com.think.tcp2.common.model.message.WelMessage;
 import com.think.tcp2.server.ClientManager;
 import com.think.tcp2.server.TcpClient;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ipfilter.AbstractRemoteAddressFilter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

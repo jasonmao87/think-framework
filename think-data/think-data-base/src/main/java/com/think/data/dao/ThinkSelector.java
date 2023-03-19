@@ -1,9 +1,8 @@
 package com.think.data.dao;
 
+import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
-import com.think.common.data.mysql.ThinkSqlFilter;
-import com.think.data.exception.ThinkDataException;
 import com.think.exception.ThinkRuntimeException;
 
 import java.io.Serializable;

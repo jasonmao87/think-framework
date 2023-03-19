@@ -5,8 +5,6 @@ import com.think.common.util.security.SHAUtil;
 import com.think.core.security.token.ThinkSecurityToken;
 import com.think.exception.ThinkException;
 
-import java.util.List;
-
 /**
  * 单例
  * 框架核心 安全签名 器

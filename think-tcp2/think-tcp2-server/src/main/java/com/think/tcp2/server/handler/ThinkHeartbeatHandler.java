@@ -1,8 +1,8 @@
 package com.think.tcp2.server.handler;
 
-import com.think.tcp2.server.TcpClient;
 import com.think.tcp2.common.model.Tcp2Heartbeat;
 import com.think.tcp2.server.ClientManager;
+import com.think.tcp2.server.TcpClient;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;

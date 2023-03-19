@@ -1,19 +1,15 @@
 package com.think.data.model;
 
-import com.think.common.util.ByteUtil;
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.core.annotations.bean.ThinkColumn;
-import com.think.core.bean.util.ClassUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j

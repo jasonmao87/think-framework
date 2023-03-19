@@ -11,7 +11,6 @@ import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.exception.ThinkDataVerificationException;
 import com.think.exception.ThinkRuntimeException;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;

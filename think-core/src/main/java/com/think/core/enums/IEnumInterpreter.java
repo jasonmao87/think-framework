@@ -1,9 +1,5 @@
 package com.think.core.enums;
 
-import com.think.core.bean.TEnumExplain;
-
-import java.util.Map;
-
 /**
  * @author : JasonMao
  * @version : 1.0

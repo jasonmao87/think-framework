@@ -1,16 +1,11 @@
 package com.think.common.util;
 
-import com.think.core.executor.ThinkAsyncExecutor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
-
-import static io.protostuff.CollectionSchema.MessageFactories.PriorityBlockingQueue;
 
 /**
  * @author : JasonMao

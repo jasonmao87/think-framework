@@ -1,6 +1,5 @@
 package com.think.data.test;
 
-import com.mysql.cj.jdbc.Driver;
 import com.think.common.util.security.DesensitizationUtil;
 
 import java.sql.*;

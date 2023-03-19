@@ -2,7 +2,6 @@ package com.think.data.provider;
 
 import com.think.common.data.mysql.IThinkResultFilter;
 import com.think.common.util.ThinkCollectionUtil;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.List;

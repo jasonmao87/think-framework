@@ -3,13 +3,11 @@ package com.think.tcp2.common.model;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.core.bean.util.ObjectUtil;
 import com.think.exception.ThinkException;
-import com.think.structure.ByteBean;
 import com.think.tcp2.core.listener.PayloadListenerManager;
 import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 
 /**

@@ -6,13 +6,11 @@ import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.util.DateUtil;
 import com.think.common.util.IdUtil;
 import com.think.common.util.StringUtil;
-import com.think.common.util.ThinkCollectionUtil;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean._Entity;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

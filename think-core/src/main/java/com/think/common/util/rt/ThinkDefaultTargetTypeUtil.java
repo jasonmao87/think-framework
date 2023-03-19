@@ -1,10 +1,7 @@
 package com.think.common.util.rt;
 
-import com.think.core.bean.SimplePrimaryEntity;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 
 public class ThinkDefaultTargetTypeUtil<T> {
     private Type type;

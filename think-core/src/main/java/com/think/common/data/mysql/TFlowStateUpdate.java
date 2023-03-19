@@ -8,7 +8,6 @@ import com.think.core.bean.TFlowBuilder;
 import com.think.core.bean.TFlowState;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
 
 /**

@@ -2,11 +2,9 @@ package com.think.web.core;
 
 import com.think.common.util.rt.ThinkMachineUtil;
 import com.think.common.util.rt.ThinkRuntimeUtil;
-import com.think.common.util.rt.models.MemeryInfoModel;
 import com.think.common.util.rt.models.RuntimeInfoModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 

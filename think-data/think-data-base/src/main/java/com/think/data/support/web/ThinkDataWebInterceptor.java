@@ -1,7 +1,6 @@
 package com.think.data.support.web;
 
 import com.think.data.Manager;
-import com.think.data.ThinkDataRuntime;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 

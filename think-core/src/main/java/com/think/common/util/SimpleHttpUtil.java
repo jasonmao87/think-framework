@@ -1,11 +1,10 @@
 package com.think.common.util;
 
+import okhttp3.*;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import com.think.core.annotations.Remark;
-import okhttp3.*;
 
 /**
  * 最简单的httpUtil类

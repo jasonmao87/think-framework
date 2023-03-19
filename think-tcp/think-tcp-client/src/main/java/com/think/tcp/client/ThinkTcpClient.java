@@ -1,6 +1,5 @@
 package com.think.tcp.client;
 
-import com.think.tcp.THeartBeat;
 import com.think.tcp.TMessage;
 import com.think.tcp.TcpTransModel;
 import com.think.tcp.client.handler.ThinkTcpClientHandler;

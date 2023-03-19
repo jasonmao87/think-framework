@@ -1,7 +1,6 @@
 package com.think.tcp2.core.listener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**

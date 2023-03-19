@@ -2,9 +2,9 @@ package com.think.tcp.client.handler;
 
 import com.think.tcp.THeartBeat;
 import com.think.tcp.TcpTransModel;
+import com.think.tcp.client.IThinkTcpClientIdleListener;
 import com.think.tcp.client.TcpMessageTransmissionUtil;
 import com.think.tcp.client.ThinkTcpClient;
-import com.think.tcp.client.IThinkTcpClientIdleListener;
 import com.think.tcp.consumer.IMessageConsumer;
 import com.think.tcp.listener.ITcpListener;
 import io.netty.channel.ChannelHandlerContext;

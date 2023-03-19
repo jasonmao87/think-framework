@@ -2,10 +2,8 @@ package com.think.data.provider;
 
 import com.think.common.util.StringUtil;
 import com.think.core.bean._Entity;
-import com.think.core.bean.util.ObjectUtil;
 import com.think.data.Manager;
 import com.think.data.extra.StructAlterSqlLogger;
-import com.think.data.model.DataModelBuilder;
 import com.think.data.model.MysqlStructColumnBean;
 import com.think.data.model.ThinkColumnModel;
 import com.think.data.model.ThinkTableModel;

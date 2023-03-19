@@ -1,7 +1,5 @@
 package com.think.core.executor.reducer;
 
-import com.think.core.executor.reduce.ILocalReduceTask;
-
 /**
  * @author : JasonMao
  * @version : 1.0

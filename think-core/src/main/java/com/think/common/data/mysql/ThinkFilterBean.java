@@ -8,7 +8,8 @@ import com.think.common.util.IdUtil;
 import com.think.core.annotations.Remark;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  * 参数条件对象类

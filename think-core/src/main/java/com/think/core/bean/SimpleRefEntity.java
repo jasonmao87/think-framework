@@ -3,7 +3,6 @@ package com.think.core.bean;
 
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
-import com.think.common.result.ThinkResult;
 import com.think.common.util.DateUtil;
 import com.think.common.util.IdUtil;
 import com.think.core.annotations.Remark;

@@ -1,7 +1,6 @@
 package com.think.core.data.cache;
 
 import com.think.common.util.IdUtil;
-import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.TimeUtil;
 import com.think.core.annotations.Remark;

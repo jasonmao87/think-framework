@@ -1,6 +1,5 @@
 package com.think.core.bean;
 
-import com.think.common.data.mysql.ThinkFilterBean;
 import com.think.common.util.StringUtil;
 
 import java.util.*;
