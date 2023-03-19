@@ -1,6 +1,5 @@
 package com.think.structure;
 
-import org.omg.CORBA.Object;
 
 import java.util.List;
 
