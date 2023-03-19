@@ -1,13 +1,8 @@
 package com.think.common.util;
 
-import com.think.common.result.ThinkResult;
-import com.think.common.util.security.Base64Util;
 import com.think.common.util.security.MD5Util;
 import com.think.common.util.security.SHAUtil;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public class PasswordUtil {

@@ -1,7 +1,7 @@
 package com.think.data.filter;
 
-import com.think.core.bean._Entity;
 import com.think.common.data.mysql.ThinkUpdateMapper;
+import com.think.core.bean._Entity;
 
 public interface ThinkDataFilter {
 

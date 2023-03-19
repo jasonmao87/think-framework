@@ -2,7 +2,6 @@ package com.think.core.executor.schedule;
 
 import com.think.core.bean.schedules.ThinkScheduleCronConfig;
 import com.think.core.executor.ThinkAsyncTask;
-import com.think.core.security.ThinkToken;
 import com.think.core.security.token.ThinkSecurityToken;
 import com.think.exception.ThinkRuntimeException;
 

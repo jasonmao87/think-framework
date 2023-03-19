@@ -6,7 +6,6 @@ import com.think.common.util.DateUtil;
 import com.think.common.util.IdUtil;
 import com.think.core.annotations.Remark;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

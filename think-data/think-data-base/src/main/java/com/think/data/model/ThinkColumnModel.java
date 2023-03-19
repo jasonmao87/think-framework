@@ -1,7 +1,6 @@
 package com.think.data.model;
 
 import com.think.core.annotations.Remark;
-import com.think.data.Manager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;

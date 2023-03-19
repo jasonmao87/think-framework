@@ -2,7 +2,6 @@ package com.think.common.util.security;
 
 import com.think.common.util.StringUtil;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
 public class Base64Util {

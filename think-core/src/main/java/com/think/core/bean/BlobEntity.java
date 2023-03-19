@@ -1,10 +1,6 @@
 package com.think.core.bean;
 
-import com.think.common.data.mysql.ThinkSqlFilter;
-import com.think.common.data.mysql.ThinkUpdateMapper;
-
 import java.io.Serializable;
-import java.sql.Blob;
 import java.util.Date;
 
 /**

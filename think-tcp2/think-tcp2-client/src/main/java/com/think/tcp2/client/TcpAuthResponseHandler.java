@@ -2,7 +2,6 @@ package com.think.tcp2.client;
 
 import com.think.common.util.StringUtil;
 import com.think.tcp2.common.model.message.AuthResponseMessage;
-import com.think.tcp2.common.model.message.WelMessage;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;

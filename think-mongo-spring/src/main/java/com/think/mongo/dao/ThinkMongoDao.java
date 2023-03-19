@@ -11,7 +11,6 @@ import com.think.core.annotations.Remark;
 import com.think.core.bean.SimpleMongoEntity;
 import com.think.core.bean.util.ObjectUtil;
 import com.think.exception.ThinkException;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -22,7 +21,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
-import java.net.HttpRetryException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -3,8 +3,6 @@ package com.think.common.util.security;
 import com.think.common.util.L;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ThinkHashUtilTest {
 
     @Test

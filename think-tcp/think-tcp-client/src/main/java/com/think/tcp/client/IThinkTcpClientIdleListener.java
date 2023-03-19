@@ -1,6 +1,6 @@
 package com.think.tcp.client;
 
-import  io.netty.channel.Channel;
+import io.netty.channel.Channel;
 
 public interface IThinkTcpClientIdleListener {
 

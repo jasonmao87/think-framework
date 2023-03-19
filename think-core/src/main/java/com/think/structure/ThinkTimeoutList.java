@@ -2,7 +2,7 @@ package com.think.structure;
 
 import com.think.common.util.ThinkMilliSecond;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * @author : JasonMao

@@ -1,7 +1,6 @@
 package com.think.tcp.listener;
 
 import com.think.tcp.TMessage;
-import com.think.tcp.TcpTransModel;
 
 public interface ITcpListener {
 

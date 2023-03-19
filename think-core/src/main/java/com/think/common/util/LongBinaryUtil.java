@@ -1,7 +1,6 @@
 package com.think.common.util;
 
 
-import com.think.common.util.security.Base64Util;
 import com.think.core.annotations.Remark;
 
 import java.util.ArrayList;

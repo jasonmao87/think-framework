@@ -1,12 +1,6 @@
 package com.think.common.util.security;
 
-import com.github.stuxuhai.jpinyin.PinyinFormat;
-import com.github.stuxuhai.jpinyin.PinyinHelper;
 import com.think.common.util.StringUtil;
-import sun.security.provider.MD4;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * @author : JasonMao

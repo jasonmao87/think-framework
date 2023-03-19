@@ -1,17 +1,5 @@
 package com.think.mongo;
 
-import com.think.common.util.IdUtil;
-import com.think.common.util.StringUtil;
-import com.think.mongo.dao.ThinkMongoDao;
-import com.think.structure.ThinkFastList;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Deprecated
 //@RestController
 public class WWWWW {

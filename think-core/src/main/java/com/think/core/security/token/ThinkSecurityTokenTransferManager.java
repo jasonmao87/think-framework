@@ -2,15 +2,14 @@ package com.think.core.security.token;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.think.common.util.FastJsonUtil;
 import com.think.common.util.StringUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.security.token.filter.IThinkSecurityAsyncTokenFilter;
-import com.think.core.threadLocal.ThinkThreadLocal;
 import com.think.core.threadLocal.ThreadLocalBean;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 /**

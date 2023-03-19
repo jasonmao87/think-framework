@@ -5,7 +5,6 @@ import com.think.common.util.DateUtil;
 import com.think.common.util.FileUtil;
 import com.think.core.bean.TbBinaryEntity;
 import com.think.core.bean.util.ObjectUtil;
-import com.think.core.executor.ThinkThreadExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

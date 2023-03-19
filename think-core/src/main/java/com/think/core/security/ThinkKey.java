@@ -1,6 +1,5 @@
 package com.think.core.security;
 
-import com.think.common.util.DateUtil;
 import com.think.common.util.ThinkMilliSecond;
 
 public class ThinkKey {

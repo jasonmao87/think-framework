@@ -1,10 +1,7 @@
 package com.think.common.util;
 
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 public class ThinkConsoleLogger {
     private static boolean enable  = true;

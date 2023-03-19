@@ -1,8 +1,0 @@
-com\think\common\data\mysql\ThinkSqlFilterTest.class
-com\think\core\bean\util\ObjectUtilTest.class
-com\think\core\bean\schedules\ThinkScheduleBuilderTest.class
-com\think\core\bean\util\TbX_FOR_TEST.class
-com\think\data\provider\ThinkSqlFilterTest.class
-com\think\common\util\security\ThinkHashUtilTest.class
-com\think\moudles\auth\UserAccountModelTest.class
-com\think\data\provider\TestTableBean.class

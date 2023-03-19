@@ -5,7 +5,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.think.common.util.FastJsonUtil;
 import com.think.common.util.StringUtil;
 import com.think.common.util.ThinkMilliSecond;
-import com.think.moudles.auth.RoleModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;

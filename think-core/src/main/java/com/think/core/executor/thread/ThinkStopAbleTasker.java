@@ -1,8 +1,6 @@
 package com.think.core.executor.thread;
 
-import com.think.core.executor.ThinkAsyncExecutor;
 import com.think.core.executor.ThinkAsyncTask;
-import com.think.core.executor.ThinkThreadExecutor;
 
 /**
  * @author : JasonMao

@@ -1,14 +1,9 @@
 package com.think.data.extra;
 
-import com.think.common.util.IdUtil;
-import com.think.data.bean.api.ThinkBeanApi;
-import com.think.data.bean.api.ThinkBeanApiFactory;
 import com.think.data.dao.ThinkDao;
 import com.think.data.model.TbStructAlterSqlLog;
 import com.think.data.provider.ThinkDaoImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 
 /**
  * @author : JasonMao

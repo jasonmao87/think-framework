@@ -4,7 +4,6 @@ import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.TimeUtil;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author : JasonMao

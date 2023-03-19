@@ -1,12 +1,9 @@
 package com.think.data.provider;
 
-import com.think.common.data.TbA;
-import com.think.common.data.mysql.ThinkFilterBean;
-import com.think.common.data.ThinkFilterOp;
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
-import com.think.common.result.ThinkResult;
-import com.think.common.util.*;
+import com.think.common.util.IdUtil;
+import com.think.common.util.StringUtil;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean._Entity;
@@ -18,12 +15,8 @@ import com.think.data.model.DataModelBuilder;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j

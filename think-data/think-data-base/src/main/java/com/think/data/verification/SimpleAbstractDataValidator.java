@@ -1,10 +1,7 @@
 package com.think.data.verification;
 
-import com.think.core.bean._Entity;
-import com.think.core.bean.util.ClassUtil;
 import com.think.data.Manager;
 import com.think.data.model.ThinkTableModel;
-import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;

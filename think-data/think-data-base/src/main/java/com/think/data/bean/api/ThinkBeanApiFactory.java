@@ -1,6 +1,5 @@
 package com.think.data.bean.api;
 
-import com.think.core.annotations.Remark;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean.SimpleRefEntity;
 

@@ -1,18 +1,12 @@
 package com.think.core.bean.schedules;
 
-import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.common.util.TimeUtil;
 import com.think.core.executor.ThinkThreadExecutor;
-import com.think.exception.ThinkNotSupportException;
 import org.junit.Test;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.*;
 
 public class ThinkScheduleBuilderTest {
 

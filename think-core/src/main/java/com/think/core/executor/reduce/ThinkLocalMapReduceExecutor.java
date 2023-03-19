@@ -2,10 +2,7 @@ package com.think.core.executor.reduce;
 
 import com.think.core.executor.ThinkAsyncExecutor;
 
-import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 

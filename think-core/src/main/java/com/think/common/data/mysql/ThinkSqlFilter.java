@@ -13,7 +13,6 @@ import com.think.core.bean.TFlowState;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.core.enums.TEnableRequired;
-import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;

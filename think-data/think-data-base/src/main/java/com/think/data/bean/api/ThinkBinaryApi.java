@@ -1,6 +1,5 @@
 package com.think.data.bean.api;
 
-import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.result.ThinkResult;
 import com.think.core.bean.TbBinaryEntity;
 

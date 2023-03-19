@@ -1,9 +1,6 @@
 package com.think.common.data.mysql;
 
 import com.think.common.data.TbA;
-import com.think.core.bean.SimplePrimaryEntity;
-
-import static org.junit.Assert.*;
 
 public class ThinkSqlFilterTest {
 

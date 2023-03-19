@@ -1,7 +1,5 @@
 package com.think.core.executor.reduce;
 
-import org.apache.poi.ss.formula.functions.T;
-
 /**
  * @author : JasonMao
  * @version : 1.0

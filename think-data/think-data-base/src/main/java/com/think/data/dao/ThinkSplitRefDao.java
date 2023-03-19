@@ -1,12 +1,10 @@
 package com.think.data.dao;
 
+import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimpleRefEntity;
-import com.think.common.data.mysql.ThinkSqlFilter;
-import com.think.data.provider.ThinkExecuteQuery;
-import com.think.data.provider.ThinkUpdateQueryBuilder;
 
 import java.util.List;
 

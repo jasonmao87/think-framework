@@ -9,7 +9,10 @@ import com.think.core.bean.util.ClassUtil;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ThinkMongoModel implements Serializable {
     private static final long serialVersionUID = 8594180087630745151L;

@@ -1,9 +1,6 @@
 package com.think.tcp.client;
 
 import com.think.common.util.IdUtil;
-import com.think.tcp.TMessage;
-import com.think.tcp.consumer.IMessageConsumer;
-import org.junit.jupiter.api.Test;
 
 class ThinkTcpClientTest {
     static {
