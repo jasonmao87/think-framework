@@ -1,9 +1,11 @@
 package com.think.core.bean.schedules;
 
 import com.think.common.util.DateUtil;
+import com.think.common.util.FastJsonUtil;
 import com.think.common.util.RandomUtil;
 import com.think.common.util.TVerification;
 import com.think.core.annotations.Remark;
+import com.think.core.executor.ThinkThreadExecutor;
 import com.think.exception.ThinkNotSupportException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,12 +57,6 @@ public class ThinkScheduleBuilder {
      * @return
      */
     public static ThinkScheduleCronConfig buildDelayConfig(int delayTime , TimeUnit timeUnit) throws ThinkNotSupportException {
-//        if(timeUnit == TimeUnit.MICROSECONDS || timeUnit ==TimeUnit.NANOSECONDS || timeUnit == TimeUnit.MILLISECONDS ){
-//            throw new ThinkNotSupportException("最小时间单位必须为秒");
-//        }
-//        if(timeUnit == TimeUnit.DAYS){
-//            throw new ThinkNotSupportException("最大时间单位不能大于小时");
-//        }
         final long maxSecond = 72L * 60L * 60L;
         long delaySecond = timeUnit.toSeconds(delayTime);
         if(delaySecond > maxSecond){
@@ -72,7 +68,9 @@ public class ThinkScheduleBuilder {
         final ThinkScheduleBuilder builder = builderWithMaxTrigger(1);
         delaySecond += 1L ;
         Date now = DateUtil.now();
-        final Date runDate = DateUtil.computeAddSeconds(now, Long.valueOf(delaySecond).intValue());
+        Date runDate = new Date(now.getTime() + delayTime * 1000);
+                //DateUtil.computeAddSeconds(now, Long.valueOf(delaySecond).intValue());
+
         builder.configMonth( String.valueOf(DateUtil.month(runDate)))
                 .configDate( String.valueOf(DateUtil.date(runDate)))
                 .configHour(String.valueOf(DateUtil.hourOfTime(runDate)))
@@ -144,9 +142,11 @@ public class ThinkScheduleBuilder {
         try{
             boolean b = this.config.enable(maxTrigger);
             if(!b) {
+
                 log.error("无法获取到合法的配置");
                 throw new RuntimeException("无法获取到合法的配置");
             }
+            log.error("{}", config.toSerializedString());
         }catch (Exception e){
             log.error("无法获取到合法的配置",e);
             throw new RuntimeException("无法获取到合法的配置",e);
@@ -155,5 +155,39 @@ public class ThinkScheduleBuilder {
     }
 
 
+    public static void main(String[] args) {
+        try {
+            while (true) {
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+                ThinkThreadExecutor.runDelay(() -> {
+                }, 1);
+
+
+
+                Thread.sleep(1000);
+            }
+        }catch (Exception e){}
+    }
 
 }

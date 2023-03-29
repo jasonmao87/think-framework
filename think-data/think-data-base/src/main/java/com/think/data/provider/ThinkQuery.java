@@ -142,7 +142,11 @@ public class ThinkQuery {
                 }
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("k", columnModal.getKey());
+                // 匹配用 key
                 map.put("fk", columnModal.getFastMatchKeyWhileExits());
+                // 排序用key
+                map.put("sortKey",columnModal.getSecondaryFastMatchKeyWhileExits());
+//                map.put("")
                 map.put(columnModal.getFastMatchKeyWhileExits(), columnModal.getKey());
                 this.extendFastMatchKeyList.add(map);
             }
@@ -284,46 +288,6 @@ public class ThinkQuery {
 
 
         }
-
-
-
-//
-//        // 处理 key or 逻辑 ....
-//        Map<String, Serializable> keyOrMap = this.filter.getKeyOrMap();
-//        boolean op_keyOrLike = false;
-//        if(!keyOrMap.isEmpty() && keyOrMap.size()>1) {
-//
-//            if(paramValues.size()>0){
-//                sb.append(" AND ");
-//            }
-//            sb.append(" (");
-//            int index = 0;
-//
-//
-//
-//            for (Map.Entry<String, Serializable> kv : keyOrMap.entrySet()) {
-//
-//                if(index>0){
-//                    sb.append("OR ");
-//                }
-//                if( filter.isKeyOrTypeUsingLike()){
-//                    sb.append(" ").append(kv.getKey()).append(" LIKE ").append("? ");
-//                }else {
-//                    sb.append(" ").append(kv.getKey()).append("=").append("? ");
-//                }
-//                Serializable v = kv.getValue();
-//                try{
-//                    ThinkColumnModel columnModel = Manager.getModelBuilder().get(filter.gettClass()).getKey(kv.getKey());
-//                    if(columnModel.isSensitive()){
-//                        v =DesensitizationUtil.encodeWithIgnore((String) v, '%');
-//                    }
-//                }catch (Exception e){}
-//                paramValues.add(v);
-//
-//                index++;
-//            }
-//            sb.append(") ");
-//        }
 
     }
 
@@ -484,7 +448,9 @@ public class ThinkQuery {
         try {
             ThinkTableModel model = Manager.getModelBuilder().get(filter.gettClass());
             if (model.getKey(sortKey).isFastMatchAble()) {
-                sortKey = model.getKey(sortKey).getFastMatchKeyWhileExits();
+                //sortKey = model.getKey(sortKey).getFastMatchKeyWhileExits();
+                sortKey = model.getKey(sortKey).getSecondaryFastMatchKeyWhileExits();
+
             }
         }catch (Exception e){}
 

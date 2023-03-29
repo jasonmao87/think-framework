@@ -8,6 +8,7 @@ import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
 
@@ -49,6 +50,9 @@ public interface ThinkSplitBeanApi<T extends SimplePrimaryEntity> {
      * @return
      */
     List<T> list(ThinkSqlFilter<T> sqlFilter);
+
+
+    List<Map<String,Object>> mapList(ThinkSqlFilter<T> sqlFilter);
 
 
     <V extends BaseVo<T>> List<V> voList(ThinkSqlFilter<T> sqlFilter, Class<V> vo);

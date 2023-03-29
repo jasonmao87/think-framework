@@ -170,8 +170,9 @@ public class R<T>  implements Serializable {
 
     public static R SUCCESS(Object result){
         if(result instanceof ThinkResult){
-            log.error("SUCCESS 不能使用 ThinkResult 对象作为参数 ");
-            throw new ThinkRuntimeException("错误的调用，R.SUCCESS 不能使用 ThinkResult 作为参数！");
+            return R.RESULT((ThinkResult) result);
+//            log.error("SUCCESS 不能使用 ThinkResult 对象作为参数 ");
+//            throw new ThinkRuntimeException("错误的调用，R.SUCCESS 不能使用 ThinkResult 作为参数！");
         }
 
         R webResult = _init(ResultCode.SUCCESS);

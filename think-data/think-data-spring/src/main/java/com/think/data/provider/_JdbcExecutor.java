@@ -17,6 +17,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public abstract class _JdbcExecutor {
@@ -128,23 +129,12 @@ public abstract class _JdbcExecutor {
                                     "ADD INDEX "+key+"("+key+") ";
                             getJdbcTemplate().update(initSQL);
                         }
-
                         CompletableFuture.runAsync(()->{
                            getJdbcTemplate().update("UPDATE " +tableName +" SET " + key +" = id where " +key + " = '' ");
                         });
-
-
                     }
                      */
-
-
                 }
-
-
-
-
-
-
             }catch (Exception exception){
                 if(log.isErrorEnabled()){
                     log.error("创建数据库表格抛出的异常信息: ",exception);
@@ -229,7 +219,7 @@ public abstract class _JdbcExecutor {
                 rt().get().fireSelect(sql,success,affectedCount,duration,executeQuery.getValues()).throwInfo(throwable);
             }
             if(log.isDebugEnabled()){
-                outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
+                asyncOutputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
                 //log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
             }
         }
@@ -275,7 +265,7 @@ public abstract class _JdbcExecutor {
                 rt().get().fireSelect(sql,success,affectedCount,duration,executeQuery.getValues()).throwInfo(throwable);
             }
             if(log.isDebugEnabled()){
-                outputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
+                asyncOutputSQLInfo(sql,executeQuery.getValues(),success,affectedCount,duration);
                 //log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
             }
         }
@@ -327,7 +317,7 @@ public abstract class _JdbcExecutor {
                 }
             }
             if(log.isDebugEnabled()){
-                outputSQLInfo(sql,executeQuery.getValues(),success,result,duration);
+                asyncOutputSQLInfo(sql,executeQuery.getValues(),success,result,duration);
                 /*
                 log.debug("sql {}\n\t execute state ={} , execute duration :{} ms" ,sql,success,duration);
 
@@ -358,6 +348,8 @@ public abstract class _JdbcExecutor {
     }
 
 
+
+
     /**
      *
      * @param sql           sql
@@ -366,12 +358,22 @@ public abstract class _JdbcExecutor {
      * @param duration      持续时长
      * @param affectedCount 影响行数
      */
-    public static final void outputSQLInfo(String sql , Serializable[] values , boolean successState , int affectedCount,long duration  ) {
+    public static final void asyncOutputSQLInfo( String sql , Serializable[] values , boolean successState , int affectedCount, long duration ) {
+        final long threadId = Thread.currentThread().getId();
+        final String threadName = Thread.currentThread().getName();
+        CompletableFuture.runAsync(()->{
+            outPutSQLInfo(threadName,threadId,sql,values,successState,affectedCount,duration);
+        });
+
+
+
+    }
+
+    private static void outPutSQLInfo(String  threadName ,long threadId ,String sql , Serializable[] values , boolean successState , int affectedCount, long duration){
         if (log.isDebugEnabled() && Manager.sqlPrintAble()) {
             if(Manager.isPrintExecutableSql()){
-                outputExecutableSql(sql,values,successState,affectedCount,duration);
+                outputExecutableSql(threadName,threadId,sql,values,successState,affectedCount,duration);
             }else {
-
                 if (values != null && values.length > 0) {
                     for (Serializable v : values) {
                         String typeValue = "";
@@ -379,7 +381,7 @@ public abstract class _JdbcExecutor {
                             typeValue = v.getClass().getSimpleName() ;// .getTypeName();
                         } catch (Exception e) {
                         }
-                        String tv = v!=null?v.toString():null ;
+                        String tv =  computeParamValue(v) ; //v!=null?v.toString():null ;
                         try {
                             String temp  =sql.replaceFirst("\\?", "[type :: " + typeValue + " ,value :: " + tv + "]");
                             sql = temp;
@@ -389,7 +391,7 @@ public abstract class _JdbcExecutor {
                         sql += "\n\t\t";
                     }
                 }
-                doPrint(sql,successState,affectedCount,duration);
+                doPrint(threadName,threadId,sql,successState,affectedCount,duration);
             }
 
         }
@@ -397,20 +399,41 @@ public abstract class _JdbcExecutor {
 
 
 
-    public static final void outputExecutableSql(String sql , Serializable[] values , boolean successState,int affectedCount, long duration){
-        if(values !=null && values.length > 0){
-            for(Serializable v : values){
-                sql = sql.replaceFirst("\\?",computeParamValue(v));
+    public static final void outputExecutableSql(String  threadName ,long threadId ,
+                                                 String sql , Serializable[] values ,
+                                                 boolean successState,int affectedCount, long duration){
+        StringBuilder sqlBuilder = new StringBuilder();
+        int index = 0 ;
+        for (char c : sql.toCharArray()) {
+            if(c == '?'){
+                if(index < values.length) {
+                    String tempValue = computeParamValue(values[index]);
+                    sqlBuilder.append(tempValue);
+                    index++;
+                }else{
+                    sqlBuilder.append("[ERROR:OUT OF VALUES INDEX ]");
+                }
+
+            }else {
+                sqlBuilder.append(c);
             }
         }
-        doPrint(sql,successState,affectedCount,duration);
+//
+//
+//        if(values !=null && values.length > 0){
+//            for(Serializable v : values){
+//                sql = sql.replaceFirst("\\?",computeParamValue(v));
+//            }
+//        }
+        doPrint(threadName,threadId,sqlBuilder.toString(),successState,affectedCount,duration);
 
     }
 
-    public static final void doPrint(String sql ,  boolean successState,int affectedCount, long duration){
+    public static final void doPrint(String  threadName ,long threadId ,String sql ,  boolean successState,int affectedCount, long duration){
         if (log.isDebugEnabled()) {
             if(reportSqlTemplate == null) {
-                StringBuilder reportForPrint = new StringBuilder("")
+                StringBuilder reportForPrint = new StringBuilder("TARGET THREAD INFO : ")
+                        .append("THREAD ID = ").append(threadId).append(" THREAD NAME = ").append(threadName).append("\n")
                         .append("EXECUTED SQL :\n\t\t{}\n").append("\n")    // param:  sql
                         .append("EXECUTED RESULT REPORT >> STATE:{}  ROW AFFECTED :{} DURATION（毫秒）:{}\n") ;
                 reportSqlTemplate = reportForPrint.toString().intern();
@@ -425,6 +448,9 @@ public abstract class _JdbcExecutor {
 
 
     public static final String computeParamValue(Serializable v){
+        if(v == null) {
+            return  "null";
+        }
         if(v instanceof Boolean ){
             return ((Boolean)v).booleanValue()?"1":"0";
         }
@@ -435,10 +461,22 @@ public abstract class _JdbcExecutor {
             StringBuilder vb = new StringBuilder("'").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format( (Date) v))
                     .append("'");
             return vb.toString() ;
-
+        }
+        if(v instanceof Number){
+            return v.toString();
         }
         return v +"";
     }
 
+    public static void main(String[] args) {
+        String s = "\tSELECT COUNT(*) as COUNT_RESULT FROM tb_task_user_todo_index_split_2021  WHERE\n" +
+                "\t\t\t  id  > ?  AND  deptId = ?  AND  serviceModuleItemId = ?  AND  customer";
+        for (char c : s.toCharArray()) {
+            if (c == '?') {
+                System.out.println("is wenhao ");
+            }
+        }
+
+    }
 
 }

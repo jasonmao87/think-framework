@@ -99,9 +99,8 @@ public class ThinkSecurityTokenTransferManager {
      * @param usingTokenOnlyTransferSessionData
      */
     public static final void setThreadLocal(ThinkSecurityToken token, boolean usingTokenOnlyTransferSessionData){
-
-        final String transferJson = usingTokenOnlyTransferSessionData?buildSimpleTransferStringByToken(token):buildFullTransferStringByToken(token);
-        log.info("{} --本地线程注入 token 信息 >>>>>{}" ,tinfo() ,transferJson);
+        String transferJson = usingTokenOnlyTransferSessionData?buildSimpleTransferStringByToken(token):buildFullTransferStringByToken(token);
+        //log.info("{} --本地线程注入 token 信息 >>>>>{}" ,tinfo() ,transferJson);
         tokenThreadLocal.set(new ThreadLocalBean(transferJson));
 
 //        ThinkThreadLocal.set(transferJson);

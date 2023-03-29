@@ -66,6 +66,7 @@ public class AccessKey implements Serializable {
             ak.setUaHashCode(uaHashCode);
             return ak;
         } catch (Exception e) {
+
             log.error("接收到的ACCESS KEY信息\n\t ACCESS KEY = {} ,\n\tUser-Agent = {} ,\n\t UA-HASH = {}" , accessKey ,ua, uaHashCode);
             //throw new RuntimeException("[此异常输出不会中断程序]非法的ACCESS KEY ");
         }

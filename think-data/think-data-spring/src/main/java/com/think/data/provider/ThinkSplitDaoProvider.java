@@ -159,7 +159,12 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         return result;
     }
 
-    public List<Map<String,Object>> _autoMapList(ThinkSqlFilter<T> sqlFilter ,String... keys) {
+    @Override
+    public List<Map<String, Object>> autoMapList(ThinkSqlFilter<T> sqlFilter) {
+        return this._autoMapList(sqlFilter,"*");
+    }
+
+    public List<Map<String,Object>> _autoMapList(ThinkSqlFilter<T> sqlFilter , String... keys) {
         int[] possibleSplits = _DaoSupport.possibleSplitYears(sqlFilter ,this.showSplitTables());
         if (possibleSplits.length >0) {
             int limit = sqlFilter.getLimit();

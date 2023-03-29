@@ -7,6 +7,7 @@ import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ThinkSplitPrimaryDao<T extends SimplePrimaryEntity> {
 
@@ -38,6 +39,8 @@ public interface ThinkSplitPrimaryDao<T extends SimplePrimaryEntity> {
      * @return
      */
     List<T> autoList(ThinkSqlFilter<T> sqlFilter );
+
+    List<Map<String,Object>> autoMapList(ThinkSqlFilter<T> sqlFilter );
 
     <V extends BaseVo>  List<V> autoVoList(ThinkSqlFilter<T> sqlFilter ,Class<V> voClass);
 

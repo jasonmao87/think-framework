@@ -7,6 +7,7 @@ import com.think.core.annotations.Remark;
 import com.think.core.bean.SimpleRefEntity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Date :2021/8/18
@@ -57,6 +58,8 @@ public interface ThinkSplitRefBeanApi <T extends SimpleRefEntity> {
 
 
     List<T> list(ThinkSqlFilter<T> sqlFilter , long rootPrimaryId);
+
+    List<Map<String,Object>> mapList(ThinkSqlFilter<T> sqlFilter , long rootPrimaryId);
 
     long count(ThinkSqlFilter<T> sqlFilter ,long rootPrimaryId);
 

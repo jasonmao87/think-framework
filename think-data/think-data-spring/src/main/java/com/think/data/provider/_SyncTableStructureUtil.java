@@ -43,14 +43,20 @@ public class _SyncTableStructureUtil {
                 log.info("需要调整{}的表结构，需要新增{}个字段 ",tableName,newKeys.size());
                 String alterSql = this.alterSql(newKeys, tableName);
                 String reverseSql = this.reverseSql(newKeys,tableName);
-                log.info("即将执行结构调整脚本SQL---->>:  {}" , alterSql );
-                log.info("如果遇到错误需要回滚的SQL-->>:  {}" ,reverseSql);
+                if (log.isDebugEnabled()) {
+                    log.debug("即将执行结构调整脚本SQL---->>:  {}" , alterSql );
+                    log.debug("如果遇到错误需要回滚的SQL-->>:  {}" ,reverseSql);
+                }
                 int updateResult = template.update(alterSql);
                 getAlterLogger(template).afterAlter(tClass,tableName,alterSql,reverseSql);
-
-                log.info("执行结果 ： the number of rows affected = {}" ,updateResult);
+                if(log.isDebugEnabled()){
+                    log.debug("执行结果 ： the number of rows affected = {}" ,updateResult);
+                }
             }else{
-                log.info("无需调整{}的表结构",tableName);
+                if (log.isDebugEnabled()) {
+                    log.debug("无需调整{}的表结构",tableName);
+
+                }
             }
         }catch (Exception e){
             e.printStackTrace();

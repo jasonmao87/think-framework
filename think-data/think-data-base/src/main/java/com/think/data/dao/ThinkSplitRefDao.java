@@ -7,6 +7,7 @@ import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimpleRefEntity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 专用于  时间分割分区业务子表/从表 的Dao ，提供受限制的 功能
@@ -37,6 +38,10 @@ public interface ThinkSplitRefDao<T extends SimpleRefEntity> {
     List<T> list(long rootPrimaryId,int limit );
 
     List<T> list(ThinkSqlFilter<T> sqlFilter ,long rootPrimaryId);
+
+    List<Map<String,Object>> mapList(ThinkSqlFilter<T> sqlFilter , long rootPrimaryId);
+
+
 
     ThinkResult<T> insert(T t);
 

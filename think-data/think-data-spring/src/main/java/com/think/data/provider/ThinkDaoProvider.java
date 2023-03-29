@@ -112,7 +112,7 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
              Long[] idArray = _DaoSupport.getIdArray(list);
              if (idArray.length > 0) {
                  ThinkSqlFilter<T> checkIdSqlFilter = ThinkSqlFilter.build(targetClass, -1).in("id", idArray);
-                 List<Map<String, Object>> findExistIdList = this.list(checkIdSqlFilter, "id");
+                 List<Map<String, Object>> findExistIdList = this.mapList(checkIdSqlFilter, "id");
                  if (findExistIdList.size() > 0) {
                      StringBuilder idErrorInfo = new StringBuilder("以下id可能存在冲突：");
                      int i = 0;
@@ -389,7 +389,7 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
 
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter) {
-        List<Map<String, Object>> list = this.list(sqlFilter, "*");
+        List<Map<String, Object>> list = this.mapList(sqlFilter, "*");
         List<T> resultList = new ArrayList<>(list.size());
         for(Map<String, Object> map : list){
             T t= (T) ObjectUtil.mapToBean(map,targetClass);
@@ -400,7 +400,7 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
 
     @Override
     public <V extends BaseVo<T>> List<V> list(ThinkSqlFilter<T> sqlFilter, Class<V> voClass) {
-        List<Map<String, Object>> list = this.list(sqlFilter,_DaoSupport.voKeys(targetClass,voClass));
+        List<Map<String, Object>> list = this.mapList(sqlFilter,_DaoSupport.voKeys(targetClass,voClass));
         List<V> resultList = new ArrayList<>(list.size());
         for(Map<String, Object> map : list){
             V v= (V) ObjectUtil.mapToBean(map,voClass);
@@ -410,14 +410,20 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
     }
 
     @Override
-    public List<Map<String, Object>> list(ThinkSqlFilter<T> sqlFilter, String... keys) {
+    public List<Map<String, Object>> mapList(ThinkSqlFilter<T> sqlFilter, String... keys) {
         if(sqlFilter.mayBeEmptyResult()){
             return new ArrayList<>();
         }
-
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.selectForKeys(targetClass,keys) ;
         return executeSelectList(executeQuery,finalTableName());
+    }
+
+    @Override
+    @Deprecated
+    public List<Map<String, Object>> list(ThinkSqlFilter<T> sqlFilter, String... keys) {
+        return this.mapList(sqlFilter,keys);
+
     }
 
     @Override

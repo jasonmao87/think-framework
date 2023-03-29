@@ -9,6 +9,7 @@ import com.think.data.dao.ThinkSplitRefDao;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Date :2021/8/18
@@ -80,6 +81,11 @@ public class ThinkSplitRefBeanApiImpl<T extends SimpleRefEntity>  implements Thi
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter, long rootPrimaryId) {
         return dao.list(sqlFilter,rootPrimaryId);
+    }
+
+    @Override
+    public List<Map<String, Object>> mapList(ThinkSqlFilter<T> sqlFilter, long rootPrimaryId) {
+        return dao.mapList(sqlFilter,rootPrimaryId);
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.think.core.bean.SimplePrimaryEntity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
 
@@ -62,6 +63,8 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
     ThinkResult<Integer> update(ThinkUpdateMapper<T> updateMapper);
 
     List<T> list(ThinkSqlFilter<T> sqlFilter);
+
+    List<Map<String,Object>> mapList(ThinkSqlFilter<T> sqlFilter);
 
     <V extends BaseVo<T>> List<V> list(ThinkSqlFilter<T> sqlFilter, Class<V> vo);
 

@@ -111,6 +111,11 @@ public class ThinkSplitBeanApiImpl<T extends SimplePrimaryEntity> implements Thi
     }
 
     @Override
+    public List<Map<String, Object>> mapList(ThinkSqlFilter<T> sqlFilter) {
+        return this.dao.autoMapList(sqlFilter);
+    }
+
+    @Override
     public <V extends BaseVo<T>> List<V> voList(ThinkSqlFilter<T> sqlFilter, Class<V> vo) {
         return dao.autoVoList(sqlFilter,vo);
     }

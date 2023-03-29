@@ -65,6 +65,12 @@ public class ThinkUpdateMapper<T extends _Entity> {
         }
     }
 
+    @Remark("检查key 是不是已经被修改了")
+    public boolean isKeyValueChanged(String key){
+        return this.keySet.contains(key) ;
+    }
+
+
     public ThinkSqlFilter<T> sqlFilter(){
         if(this.filter == null){
             filter = ThinkSqlFilter.build(targetClass,-1);

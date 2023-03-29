@@ -144,6 +144,11 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
     }
 
     @Override
+    public List<Map<String,Object>> mapList(ThinkSqlFilter<T> sqlFilter) {
+        return dao.mapList(sqlFilter,"*");
+    }
+
+    @Override
     public <V extends BaseVo<T>> List<V> list(ThinkSqlFilter<T> sqlFilter, Class<V> vo) {
         return dao.list(sqlFilter,vo);
     }

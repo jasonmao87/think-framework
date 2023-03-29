@@ -205,6 +205,7 @@ public class ThinkThreadExecutor {
         if (log.isDebugEnabled()) {
             log.debug("添加延迟执行任务，将在{}秒后执行" ,second);
         }
+
         ThinkScheduleCronConfig config = ThinkScheduleBuilder.buildDelayConfig(second, TimeUnit.SECONDS);
         startScheduledTask(task,config);
     }

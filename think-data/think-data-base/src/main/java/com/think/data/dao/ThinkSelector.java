@@ -32,7 +32,11 @@ public interface ThinkSelector<T extends SimplePrimaryEntity> {
 
     <V extends BaseVo<T>>List<V>  list(ThinkSqlFilter<T> filter, Class<V> voClass);
 
+    @Deprecated
     List<Map<String,Object>> list(ThinkSqlFilter<T> filter, String... keys);
+
+    List<Map<String,Object>> mapList(ThinkSqlFilter<T> sqlFilter, String... keys);
+
 
     long count(ThinkSqlFilter sqlFilter);
 

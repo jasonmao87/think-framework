@@ -28,7 +28,7 @@ public class ThinkMiddleState {
     public ThinkMiddleState() {}
 
     public ThinkMiddleState success(){
-        return this.success(null);
+        return this.success("");
     }
 
     public synchronized ThinkMiddleState success(String message){

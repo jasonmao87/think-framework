@@ -134,16 +134,22 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter, long rootPrimaryId) {
-        sqlFilter.eq("rootPrimaryId" ,rootPrimaryId);
-        ThinkQuery query = ThinkQuery.build(sqlFilter);
-        int splitYear = _DaoSupport.computeSpiltYearById(rootPrimaryId);
-        ThinkExecuteQuery executeQuery = query.selectFullKeys(targetClass);
-        List<Map<String,Object>> list = executeSelectList(executeQuery,finalTableName(splitYear));
+        List<Map<String, Object>> list = this.mapList(sqlFilter,rootPrimaryId);
         List<T> result = new ArrayList<T>();
         for(Map<String,Object> map : list){
             result.add((T) ObjectUtil.mapToBean(map,targetClass));
         }
         return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> mapList(ThinkSqlFilter<T> sqlFilter, long rootPrimaryId) {
+        sqlFilter.eq("rootPrimaryId", rootPrimaryId);
+        ThinkQuery query = ThinkQuery.build(sqlFilter);
+        int splitYear = _DaoSupport.computeSpiltYearById(rootPrimaryId);
+        ThinkExecuteQuery executeQuery = query.selectFullKeys(targetClass);
+        List<Map<String, Object>> list = executeSelectList(executeQuery, finalTableName(splitYear));
+        return list;
     }
 
     @Override
