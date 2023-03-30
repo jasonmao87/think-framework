@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -24,17 +25,18 @@ public class DateUtil extends TimeUtil{
 
 
     public static final String toFmtYMd(Date date){
-        return new SimpleDateFormat(FMT_YMD).format(date);
+        return toFmtString(date, FMT_YMD);
     }
 
     public static final String toFmtYMdHms(Date date){
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+        return toFmtString(date, "yyyy-MM-dd HH:mm:ss");
     }
 
 
 
     public static final String toFmtString(Date date,String fmt){
-        return new SimpleDateFormat(fmt).format(date);
+        return LocalDateTimeUtil.valueOfDate(date)
+                .format(DateTimeFormatter.ofPattern(fmt));
     }
 
     /**
@@ -506,7 +508,10 @@ public class DateUtil extends TimeUtil{
         try{
             return new Date(datetime);
         }catch (Exception e){}
-
+        try{
+            LocalDateTime localDateTime = LocalDateTimeUtil.valueOfString(datetime);
+            return localdatetime2Date(localDateTime);
+        }catch (Exception e){}
         String fmtStr =  datetime.replaceAll("/","-");
         try{
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(fmtStr);
@@ -536,7 +541,7 @@ public class DateUtil extends TimeUtil{
      */
     public static String getWeekZhCN(Date date){
         String[] weeks = { "星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
-         return weeks[getWeek(date)-1];
+        return weeks[getWeek(date)-1];
     }
 
 
