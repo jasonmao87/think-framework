@@ -4,8 +4,10 @@ import com.think.core.annotations.Remark;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 日期工具类
@@ -20,19 +22,6 @@ public class DateUtil extends TimeUtil{
 
     private static final Date zero =new Date(0);
 
-    public static final Calendar getCalendar(){
-        return Calendar.getInstance();
-    }
-    public static final Calendar getCalendar(Long time){
-        Calendar calendar = getCalendar();
-        calendar.setTimeInMillis(time);
-        return calendar;
-    }
-    public static Calendar getCalendar(Date date){
-        Calendar calendar = getCalendar();
-        calendar.setTime(date);
-        return calendar;
-    }
 
     public static final String toFmtYMd(Date date){
         return new SimpleDateFormat(FMT_YMD).format(date);
@@ -54,11 +43,7 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final int year(Date date){
-        Calendar cal = getCalendar();
-        if(date!=null){
-            cal.setTime(date);
-        }
-        return cal.get(Calendar.YEAR);
+        return LocalDateTimeUtil.valueOfDate(date).getYear();
     }
     /**
      * 当前年份
@@ -73,7 +58,6 @@ public class DateUtil extends TimeUtil{
             dateStr = "0" + dateStr;
         }
         return dateStr;
-
     }
 
 
@@ -118,11 +102,7 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final int month(Date date){
-        Calendar cal = getCalendar();
-        if(date!=null){
-            cal.setTime(date);
-        }
-        return cal.get(Calendar.MONTH) + 1;
+       return LocalDateTimeUtil.valueOfDate(date).getMonthValue();
     }
 
     /**
@@ -146,7 +126,7 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final int day(){
-        return getCalendar().get(Calendar.DAY_OF_MONTH);
+        return day(null);
     }
 
 
@@ -171,8 +151,7 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final int date(Date date){
-        Calendar calendar = getCalendar(date);
-        return calendar.get(Calendar.DAY_OF_MONTH);
+        return LocalDateTimeUtil.valueOfDate(date).getDayOfMonth();
     }
 
 
@@ -221,47 +200,6 @@ public class DateUtil extends TimeUtil{
     public static final Date nowByNew(){
         return new Date();
     }
-
-
-//    public static void main(String[] args) {
-//        int max = 99999999;
-//        t1(max);
-//        t2(max);
-//
-//    result:
-//            99999999 of now ----73
-//            99999999 of nowtime  ----274
-
-//        System.exit(-1);
-//    }
-//
-//    static void t1(int max ){
-//        long start = System.currentTimeMillis();
-//        int x.log = 0;
-//        for(int i =0 ; i< max; i++){
-//            Date now = DateUtil.now();
-//            if (now.getTime() >10000) {
-//                x.log ++ ;
-//            }
-//        }
-//        long end = System.currentTimeMillis();
-//        System.out.println( x.log +" of now ----" + (end -start));
-//    }
-//
-//
-//    static void t2(int max ){
-//        long start = System.currentTimeMillis();
-//        int x.log = 0;
-//        for(int i =0 ; i< max; i++){
-//            Date now = DateUtil.nowTime();
-//            if (now.getTime() >10000) {
-//                x.log ++ ;
-//            }
-//        }
-//        long end = System.currentTimeMillis();
-//        System.out.println( x.log +" of nowtime  ----" + (end -start));
-//
-//    }
     /**
      * 通过年月日 解析一个时间
      * @param year
@@ -270,16 +208,14 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date from(int year ,int month ,int date){
-        Calendar calendar = getCalendar();
-        calendar.set(year,month -1 ,date);
-        Date d =  calendar.getTime();
-        return d;
+        return buildNewDate(year,month,date,0,0,0);
+
     }
 
     public static final Date buildNewDate(int year,int month,int date,int hour,int minute,int second){
-        Calendar calendar = getCalendar();
-        calendar.set(year,month-1,date,hour,minute,second);
-        return calendar.getTime();
+        LocalDateTime localDateTime = LocalDateTime.of(year, month, date,hour,minute,second);
+        return LocalDateTimeUtil.toDate(localDateTime);
+
     }
 
     /**
@@ -387,12 +323,11 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date beginOfDate(Date date){
-        Calendar c = getCalendar(date);
-        c.set(Calendar.HOUR_OF_DAY,0);
-        c.set(Calendar.MINUTE,0);
-        c.set(Calendar.SECOND,0);
-        c.set(Calendar.MILLISECOND,0);
-        return c.getTime();
+        LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(date);
+        LocalDateTime of = LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth(),
+                0, 0, 0, 0);
+        return LocalDateTimeUtil.toDate(of);
+
     }
 
     /**
@@ -409,14 +344,10 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date beginOfMonth(Date date){
-        Calendar c = getCalendar(date);
-        c.set(Calendar.DATE,1);
-        c.set(Calendar.HOUR_OF_DAY,0);
-        c.set(Calendar.MINUTE,0);
-        c.set(Calendar.SECOND,0);
-        c.set(Calendar.MILLISECOND,0);
-        return c.getTime();
-
+        LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(date);
+        LocalDateTime of = LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonthValue(), 1,
+                0, 0, 0, 0);
+        return LocalDateTimeUtil.toDate(of);
     }
 
     /**
@@ -434,13 +365,13 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date endOfDate(Date date){
-        Calendar c = getCalendar(date);
-        c.set(Calendar.HOUR_OF_DAY,23);
-        c.set(Calendar.MINUTE,59);
-        c.set(Calendar.SECOND,59);
-        c.set(Calendar.MILLISECOND,0);
-        return c.getTime();
+        //next day
+        LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(date).plusDays(1);
+        LocalDateTime of = LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth(),
+                0, 0, 0, 0).minusNanos(1);
+        return LocalDateTimeUtil.toDate(of);
     }
+
 
     /**
      * 今日最后1毫秒的时间
@@ -456,11 +387,8 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date endOfMonth(Date date){
-        Date t = beginOfMonth(date);
-        Calendar c = getCalendar(t);
-        c.add(Calendar.MONTH,1);
-        c.add(Calendar.SECOND,-1);
-        return c.getTime();
+        final LocalDateTime endOfMonth = LocalDateTimeUtil.endOfMonth(LocalDateTimeUtil.valueOfDate(date));
+        return LocalDateTimeUtil.toDate(endOfMonth);
     }
 
     /**
@@ -490,61 +418,22 @@ public class DateUtil extends TimeUtil{
      */
     public static final int differentDays(Date date1,Date date2)
     {
-        int value = 0 ;
-        boolean needTran = false; //是否需要反转
-        if(date1.getTime() -  date2.getTime()>0){
-            needTran = true;
-            Date t = null;
-            t = date1 ;
-            date1 = date2;
-            date2 = t ;
-        }
-        Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(date1);
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(date2);
-        int day1= cal1.get(Calendar.DAY_OF_YEAR);
-        int day2 = cal2.get(Calendar.DAY_OF_YEAR);
-        int year1 = cal1.get(Calendar.YEAR);
-        int year2 = cal2.get(Calendar.YEAR);
-        if(year1 != year2)//不是同一年
-        {
-            int timeDistance = 0 ;
-            for(int i = year1 ; i < year2 ; i ++)
-            {
-                if(i%4==0 && i%100!=0 || i%400==0)    //闰年
-                {
-                    timeDistance += 366;
-                }
-                else    //不是闰年
-                {
-                    timeDistance += 365;
-                }
-            }
-            value =  timeDistance + (day2-day1) ;
-        }
-        else {//同一年
-            value =  day2-day1;
-        }
-        return needTran?(-value):value;
+
+        final LocalDateTime d1 = LocalDateTimeUtil.valueOfDate(date1);
+        final LocalDateTime d2 = LocalDateTimeUtil.valueOfDate(date2);
+        System.out.println(d1);
+        System.out.println(d2);
+        long l = Duration.between(d1, d2).getSeconds();
+        return Long.valueOf(TimeUnit.SECONDS.toDays(l)).intValue();
+
     }
 
 
-    /************/
-    /**
-     * 时间计算基础方法
-     * @param source
-     * @param type
-     * @param number
-     * @return
-     */
-    private static final Date computeAdd(Date source,final int type ,int number){
-        Calendar c =getCalendar();
-        c.setTime(source);
-        c.add(type ,number);
-        return c.getTime();
-    }
 
+
+    private static Date localdatetime2Date(LocalDateTime localDateTime){
+        return LocalDateTimeUtil.toDate(localDateTime);
+    }
     /**
      * 时间计算 -- 加指定年数(负数为减)
      * @param source
@@ -552,7 +441,8 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date computeAddYears(Date source ,int number){
-        return computeAdd(source,Calendar.YEAR,number);
+        final LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(source).plusYears(number);
+        return localdatetime2Date(localDateTime);
     }
     /**
      * 时间计算 -- 加指定月数 (负数为减)
@@ -561,7 +451,8 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date computeAddMonths(Date source ,int number){
-        return computeAdd(source,Calendar.MONTH,number);
+        final LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(source).plusMonths(number);
+        return localdatetime2Date(localDateTime);
     }
 
 
@@ -573,8 +464,8 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date computeAddDays(Date source ,int number){
-        return computeAdd(source,Calendar.DATE,number);
-    }
+        final LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(source).plusDays(number);
+        return localdatetime2Date(localDateTime);    }
 
     /**
      * 时间计算 -- 加指定小时数(负数为减)
@@ -583,8 +474,8 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date computeAddHours(Date source ,int number){
-        return computeAdd(source,Calendar.HOUR_OF_DAY,number);
-    }
+        final LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(source).plusHours(number);
+        return localdatetime2Date(localDateTime);    }
     /**
      * 时间计算 -- 加指定分数(负数为减)
      * @param source
@@ -592,7 +483,8 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date computeAddMinutes(Date source ,int number){
-        return computeAdd(source,Calendar.MINUTE,number);
+        final LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(source).plusMinutes(number);
+        return localdatetime2Date(localDateTime);
     }
     /**
      * 时间计算 -- 加指定秒数(负数为减)
@@ -601,7 +493,9 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final Date computeAddSeconds(Date source ,int number){
-        return computeAdd(source,Calendar.SECOND,number);
+        final LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(source).plusSeconds(number);
+        return localdatetime2Date(localDateTime);
+
     }
 
 
@@ -641,15 +535,12 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static String getWeekZhCN(Date date){
-        String[] weeks = {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
-        Calendar cal =getCalendar(date);
-
-        int week_index = cal.get(Calendar.DAY_OF_WEEK) - 1;
-        if(week_index<0){
-            week_index = 0;
-        }
-        return weeks[week_index];
+        String[] weeks = { "星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
+         return weeks[getWeek(date)-1];
     }
+
+
+
 
     public static String getWeekZhCN(){
         return getWeekZhCN(DateUtil.now());
@@ -657,7 +548,8 @@ public class DateUtil extends TimeUtil{
 
 
     public static int getWeek(Date date){
-        return getCalendar(date).get(Calendar.DAY_OF_WEEK);
+        int index = LocalDateTimeUtil.valueOfDate(date).getDayOfWeek().getValue();
+        return index;
     }
 
     public static int getWeek(){
@@ -666,9 +558,7 @@ public class DateUtil extends TimeUtil{
 
 
     public static final int dayOfYear(Date date){
-        Calendar calendar = getCalendar(date);
-        int i = calendar.get(Calendar.DAY_OF_YEAR);
-        return i;
+        return LocalDateTimeUtil.valueOfDate(date).getDayOfYear();
     }
 
     public static final int dayOfYear(){
@@ -678,16 +568,8 @@ public class DateUtil extends TimeUtil{
 
 
     public static final Date beginOfYear(Date date){
-        if(date == null){
-            date = DateUtil.now();
-        }
-        Calendar c = getCalendar(date);
-        c.set(Calendar.DAY_OF_YEAR,1);
-        c.set(Calendar.HOUR_OF_DAY,0);
-        c.set(Calendar.MINUTE,0);
-        c.set(Calendar.SECOND,0);
-        c.set(Calendar.MILLISECOND,0);
-        return c.getTime();
+        final LocalDateTime localDateTime = LocalDateTimeUtil.beginOfYear(LocalDateTimeUtil.valueOfDate(date));
+        return localdatetime2Date(localDateTime);
     }
 
     public static final Date beginOfCurrentYear(){
@@ -758,10 +640,6 @@ public class DateUtil extends TimeUtil{
         return date;
     }
 
-    public static void main(String[] args) {
-        Date da =new Date();
-        System.out.println(DateUtil.toFmtYMdHms(DateUtil.computeAddMonths(da,2)));
-    }
 
     public static Date nextMonday(){
         return nextMonday(DateUtil.now());

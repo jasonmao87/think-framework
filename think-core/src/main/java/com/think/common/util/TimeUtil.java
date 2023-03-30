@@ -37,9 +37,7 @@ public class TimeUtil {
      * @return
      */
     public static final int hourOfTime(Date date){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar.get(Calendar.HOUR_OF_DAY);
+        return LocalDateTimeUtil.valueOfDate(date).getHour();
     }
     /**
      * 当前小时数
@@ -57,9 +55,7 @@ public class TimeUtil {
      * @return
      */
     public static final int minuteOfTime(Date date){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar.get(Calendar.MINUTE);
+        return LocalDateTimeUtil.valueOfDate(date).getMinute();
     }
 
     public static final int currentMinuteOfTime(){
@@ -67,9 +63,7 @@ public class TimeUtil {
     }
 
     public static final int secondOfTime(Date date){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar.get(Calendar.SECOND);
+        return LocalDateTimeUtil.valueOfDate(date).getSecond();
     }
 
     public static final int currentSecondOfTime(){
@@ -201,84 +195,9 @@ public class TimeUtil {
     }
 
 
-    public static void main(String[] args) {
-
-        Thread t =new Thread(()->{
-            try{
-                while (true){
-
-                }
-
-            }catch (Exception e){
-
-            }
-            int i = 0;
-           while (true){
-               TimeUtil.sleepForSeconds(1);
-               System.out.println("run  " + i );
-               i++;
-           }
-        });
-        t.start();
-        int i = 0;
-        while (true){
-
-            TimeUtil.sleepForSeconds(3);
-            System.out.println("hello" + i );
-            i ++ ;
-            if(i % 5==0){
-                if (t.isAlive()) {
-                    t.interrupt();
-                    System.out.println("to interrupt ");
-                }
-            }
-        }
-
-    }
-
-
 
 
 }
-//
-//class ThinkTimer{
-//
-//    private long begin ;
-//
-//    protected ThinkTimer(){
-//        begin = ThinkMilliSecond.currentTimeMillis();
-//    }
-//
-//    public long duration(TimeUnit unit){
-//
-//        long duration = ThinkMilliSecond.currentTimeMillis() - begin;
-//        switch (unit){
-//            case MILLISECONDS:{
-//                return duration;
-//            }
-//            case NANOSECONDS:{
-//                return TimeUnit.MILLISECONDS.toNanos(duration);
-//            }
-//            case MICROSECONDS:{
-//                return TimeUnit.MILLISECONDS.toMicros(duration);
-//            }
-//            case SECONDS:{
-//                return TimeUnit.MILLISECONDS.toSeconds(duration);
-//            }
-//            case MINUTES:{
-//                return TimeUnit.MILLISECONDS.toMinutes(duration);
-//            }
-//            case HOURS:{
-//                return TimeUnit.MILLISECONDS.toHours(duration);
-//            }
-//            case DAYS:{
-//                return TimeUnit.MILLISECONDS.toDays(duration);
-//            }
-//        }
-//        return duration;
-//    }
-//
-//}
 
 
 
