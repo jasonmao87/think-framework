@@ -505,7 +505,7 @@ public class ThinkQuery {
      }
 
 
-     private static String reDoStringAsFastMatchForQuery(String sourceValueStr,boolean isFull){
+     public static String reDoStringAsFastMatchForQuery(String sourceValueStr,boolean isFull){
         StringBuilder resultSb = new StringBuilder();
         String[] arrays =  sourceValueStr.split("%");
         boolean endSign = sourceValueStr.endsWith("%");

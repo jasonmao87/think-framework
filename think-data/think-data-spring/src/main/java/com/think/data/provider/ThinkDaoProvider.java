@@ -416,7 +416,9 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
         }
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.selectForKeys(targetClass,keys) ;
-        return executeSelectList(executeQuery,finalTableName());
+
+        // dododododo
+        return executeSelectList(executeQuery,finalTableName(),sqlFilter.fastMatchMapInfo());
     }
 
     @Override

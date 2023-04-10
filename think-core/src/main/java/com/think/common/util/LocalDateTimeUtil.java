@@ -80,8 +80,12 @@ public class LocalDateTimeUtil {
 
 
     public static final LocalDateTime valueOfDate(Date date){
+        if (date == null) {
+            date = new Date();
+        }
         return LocalDateTime.ofInstant(date.toInstant(),ZONE_ID);
     }
+
 
     public static final Date toDate(LocalDateTime localDateTime){
         return new Date(toEpochMilli(localDateTime));

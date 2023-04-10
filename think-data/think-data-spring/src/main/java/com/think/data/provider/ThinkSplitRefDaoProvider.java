@@ -148,7 +148,7 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         int splitYear = _DaoSupport.computeSpiltYearById(rootPrimaryId);
         ThinkExecuteQuery executeQuery = query.selectFullKeys(targetClass);
-        List<Map<String, Object>> list = executeSelectList(executeQuery, finalTableName(splitYear));
+        List<Map<String, Object>> list = executeSelectList(executeQuery, finalTableName(splitYear),sqlFilter.fastMatchMapInfo());
         return list;
     }
 

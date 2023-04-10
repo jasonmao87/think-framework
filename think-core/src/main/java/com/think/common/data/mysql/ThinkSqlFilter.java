@@ -883,4 +883,23 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     }
 
 
+    public Map<String,String> fastMatchMapInfo(){
+        Map<String,String> map =new HashMap();
+        getKeyOrBeans().forEach(filterBean->{
+            if(filterBean.isFastMatchAble()){
+                Object v = filterBean.getValues()[0];
+                if (v instanceof String  && this.isKeyOrTypeUsingLike()) {
+                    map.put(
+                            filterBean.getKey(),
+                            v.toString().replaceAll("%","")
+                    );
+                }
+                //fastMatchMap.put(t.getKey(),t.getValues()[0].toString());
+            }
+        });
+
+
+        return map;
+    }
+
 }

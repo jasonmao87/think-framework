@@ -223,7 +223,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         }
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.selectForKeys(targetClass ,keys ) ;
-        List<Map<String,Object>> list = this.executeSelectList(executeQuery,finalTableName(splitYear));
+        List<Map<String,Object>> list = this.executeSelectList(executeQuery,finalTableName(splitYear),sqlFilter.fastMatchMapInfo());
         return list;
     }
 

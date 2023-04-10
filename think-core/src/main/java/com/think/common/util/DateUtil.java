@@ -51,7 +51,7 @@ public class DateUtil extends TimeUtil{
      * 当前年份
      */
     public static final int year(){
-        return year(null);
+        return year(new Date());
     }
 
     public static final String yearStr(int strLen){
@@ -112,7 +112,7 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final int month(){
-        return month(null);
+        return month(new Date());
     }
 
     public static final String monthStr(int strLen){
@@ -128,7 +128,7 @@ public class DateUtil extends TimeUtil{
      * @return
      */
     public static final int day(){
-        return day(null);
+        return day(new Date());
     }
 
 

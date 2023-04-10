@@ -1,7 +1,10 @@
 package com.think.data.provider;
 
 import com.think.common.data.mysql.IThinkResultFilter;
+import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.result.ThinkResult;
+import com.think.common.util.StringUtil;
+import com.think.common.util.ThinkCollectionUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean._Entity;
@@ -236,11 +239,13 @@ public abstract class _JdbcExecutor {
 
 
 
-    public List<Map<String,Object>> executeSelectList( ThinkExecuteQuery executeQuery, String finalTableName){
+
+    public List<Map<String,Object>> executeSelectList(ThinkExecuteQuery executeQuery, String finalTableName,Map<String,String> fastMapInfo){
         if(executeQuery.isMayByEmpty()){
             log.warn("SQL FILTER 存在 IN 空数据内容，不执行实际查询，直接返回 0 或者 空值 ");
             return new ArrayList<>();
         }
+
 
         this.executeTableInit(getTargetClass(),finalTableName);
         List<Map<String,Object>> result = null;
@@ -276,9 +281,55 @@ public abstract class _JdbcExecutor {
             for (IThinkResultFilter resultFilter : resultFilters) {
                 resultFilter.doFilter(map);
             }
-
         }
+        // 新增加的，如果有问题 直接返回result
+        return this.doFastMatch(result,fastMapInfo);
+    }
 
+    public List<Map<String,Object>> doFastMatch(List<Map<String, Object>> result , Map<String,String> fastMapInfo){
+        if (fastMapInfo!=null && !fastMapInfo.isEmpty()){
+            List<Map<String,Object>> preList =new ArrayList<>();
+            List<Map<String,Object>> secList =new ArrayList<>();
+            Optional<Map<String, Object>> any = ThinkCollectionUtil.findAny(result, (t) -> {
+                for (Map.Entry<String, String> entry : fastMapInfo.entrySet()) {
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+                    if (t.get(key).toString().contains(value)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            if(any.isPresent()){
+                Map<String, Object> temp = any.get();
+                preList.add(temp);
+                ThinkCollectionUtil.removeIf(result, (t) -> {
+                    return (t.get("id")).equals( temp.get("id"));
+                });
+            }
+            // 二次处理
+            Optional<Map<String, Object>> anySec = ThinkCollectionUtil.findAny(result, (t) -> {
+                for (Map.Entry<String, String> entry : fastMapInfo.entrySet()) {
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+                    value = ThinkQuery.reDoStringAsFastMatchForQuery(value, true);
+                    if (t.get("fss_"+key).toString().contains(value)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            if(anySec.isPresent()){
+                Map<String, Object> temp = any.get();
+                secList.add(temp);
+                ThinkCollectionUtil.removeIf(result, (t) -> {
+                    return (t.get("id")).equals( temp.get("id"));
+                });
+            }
+            preList.addAll(secList);
+            preList.addAll(result);
+            return preList;
+        }
         return result;
     }
 
