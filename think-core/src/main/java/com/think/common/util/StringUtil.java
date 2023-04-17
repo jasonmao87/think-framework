@@ -588,6 +588,14 @@ public class StringUtil {
          **/
     }
 
+
+    public static final String removePrefix(String source ,String prefix){
+        if(source.startsWith(prefix)){
+            return source.substring(prefix.length());
+        }
+        return source;
+    }
+
     public static void main(String[] args) throws UnsupportedEncodingException {
 
         String s = "我爱茜茜";
