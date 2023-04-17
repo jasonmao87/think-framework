@@ -5,6 +5,7 @@ import com.think.exception.ThinkDataVerificationException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
+import java.util.function.Predicate;
 
 /**
  * @Date :2021/9/26
@@ -136,10 +137,26 @@ public class TVerification<T extends Object>{
 
 
 
+
+
+
     public final TVerification<T> throwIfCollectionIsEmpty(){
         return throwIfCollectionIsEmpty("容器不存在任何数据");
     }
 
+
+    public final TVerification<T> throwIfCollectionIsNotEmpty(String errorMessage){
+        throwIfNull(errorMessage);
+        T data = getData();
+        Collection collection = (Collection) data;
+        if (!collection.isEmpty()) {
+            errThrow(errorMessage);
+        }
+        return this;
+    }
+    public final TVerification<T> throwIfCollectionIsNotEmpty(){
+        return throwIfCollectionIsNotEmpty("容器不是空的");
+     }
 
 
 
@@ -209,8 +226,28 @@ public class TVerification<T extends Object>{
     }
 
 
+    public final TVerification<T> throwIfNotMatch(Predicate<T> test, String errMsg){
+        if (!test.test(t)) {
+            errThrow(errMsg);
+        }
+        return this;
+    }
+
+    public final TVerification<T> throwIfMatch(Predicate<T> test, String errMsg){
+        if (test.test(t)) {
+            errThrow(errMsg);
+        }
+        return this;
+    }
+
+
+
+
     private void errThrow(String errMsg){
         throw new ThinkDataVerificationException(errMsg);
     }
+
+
+
 
 }
