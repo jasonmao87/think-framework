@@ -5,8 +5,11 @@ import com.github.stuxuhai.jpinyin.PinyinHelper;
 import com.think.core.annotations.Remark;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -590,26 +593,24 @@ public class StringUtil {
 
 
     public static final String removePrefix(String source ,String prefix){
-        if(source.startsWith(prefix)){
-            return source.substring(prefix.length());
+        if(isNotEmpty(source) && isNotEmpty(prefix)) {
+            if (source.startsWith(prefix)) {
+                return source.substring(prefix.length());
+            }
+            return source;
         }
-        return source;
+
+        return null;
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-
-        String s = "我爱茜茜";
 
 
-        byte[] bytes = s.getBytes("GB2312");
-
-        System.out.println(s);
 
 
-        String s2 = new String(bytes, "ISO-8859-1");
 
+    public static void main(String[] args) {
 
-        System.out.println(s2);
 
     }
+
 }
