@@ -273,7 +273,6 @@ public class ObjectUtil  {
     /**
      * 我i发通过 protostuf 序列化反序列化的class 类型
      */
-    public static final HashSet<Class> protostufErrClassSet= new HashSet<>();
 
 
 
