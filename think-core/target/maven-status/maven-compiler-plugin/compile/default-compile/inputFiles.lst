@@ -188,3 +188,4 @@ C:\developer\incubator\think-famework\think-core\src\main\java\com\think\core\da
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\core\security\ThinkWebToken.java
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\core\bean\SimpleRefEntity.java
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\common\data\mysql\ThinkFilterBean.java
+C:\developer\incubator\think-famework\think-core\src\main\java\com\think\core\data\cache\ExpireAbleCache.java

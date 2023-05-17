@@ -159,7 +159,7 @@ public class Manager {
        }
     }
 
-    public static final ThinkDataRuntime getDataSrvRuntimeInfo(){
+    public static ThinkDataRuntime getDataSrvRuntimeInfo(){
         if(dataRuntimeThreadLocal.get() == null) {
             final ThinkSecurityToken token = ThinkSecurityTokenTransferManager.getToken();
 

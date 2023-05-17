@@ -235,6 +235,7 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         if(possibleSplits == null || possibleSplits.length == 0 ){
             return 0L;
         } else if( possibleSplits.length > 1) {
+
             String partitionRegion = Manager.getDataSrvRuntimeInfo().getPartitionRegion();
 
             return Arrays.stream(possibleSplits).parallel().mapToLong(t -> {

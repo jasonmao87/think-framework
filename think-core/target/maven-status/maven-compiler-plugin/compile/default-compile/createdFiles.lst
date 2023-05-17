@@ -1,6 +1,7 @@
 com\think\core\security\ThinkLock.class
 com\think\common\util\security\Desensitization2Util.class
 com\think\core\bean\TFlowBuilder.class
+com\think\core\data\cache\ExpireAbleCache.class
 com\think\common\result\state\ThinkResultState$1.class
 com\think\core\executor\reduce\TReducer.class
 com\think\common\util\ThinkIdGenerator.class
@@ -74,6 +75,7 @@ com\think\core\annotations\bean\ThinkMongoIndex.class
 com\think\common\result\state\ThinkResultState.class
 com\think\common\util\IdUtil.class
 com\think\core\bean\ThinkBinaryFilter.class
+com\think\core\data\cache\ExpireAbleCache$CacheEntry.class
 com\think\core\executor\ThinkAsyncTask.class
 com\think\core\security\ThinkWebToken.class
 com\think\core\executor\ThinkThreadExecutor.class
@@ -84,6 +86,7 @@ com\think\common\util\RandomUtil.class
 com\think\core\security\token\ThinkSecurityToken.class
 com\think\common\result\ResultInfo.class
 com\think\common\util\security\StrCompressionUtil.class
+com\think\core\data\cache\ExpireAbleCache$ExpiredRemoveSubscriber.class
 com\think\core\bean\BlobEntity.class
 com\think\core\data\DynamicArray.class
 com\think\core\security\ThinkLock$thinkInner.class
