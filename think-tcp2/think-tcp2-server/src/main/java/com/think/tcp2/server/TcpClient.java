@@ -101,19 +101,42 @@ public class TcpClient implements Serializable {
     }
 
     public <T extends Serializable> void sendMessage(T message){
-
-        TcpPayload payload = new TcpPayload(message);
-        payload.setClientId( this.getId());
-        final ChannelFuture channelFuture = channel.writeAndFlush(payload);
-        this.active();
+        try {
+            TcpPayload payload = new TcpPayload(message);
+            payload.setClientId(this.getId());
+            this.active();
+            final ChannelFuture channelFuture = channel.writeAndFlush(payload);
+//            channelFuture.addListener(future -> {
+//                if (future.isSuccess()) {
+//                    log.info("发送成功  sendMessage ");
+//                } else {
+//                    future.cause().printStackTrace();
+//                    log.info("发送失败 sendMessage ");
+//                }
+//            });
+        }catch (Exception   e){
+            e.printStackTrace();
+        }
     }
 
     public <T extends Serializable> void sendMessageWithSession(T message,String session){
-        this.active();
-        TcpPayload payload = new TcpPayload(message);
-        payload.setSession(session);
-        payload.setClientId( this.getId());
-        final ChannelFuture channelFuture = channel.writeAndFlush(payload);
+        try {
+            this.active();
+            TcpPayload payload = new TcpPayload(message);
+            payload.setSession(session);
+            payload.setClientId(this.getId());
+            final ChannelFuture channelFuture = channel.writeAndFlush(payload);
+//            channelFuture.addListener(future -> {
+//                if (future.isSuccess()) {
+//                    log.info("发送成功 sendMessageWithSession");
+//                } else {
+//                    future.cause().printStackTrace();
+//                    log.info("发送失败 sendMessageWithSession");
+//                }
+//            });
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 

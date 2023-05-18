@@ -40,8 +40,7 @@ public class ThinkPayloadProcessor {
 
 
 
-    public static final void processPayload(TcpPayload payload, Channel channel){
-
+    public static  void processPayload(TcpPayload payload, Channel channel){
         String payloadSession = payload.getSession();
         Serializable data =null;
         try{
@@ -50,16 +49,13 @@ public class ThinkPayloadProcessor {
             log.error("无法解析Payload内传递对象 : " ,e );
         }
         IServerMessageHandler consumer =null;
-//        if (log.isDebugEnabled()) {
-//            log.debug("message type {}",data.getClass());
-//        }
         String dataType = data.getClass().getTypeName();
-//        log.info("消息数据类型：{}" ,data.getClass().getTypeName() );
-
         if(consumerMap.containsKey(dataType)){
             consumer = consumerMap.get(data.getClass().getTypeName());
         }else{
-
+            if (log.isWarnEnabled()) {
+                log.warn("找不到{}对应的消息处理器，尝试使用StringMessagePrintConsumer处理",dataType);
+            }
             if(data instanceof String){
                 if (consumerMap.containsKey(String.class.getTypeName())) {
                     consumer = consumerMap.get(String.class.getTypeName());
@@ -70,7 +66,6 @@ public class ThinkPayloadProcessor {
                 }
             }
         }
-        //最终的执行环节
         if(consumer!=null) {
             consumer.handle(data,channel,payloadSession);
         }else{
@@ -82,17 +77,17 @@ public class ThinkPayloadProcessor {
     }
 
     @Deprecated
-    public static final <T extends Serializable> void bindC2SMessageHandler(String messageType , IServerMessageHandler<T> messageConsumer ){
+    public static <T extends Serializable> void bindC2SMessageHandler(String messageType , IServerMessageHandler<T> messageConsumer ){
         bindC2SMessageHandler(messageType,messageConsumer,false);
     }
     @Deprecated
-    public static final <T extends Serializable> void bindC2SMessageHandler(Class messageType , IServerMessageHandler<T> messageConsumer ){
+    public static <T extends Serializable> void bindC2SMessageHandler(Class messageType , IServerMessageHandler<T> messageConsumer ){
         bindC2SMessageHandler(messageType,messageConsumer,false);
     }
 
 
 
-    public static final <T extends Serializable> void bindC2SMessageHandler(String messageType , IServerMessageHandler<T> messageConsumer ,boolean authAble) throws ThinkRuntimeException {
+    public static <T extends Serializable> void bindC2SMessageHandler(String messageType , IServerMessageHandler<T> messageConsumer ,boolean authAble) throws ThinkRuntimeException {
         try {
             if(authAble == false){
                 //无需 授权校验的加入到 set中
@@ -101,10 +96,8 @@ public class ThinkPayloadProcessor {
             if (log.isInfoEnabled()) {
                 log.info("服务绑定消息处理器 类型 {} ，实例 {}" ,messageType,messageConsumer.getClass().getTypeName());
             }
-            final Class<?> aClass = Class.forName(messageType);
-            if (aClass != null) {
-                consumerMap.put(messageType, messageConsumer);
-            }
+            Class<?> aClass = Class.forName(messageType);
+            consumerMap.put(messageType, messageConsumer);
         }catch (Exception e){
             throw new ThinkRuntimeException("无法绑定Payload消息消费处理器，非法的实例对象类型 :" + messageType + " ，请使用Class.getTypeName 作为判断依据来处理Payload消息消费处理器");
         }
@@ -112,7 +105,7 @@ public class ThinkPayloadProcessor {
 
 
 
-    public static final <T extends Serializable> void bindC2SMessageHandler(Class messageType , IServerMessageHandler<T> messageConsumer,boolean authAble){
+    public static <T extends Serializable> void bindC2SMessageHandler(Class messageType , IServerMessageHandler<T> messageConsumer,boolean authAble){
         bindC2SMessageHandler(messageType.getTypeName(),messageConsumer,authAble);
     }
 

@@ -22,11 +22,6 @@ import io.netty.util.NetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -137,8 +132,6 @@ public class Tcp2Client {
         this.serverAddr = tcpServerHostAddr;
         bootstrap= new Bootstrap();
 
-//        bootstrap.bind();
-
 
         worker =new NioEventLoopGroup();
         bootstrap.group(worker);
@@ -195,31 +188,40 @@ public class Tcp2Client {
     }
 
     public boolean sendPayLoad(TcpPayload payload) throws InterruptedException {
-        if(isDeny()){
-            log.warn("当前TCP CLIENT 通信运维受限，通信的内容可能不被服务器处理和消费");
-        }
+        try {
+            if (isDeny()) {
+                log.warn("当前TCP CLIENT 通信运维受限，通信的内容可能不被服务器处理和消费");
+            }
 
 //        Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
-        final List<TcpPayloadEventListener> listeners = PayloadListenerManager.getListeners();
-        for (TcpPayloadEventListener eventListener : listeners) {
-            try {
-                eventListener.beforeSend(payload);
-            }catch (Exception e){}
-        }
-        if(channel == null){
-            log.error("暂未与服务端[{}:{}]建立连接，无法发送相关信息，丢弃信息" ,this.serverAddr,this.port);
-//            throw new InterruptedException("暂未何服务端建立连接");
-            throw new InterruptedException("暂未与服务端建立连接");
-        }
-        this.channel.writeAndFlush(payload);
-        for (TcpPayloadEventListener tcpPayloadEventListener : listeners) {
-            try {
-                tcpPayloadEventListener.afterSend(payload);
-            }catch (Exception e){
-                log.error("执行TcpPayloadListener[afterSend]出现的异常（该异常发送在消息发送后，不会影响正常程序）" ,e );
+            final List<TcpPayloadEventListener> listeners = PayloadListenerManager.getListeners();
+            for (TcpPayloadEventListener eventListener : listeners) {
+                try {
+                    eventListener.beforeSend(payload);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            if (channel == null) {
+                if (log.isErrorEnabled()) {
+                    log.error("暂未与服务端[{}:{}]建立连接，无法发送相关信息，丢弃信息", this.serverAddr, this.port);
+                }
+                throw new InterruptedException("暂未与服务端建立连接");
+            }
+            ChannelFuture channelFuture = this.channel.writeAndFlush(payload);
+
+            for (TcpPayloadEventListener tcpPayloadEventListener : listeners) {
+                try {
+                    tcpPayloadEventListener.afterSend(payload);
+                } catch (Exception e) {
+                    log.error("执行TcpPayloadListener[afterSend]出现的异常（该异常发送在消息发送后，不会影响正常程序）", e);
+                }
+            }
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
-        return true;
     }
 
 
@@ -256,45 +258,5 @@ public class Tcp2Client {
         this.id = id;
     }
 
-
-
-    //    public static void main(String[] args) throws InterruptedException {
-//        Tcp2Client.getInstance().setListener(new DefaultTcpEventListener());
-//        Tcp2Client.getInstance().connect("127.0.0.1", 5740, new IThinkTcpConsumer() {
-//            @Override
-//            public void acceptMessage(TcpPayload payload) {
-////                System.out.println(payload.getData());
-//            }
-//        });
-//        Scanner scanner= new Scanner(System.in);
-//        while (scanner.hasNext()){
-//            String text = scanner.nextLine();
-//
-//
-//            getInstance().sendMessage(text);
-//            System.out.println("SEND ===");
-//
-//
-//
-//        }
-//
-//    }
-
-
-    public static void main(String[] args) throws UnknownHostException, SocketException {
-
-
-        final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-
-        while (networkInterfaces.hasMoreElements()) {
-            final NetworkInterface networkInterface = networkInterfaces.nextElement();
-            System.out.println(networkInterface);
-            final Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-            while (inetAddresses.hasMoreElements()) {
-                System.out.println(" >> "+inetAddresses.nextElement());
-            }
-        }
-
-    }
 
 }

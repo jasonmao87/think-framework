@@ -17,10 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 public class TcpPayloadHandler  extends SimpleChannelInboundHandler<TcpPayload> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, TcpPayload payload) throws Exception {
-//        log.info("TcpPayloadHandler  收到消息 {} ",payload);
             final TcpClient client = ClientManager.getInstance().get(channelHandlerContext.channel());
             if(client!=null){
-                //初始化 payLoad 的clientId
                 payload.setClientId(client.getId());
                 try {
                     ThinkPayloadProcessor.processPayload(payload,channelHandlerContext.channel());

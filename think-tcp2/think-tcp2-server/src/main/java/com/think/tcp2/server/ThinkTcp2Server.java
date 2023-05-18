@@ -79,8 +79,10 @@ public class ThinkTcp2Server {
                 ThinkDefaultServerHandler defaultServerHandler = new ThinkDefaultServerHandler();
                 ThinkHeartbeatHandler heartBeatHandler = new ThinkHeartbeatHandler();
                 TcpPayloadHandler payloadHandler = new TcpPayloadHandler();
+
                 ThinkAuthRequestHandler authRequestHandler = new ThinkAuthRequestHandler();
                 ChannelPipeline pipeline = ch.pipeline();
+
                 pipeline.addLast(new IdleStateHandler(ThinkTcpConfig.getIdleTimeoutSeconds(),0,0, TimeUnit.SECONDS))
                         .addLast(new ObjectEncoder())
                         .addLast(new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.cacheDisabled(null)))

@@ -9,6 +9,7 @@ import io.netty.handler.ipfilter.AbstractRemoteAddressFilter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,7 +27,7 @@ public class ThinkTcpAddressFilter extends AbstractRemoteAddressFilter<InetSocke
     public ThinkTcpAddressFilter() {
         synchronized (this) {
             if (socketAddressMap == null) {
-                socketAddressMap = new ConcurrentHashMap<>();
+                socketAddressMap = new HashMap<>();
             }
         }
     }

@@ -58,12 +58,9 @@ public class TcpPayload implements Serializable {
                 e.printStackTrace();
             }
         }
-
     }
 
     public TcpPayload retry(){
-
-
         final List<TcpPayloadEventListener> listeners = PayloadListenerManager.getListeners();
         for (TcpPayloadEventListener listener : listeners) {
             try {
@@ -82,7 +79,12 @@ public class TcpPayload implements Serializable {
     }
 
     public Serializable getData() throws ClassNotFoundException, ThinkException {
-        return (Serializable) ObjectUtil.deserialization(data, dataType());
+        try {
+            return (Serializable) ObjectUtil.deserialization(data, dataType());
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Class dataType() throws ClassNotFoundException,ThinkException{

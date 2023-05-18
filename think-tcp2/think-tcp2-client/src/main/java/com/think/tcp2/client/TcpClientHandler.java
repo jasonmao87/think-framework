@@ -33,8 +33,6 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, TcpPayload payload) throws Exception {
-
-
         if (getConsumer()!=null) {
             final List<TcpPayloadEventListener> iterator = PayloadListenerManager.getListeners();
             for (TcpPayloadEventListener listener : iterator) {
@@ -55,7 +53,6 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<TcpPayload> {
 
         }else{
             log.warn("未指定IThinkTcpConsumer ，无法处理消息 :: {}" ,payload.toString());
-
         }
     }
 
