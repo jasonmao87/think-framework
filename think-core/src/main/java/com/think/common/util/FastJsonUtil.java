@@ -24,6 +24,8 @@ public class FastJsonUtil {
 //                SerializerFeature.WriteNullBooleanAsFalse,
 //                SerializerFeature.WriteNullStringAsEmpty,
 //                SerializerFeature.PrettyFormat,
+                SerializerFeature.IgnoreErrorGetter,
+                SerializerFeature.IgnoreNonFieldGetter,
                 SerializerFeature.DisableCircularReferenceDetect
         };
     }
@@ -97,7 +99,47 @@ public class FastJsonUtil {
 
 
     public static String toJSONString(JSONObject jsonObject){
-        return JSON.toJSONStringWithDateFormat(jsonObject,"yyyy-MM-dd HH:mm:ss" ,SerializerFeature.WriteDateUseDateFormat);
+        return JSON.toJSONStringWithDateFormat(jsonObject,"yyyy-MM-dd HH:mm:ss" ,
+                SerializerFeature.WriteDateUseDateFormat,SerializerFeature.IgnoreErrorGetter,SerializerFeature.IgnoreNonFieldGetter);
+    }
+
+    public static void main(String[] args) {
+
+        xada xada = new xada();
+        System.out.println(parseToJSON(xada));
+    }
+
+}
+
+class xada{
+    private int da;
+    private String name =null;
+
+    public xada() {
+    }
+
+    public void setDa(int da) {
+        this.da = da;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getDa() {
+        return da;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Boolean isGood(){
+        return null;
+    }
+
+    public String getS(){
+        throw new RuntimeException("s");
     }
 
 }

@@ -110,7 +110,8 @@ public class R<T>  implements Serializable {
         }else {
             return _init(result.getCode())
                     .setThrowable(result.getThrowable())
-                    .setMessage(result.getMessage());
+                    .setMessage(result.getMessage())
+                    .setResult(result.getResultData());
         }
     }
 
