@@ -592,7 +592,7 @@ public class DateUtil extends TimeUtil{
         int beginWeek = getWeek(begin);
         //当年第一天是否大于星期四。 大于表示，这一天属于上一年
         boolean flag = beginWeek>4;
-        return (dayOfYear(date)/7)+(flag?0:1);
+        return (dayOfYear(date)/7)+(flag?0:1)+(dayOfYear(date)%7==0?0:1);
 
     }
 
@@ -600,6 +600,10 @@ public class DateUtil extends TimeUtil{
         return weekOfYear(DateUtil.now());
     }
 
+    public static void main(String[] args) {
+        System.out.println(weekOfYear( ));
+        System.out.println(dayOfYear( ));
+    }
 
     public static final Date beginOfYear(Date date){
         final LocalDateTime localDateTime = LocalDateTimeUtil.beginOfYear(LocalDateTimeUtil.valueOfDate(date));
