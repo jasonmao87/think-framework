@@ -578,6 +578,10 @@ public class DateUtil extends TimeUtil{
      * @param date
      * @return
      */
+    @Remark(value = "根据中华人民共和国国家标准GB/T 7408-2005《数据元和交换格式信息交换日期和时间表示法》",
+    description = "一年中的第一个日历星期包括该年的第一个星期四 \n" +
+            "       并且日历年的最后一个日历星期就是在下一个日历年的第一个日历星期之前的那个星期，日历星期数是其在该年中的顺序" +
+            "")
     public static int weekOfYear(Date date){
         Date endOfYear = endOfYear(date);
         int endWeek = getWeek(endOfYear);
