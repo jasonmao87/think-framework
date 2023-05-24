@@ -571,6 +571,35 @@ public class DateUtil extends TimeUtil{
     }
 
 
+    /**
+     * 根据中华人民共和国国家标准GB/T 7408-2005《数据元和交换格式信息交换日期和时间表示法》中
+     * 4.3.2.2:一年中的第一个日历星期包括该年的第一个星期四，
+     * 并且日历年的最后一个日历星期就是在下一个日历年的第一个日历星期之前的那个星期，日历星期数是其在该年中的顺序
+     * @param date
+     * @return
+     */
+    public static int weekOfYear(Date date){
+        Date endOfYear = endOfYear(date);
+        int endWeek = getWeek(endOfYear);
+        int difOfEndYear = differentDays(endOfYear(date),date);
+        if(difOfEndYear<4 && endWeek<4){
+            //是下一年的第一周
+            // 1.当年最后一天 小于星期4
+            // 2.当天离最后一天 小于4天
+            return 1;
+        }
+        Date begin =beginOfYear(date);
+        int beginWeek = getWeek(begin);
+        //当年第一天是否大于星期四。 大于表示，这一天属于上一年
+        boolean flag = beginWeek>4;
+        return (dayOfYear(date)/7)+(flag?0:1);
+
+    }
+
+    public static int weekOfYear(){
+        return weekOfYear(DateUtil.now());
+    }
+
 
     public static final Date beginOfYear(Date date){
         final LocalDateTime localDateTime = LocalDateTimeUtil.beginOfYear(LocalDateTimeUtil.valueOfDate(date));
