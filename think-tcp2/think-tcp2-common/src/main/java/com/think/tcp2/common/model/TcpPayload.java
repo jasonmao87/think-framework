@@ -47,9 +47,9 @@ public class TcpPayload implements Serializable {
     private String session;
 
     public TcpPayload(Serializable data) {
-        this.data = ObjectUtil.serializeObject(data);
-        this.dataType = data.getClass().getName();
         this.initTime = ThinkMilliSecond.currentTimeMillis();
+        this.dataType = data.getClass().getName();
+        this.data = ObjectUtil.serializeObject(data);
         List<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getListeners();
         for (TcpPayloadEventListener listener : executeIterator) {
             try {
