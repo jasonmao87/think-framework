@@ -49,9 +49,10 @@ public class ThinkPayloadProcessor {
             log.error("无法解析Payload内传递对象 : " ,e );
         }
         IServerMessageHandler consumer =null;
-        String dataType = data.getClass().getTypeName();
+        String dataType = payload.getDataTypeName(); //data.getClass().getTypeName();
         if(consumerMap.containsKey(dataType)){
-            consumer = consumerMap.get(data.getClass().getTypeName());
+            //data.getClass().getTypeName()
+            consumer = consumerMap.get(payload.getDataTypeName());
         }else{
             if (log.isWarnEnabled()) {
                 log.warn("找不到{}对应的消息处理器，尝试使用StringMessagePrintConsumer处理",dataType);

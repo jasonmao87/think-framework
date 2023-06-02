@@ -82,6 +82,7 @@ public class TcpPayload implements Serializable {
         try {
             return (Serializable) ObjectUtil.deserialization(data, dataType());
         }catch (Exception e){
+            log.error("无法解析Payload内传递对象 : " ,e );
             e.printStackTrace();
             return null;
         }
@@ -108,6 +109,10 @@ public class TcpPayload implements Serializable {
 
     public String getSession() {
         return session;
+    }
+
+    public String getDataTypeName(){
+        return this.dataType;
     }
 
     public void setSession(String session) {
