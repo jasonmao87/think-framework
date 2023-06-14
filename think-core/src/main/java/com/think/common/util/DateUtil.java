@@ -423,8 +423,8 @@ public class DateUtil extends TimeUtil{
 
         final LocalDateTime d1 = LocalDateTimeUtil.valueOfDate(date1);
         final LocalDateTime d2 = LocalDateTimeUtil.valueOfDate(date2);
-        System.out.println(d1);
-        System.out.println(d2);
+//        System.out.println(d1);
+//        System.out.println(d2);
         long l = Duration.between(d1, d2).getSeconds();
         return Long.valueOf(TimeUnit.SECONDS.toDays(l)).intValue();
 
@@ -582,30 +582,55 @@ public class DateUtil extends TimeUtil{
     description = "一年中的第一个日历星期包括该年的第一个星期四 \n" +
             "       并且日历年的最后一个日历星期就是在下一个日历年的第一个日历星期之前的那个星期，日历星期数是其在该年中的顺序" +
             "")
-    public static int weekOfYear(Date date){
-        Date endOfYear = endOfYear(date);
-        int endWeek = getWeek(endOfYear);
-        int difOfEndYear = differentDays(endOfYear(date),date);
-        if(difOfEndYear<4 && endWeek<4){
-            //是下一年的第一周
-            // 1.当年最后一天 小于星期4
-            // 2.当天离最后一天 小于4天
+    public static int weekOfYear(final Date date){
+        int dayOfYear = dayOfYear(date);
+        int firstWeekDayNumOfYear = dayNumOfFirstWeekBeginOfYear(year(date));
+        int lastWeekDayNumOfYear = dayNumOfLastWeekEndOfYear(year(date));
+//        System.out.println(year(date) + "年的第一周开始于：" + firstWeekDayNumOfYear + " @最后一周结束于" +lastWeekDayNumOfYear );
+        if(dayOfYear>lastWeekDayNumOfYear){
             return 1;
         }
-        Date begin =beginOfYear(date);
-        int beginWeek = getWeek(begin);
-        //当年第一天是否大于星期四。 大于表示，这一天属于上一年
-        boolean flag = beginWeek>4;
-        return (dayOfYear(date)/7)+(flag?0:1)+(dayOfYear(date)%7==0?0:1);
+//        System.out.println("--- first week year day num : " + firstWeekDayNumOfYear + " @" + year(date));
+//        System.out.println("day of year : " + dayOfYear + " @" + year(date));
+        if(dayOfYear < firstWeekDayNumOfYear){
+            // 去上一年
+            return weekOfYear( DateUtil.computeAddDays(beginOfYear(date),-1));
+        }
 
+        return (dayOfYear-firstWeekDayNumOfYear)/7 + (dayOfYear%7==0?0:1);
     }
+
+    @Remark("计算当年的第一周是当年的第几天,负数 表示当年的第一周开始要往前推几天")
+    public static int dayNumOfFirstWeekBeginOfYear(int year){
+        final Date startOfYear = DateUtil.from(year, 1, 1);
+        int week = getWeek(startOfYear);
+        if(week <4){
+            return 1-week;
+        }else{
+            return 9-week;
+        }
+    }
+    @Remark("计算当年的最后周的结束是当年的第几天 ")
+    public static int dayNumOfLastWeekEndOfYear(int year){
+        final Date endOfYear = DateUtil.from(year, 12, 31);
+        int week = getWeek(endOfYear);
+        int dayOfYear = dayOfYear(endOfYear);
+        if(week <4){
+            return dayOfYear-week;
+        }else{
+            return dayOfYear+(7-week);
+        }
+    }
+
 
     public static int weekOfYear(){
         return weekOfYear(DateUtil.now());
     }
 
     public static void main(String[] args) {
-        System.out.println(weekOfYear( ));
+        final Date from = DateUtil.from(2022, 12, 31);
+
+        System.out.println( toFmtYMd(from) + " >> "+weekOfYear(from));
         System.out.println(dayOfYear( ));
     }
 
