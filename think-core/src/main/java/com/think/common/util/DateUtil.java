@@ -370,7 +370,7 @@ public class DateUtil extends TimeUtil{
         //next day
         LocalDateTime localDateTime = LocalDateTimeUtil.valueOfDate(date).plusDays(1);
         LocalDateTime of = LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth(),
-                0, 0, 0, 0).minusNanos(1);
+                0, 0, 0, 0).minusSeconds(1);
         return LocalDateTimeUtil.toDate(of);
     }
 

@@ -118,7 +118,7 @@ public class LocalDateTimeUtil {
     }
 
     public static final LocalDateTime endOfYear(LocalDateTime localDateTime){
-        return beginOfYear().plusYears(1).minusNanos(1);
+        return beginOfYear().plusYears(1).minusSeconds(1);
     }
 
     public static final LocalDateTime endOfYear(){
@@ -136,7 +136,7 @@ public class LocalDateTimeUtil {
     }
 
     public static final LocalDateTime endOfMonth(LocalDateTime localDateTime){
-        return beginOfMonth(localDateTime).plusMonths(1).minusNanos(1);
+        return beginOfMonth(localDateTime).plusMonths(1).minusSeconds(1);
     }
     public static final LocalDateTime endOfMonth(){
         return endOfMonth(now());
@@ -165,15 +165,15 @@ public class LocalDateTimeUtil {
     }
 
     public static final LocalDateTime endOfYear(int year){
-        return beginOfYear().plusYears(1).minusNanos(1);
+        return beginOfYear().plusYears(1).minusSeconds(1);
     }
 
     public static final LocalDateTime endOfYearMonth(int year,int month){
-        return beginOfYearMonth(year,month).plusMonths(1).minusNanos(1);
+        return beginOfYearMonth(year,month).plusMonths(1).minusSeconds(1);
     }
 
     public static final LocalDateTime endOfYearMonthDay(int year, int month,int day){
-        return beginOfYearMonthDay(year,month,day).plusDays(1).minusNanos(1);
+        return beginOfYearMonthDay(year,month,day).plusDays(1).minusSeconds(1);
     }
 
 
