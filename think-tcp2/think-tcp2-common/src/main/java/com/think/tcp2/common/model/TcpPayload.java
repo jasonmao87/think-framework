@@ -80,11 +80,18 @@ public class TcpPayload implements Serializable {
 
     public Serializable getData() throws ClassNotFoundException, ThinkException {
         try {
+            if(data==null){
+                throw new ThinkException("传递的可序列化内容是NULL！");
+            }
             return (Serializable) ObjectUtil.deserialization(data, dataType());
+        }catch (ClassNotFoundException e){
+            log.error("我们无法找到这个CLASS" + dataType());
+            throw e;
         }catch (Exception e){
+            log.error("无法将传递的内容[data length = {} ]序列化为：{} ，请确保传递的内容是可序列化的，且是正常的: ",data!=null?data.length+"":"NULL" ,dataType() );
             log.error("无法解析Payload内传递对象 : " ,e );
             e.printStackTrace();
-            return null;
+            throw e;
         }
     }
 

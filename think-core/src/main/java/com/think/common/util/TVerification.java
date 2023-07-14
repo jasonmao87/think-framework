@@ -55,7 +55,7 @@ public class TVerification<T extends Object>{
     public final TVerification<T> throwIfNotInstanceOfType(Class targetClass){
         throwIfNull();
         if (!targetClass.isInstance(t)) {
-            errThrow("校验对象并非" + targetClass.getCanonicalName() +"类型");
+            errThrow("校验对象并非{}类型",  targetClass.getCanonicalName() );
         }
         return this;
     }
@@ -125,12 +125,12 @@ public class TVerification<T extends Object>{
     }
 
 
-    public final TVerification<T> throwIfCollectionIsEmpty(String message){
-        throwIfNull(message);
+    public final TVerification<T> throwIfCollectionIsEmpty(String errMsgFmt,String ...args){
+        throwIfNull(errMsgFmt,args);
         T data = getData();
         Collection collection = (Collection) data;
         if (collection.isEmpty()) {
-            errThrow(message);
+            errThrow(errMsgFmt,args);
         }
         return this;
     }
@@ -162,12 +162,12 @@ public class TVerification<T extends Object>{
 
     /**
      * 当 值为 null 时候 ，抛出异常
-     * @param errMsg
+     * @param errMsgFmt
      * @return
      */
-    public final TVerification<T> throwIfNull(String errMsg){
+    public final TVerification<T> throwIfNull(String errMsgFmt,String ...args){
         if(t == null){
-            errThrow(errMsg);
+            errThrow(errMsgFmt,args);
         }
         return this;
     }
@@ -176,12 +176,15 @@ public class TVerification<T extends Object>{
         return throwIfNull("对象为NULL");
     }
 
-    public final TVerification<T> throwIfNotNull(String message){
+    public final TVerification<T> throwIfNotNull(String errMsgFmt,String ...args){
         if(t !=null){
-            errThrow(message);
+            errThrow(errMsgFmt,args);
         }
         return this;
     }
+
+
+
 
     public final TVerification<T> throwIfNotNull(){
         return this.throwIfNotNull("对象不为NULL");
@@ -199,11 +202,11 @@ public class TVerification<T extends Object>{
         return this.throwIfStringIsEmpty("字符为空");
     }
 
-    public final TVerification<T> throwIfFalse(String errMsg){
+    public final TVerification<T> throwIfFalse(String errMsgFmt,String ...args){
         this.throwIfNoInstanceOfBoolean();
         Boolean b = (Boolean) t;
         if(b.booleanValue() !=true){
-            errThrow(errMsg);
+            errThrow(errMsgFmt,args);
         }
         return this;
     }
@@ -212,11 +215,11 @@ public class TVerification<T extends Object>{
         return this.throwIfFalse("对象值为假");
     }
 
-    public final TVerification<T> throwIfTrue(String errMsg){
+    public final TVerification<T> throwIfTrue(String errMsgFmt,String ...args){
         this.throwIfNoInstanceOfBoolean();
         Boolean b = (Boolean) t;
         if(b.booleanValue() ==true){
-            errThrow(errMsg);
+            errThrow(errMsgFmt,args);
         }
         return this;
     }
@@ -233,9 +236,9 @@ public class TVerification<T extends Object>{
         return this;
     }
 
-    public final TVerification<T> throwIfMatch(Predicate<T> test, String errMsg){
+    public final TVerification<T> throwIfMatch(Predicate<T> test, String errMsgFmt,String ...args){
         if (test.test(t)) {
-            errThrow(errMsg);
+            errThrow(errMsgFmt,args);
         }
         return this;
     }
@@ -243,11 +246,19 @@ public class TVerification<T extends Object>{
 
 
 
-    private void errThrow(String errMsg){
-        throw new ThinkDataVerificationException(errMsg);
+    private void errThrow(String errMsg ,String... args){
+        throw new ThinkDataVerificationException(buildErrMessage(errMsg,args));
     }
 
-
+    private static String buildErrMessage(String message ,String...  args){
+        if(args == null || args.length ==0){
+            return message;
+        }
+        for (String arg : args) {
+            message = message.replaceFirst("\\{\\}",arg);
+        }
+        return message;
+    }
 
 
 }

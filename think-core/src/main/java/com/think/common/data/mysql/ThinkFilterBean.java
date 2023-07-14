@@ -303,7 +303,7 @@ public class ThinkFilterBean implements Serializable {
                 this.paramIsKey = true;
                 this.len=0;
                 if(this.values.length == 1) {
-                    sb.append("=").append(values[0]).append(" ");
+                    sb.append("<> ").append(values[0]).append(" ");
                 }else{
                     this.safe = false;
                 }

@@ -46,7 +46,8 @@ public class ThinkPayloadProcessor {
         try{
             data = (Serializable) payload.getData();
         }catch (Exception e){
-            log.error("无法解析Payload内传递对象 : " ,e );
+            log.error("放弃处理无法解析的Payload : {}" , payload);
+            return;
         }
         IServerMessageHandler consumer =null;
         String dataType = payload.getDataTypeName(); //data.getClass().getTypeName();
