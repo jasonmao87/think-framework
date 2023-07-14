@@ -20,7 +20,7 @@ public class DataSourceConfig {
     /**
      * 最大连接池数量 默认300
      */
-    protected int maxActive = 300 ;
+    protected int maxActive = 50 ;
     /**
      * 最小连接池数量 默认10
      */

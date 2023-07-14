@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+
 /**
  * 日期工具类
  */
@@ -620,6 +621,15 @@ public class DateUtil extends TimeUtil{
         }else{
             return dayOfYear+(7-week);
         }
+    }
+
+
+    public static Date setTime(Date date,int hour ,int minute,int second){
+        date = beginOfDate(date);
+        computeAddHours(date,hour);
+        computeAddMinutes(date,minute);
+        computeAddSeconds(date,second);
+        return date;
     }
 
 
