@@ -29,11 +29,41 @@ import java.util.Map;
 @Slf4j
 @Repository
 public class ThinkMongoDao {
+    private MongoTemplate mongoTemplate;
+    private long wrVersion = 0;
+
     @Autowired
-    MongoTemplate mongoTemplate;
+    public void setMongoTemplate(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+        this.mongoTemplate.setWriteConcern(writeConcern);
+    }
+
+    private static WriteConcern writeConcern = WriteConcern.ACKNOWLEDGED;
+    private static long WrV = 0L;
+
+    @Remark("指定mongoDb写入策略")
+    public static final void WriteConcernSet(WriteConcern writeConcern){
+        ThinkMongoDao.writeConcern = writeConcern;
+        WrV = System.currentTimeMillis();
+    }
+
+//    @Remark("修改写入策略")
+//    public ThinkMongoDao writeDaoConcernChange(WriteConcern writeConcern) {
+//        this.mongoTemplate.setWriteConcern(writeConcern);
+//        return this;
+//    }
+
+
 
     private MongoTemplate getMongoTemplate() {
-        mongoTemplate.setWriteConcern(WriteConcern.ACKNOWLEDGED);
+        if(log.isDebugEnabled()) {
+            log.debug("当前mongo写入策略：{}", writeConcern);
+        }
+        if(this.wrVersion != WrV){
+            this.wrVersion = WrV;
+            this.mongoTemplate.setWriteConcern(writeConcern);
+        }
+//        mongoTemplate.setWriteConcern(writeConcern);
         return mongoTemplate;
     }
 
