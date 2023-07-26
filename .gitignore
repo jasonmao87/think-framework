@@ -10,4 +10,5 @@ out
 gen
 *.class
 */target/
+*/target/*
 *.jar
