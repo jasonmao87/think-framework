@@ -10,6 +10,7 @@ import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ObjectUtil;
 import com.think.data.Manager;
+import com.think.data.ThinkDataRuntime;
 import com.think.data.dao.ThinkSplitPrimaryDao;
 import com.think.exception.ThinkRuntimeException;
 import lombok.extern.slf4j.Slf4j;
@@ -235,11 +236,16 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
         if(possibleSplits == null || possibleSplits.length == 0 ){
             return 0L;
         } else if( possibleSplits.length > 1) {
-
-            String partitionRegion = Manager.getDataSrvRuntimeInfo().getPartitionRegion();
-
+            final ThinkDataRuntime dataSrvRuntimeInfo = Manager.getDataSrvRuntimeInfo();
+            String partitionRegion = null ;
+            if(dataSrvRuntimeInfo!=null){
+                partitionRegion =dataSrvRuntimeInfo.getPartitionRegion();
+            }
+            final String finalPartitionRegion = partitionRegion;
             return Arrays.stream(possibleSplits).parallel().mapToLong(t -> {
-                Manager.unsafeChangeDataSrv(partitionRegion);
+                if (finalPartitionRegion!=null) {
+                    Manager.unsafeChangeDataSrv(finalPartitionRegion);
+                }
                 return simpleCount(sqlFilter.copyNew(), t);
             }).sum();
         }else{

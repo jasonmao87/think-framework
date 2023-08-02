@@ -80,6 +80,7 @@ public abstract class _JdbcExecutor {
                         log.trace("确定表{}不存在..",tableName);
                     }
                     String sql;
+//
                     if (Manager.getModelBuilder().get(getTargetClass()).isYearSplitAble()) {
                         if (log.isTraceEnabled()) {
                             log.trace("即将创建表【时间拆分】 {}", tableName);
