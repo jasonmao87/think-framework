@@ -8,6 +8,8 @@ import com.think.common.util.ThinkCollectionUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean._Entity;
+import com.think.core.executor.ThinkAsyncExecutor;
+import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
 import com.think.data.extra.StructAlterSqlLogger;
@@ -60,8 +62,15 @@ public abstract class _JdbcExecutor {
         }
     }
 
+    private <T extends _Entity> void executeTableInit(Class<T> targetClass ,String tableName){
+        ThinkAsyncExecutor.execute(()->{
+            //异步执行 防止影响事务!!!
+            _executeTableInit(targetClass,tableName);
+        });
+    }
 
-    public <T extends _Entity> void executeTableInit(Class<T> targetClass ,String tableName){
+    public <T extends _Entity> void _executeTableInit(Class<T> targetClass ,String tableName){
+//        ThinkThreadExecutor
         this.checkTransactionAndLogPrint();
         if (Manager.isTableInitialized(tableName) == false) {
             try {
