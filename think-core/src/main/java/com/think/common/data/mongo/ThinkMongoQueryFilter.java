@@ -171,6 +171,19 @@ public class ThinkMongoQueryFilter<T extends SimpleMongoEntity> implements Seria
     }
 
     private ThinkMongoQueryFilter<T> _append(String key, ThinkMongoFilterOp op, Serializable... values){
+        if(key.equalsIgnoreCase("id") || key.equalsIgnoreCase("_id")){
+            if(values!=null && values.length>0){
+                String[] strValues = new String[values.length];
+                for(int i=0;i<values.length;i++){
+                    strValues[i] = values[i] + "";
+                }
+                return _append("_id",op,strValues);
+            }
+
+
+            //
+        }
+
         if(values == null){
             if(log.isDebugEnabled()){
                 log.debug("THINK SQL FILTER 除了 NULL ，IS_NOT_NULL 外 ，参数均不能为NULL");
