@@ -56,9 +56,9 @@ public class ThinkMongoDao {
 
 
     private MongoTemplate getMongoTemplate() {
-        if(log.isDebugEnabled()) {
-            log.debug("当前mongo写入策略：{}", writeConcern);
-        }
+//        if(log.isTraceEnabled()) {
+//            log.trace("当前mongo写入策略：{}", writeConcern);
+//        }
         if(this.wrVersion != WrV){
             this.wrVersion = WrV;
             this.mongoTemplate.setWriteConcern(writeConcern);
