@@ -171,13 +171,14 @@ public class ThinkMongoQueryFilter<T extends SimpleMongoEntity> implements Seria
     }
 
     private ThinkMongoQueryFilter<T> _append(String key, ThinkMongoFilterOp op, Serializable... values){
-        if(key.equalsIgnoreCase("id") || key.equalsIgnoreCase("_id")){
+        if(key!= null && (key.equalsIgnoreCase("id") || key.equalsIgnoreCase("_id"))){
             if(values!=null && values.length>0){
                 String[] strValues = new String[values.length];
                 for(int i=0;i<values.length;i++){
                     strValues[i] = values[i] + "";
                 }
-                return _append("_id",op,strValues);
+                values= strValues;
+                //return _append("_id",op,strValues);
             }
 
 
