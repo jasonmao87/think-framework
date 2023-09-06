@@ -201,11 +201,10 @@ public class ThinkThreadExecutor {
 
 
     @Remark("延迟N秒执行")
-    public static final synchronized void runDelay(ThinkAsyncTask task , @Remark("延迟秒数") int second ) throws ThinkNotSupportException {
+    public static final synchronized void runDelay(ThinkAsyncTask task , @Remark("延迟秒数")final int second ) throws ThinkNotSupportException {
         if (log.isDebugEnabled()) {
             log.debug("添加延迟执行任务，将在{}秒后执行" ,second);
         }
-
         ThinkScheduleCronConfig config = ThinkScheduleBuilder.buildDelayConfig(second, TimeUnit.SECONDS);
         startScheduledTask(task,config);
     }

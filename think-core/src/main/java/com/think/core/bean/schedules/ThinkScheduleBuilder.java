@@ -5,6 +5,7 @@ import com.think.common.util.FastJsonUtil;
 import com.think.common.util.RandomUtil;
 import com.think.common.util.TVerification;
 import com.think.core.annotations.Remark;
+import com.think.core.executor.ThinkAsyncExecutor;
 import com.think.core.executor.ThinkThreadExecutor;
 import com.think.exception.ThinkNotSupportException;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +35,13 @@ public class ThinkScheduleBuilder {
         config.setHourCron("*");
         config.setMinuteCron("*");
         try{
-            config.setSecond(RandomUtil.nextInt()%60);
+            int i = RandomUtil.nextInt()%60;
+            if(i<1){
+                i = 1;
+            }
+            config.setSecond(i);
         }catch (Exception e){
-
-
+            log.error("error while build schedule config",e);
         }
         this.maxTrigger = maxTrigger;
     }
@@ -56,7 +60,7 @@ public class ThinkScheduleBuilder {
      * @param timeUnit   单位
      * @return
      */
-    public static ThinkScheduleCronConfig buildDelayConfig(int delayTime , TimeUnit timeUnit) throws ThinkNotSupportException {
+    public static ThinkScheduleCronConfig buildDelayConfig(final int delayTime , TimeUnit timeUnit) throws ThinkNotSupportException {
         final long maxSecond = 72L * 60L * 60L;
         long delaySecond = timeUnit.toSeconds(delayTime);
         if(delaySecond > maxSecond){
@@ -157,32 +161,20 @@ public class ThinkScheduleBuilder {
 
     public static void main(String[] args) {
         try {
-            while (true) {
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
-                ThinkThreadExecutor.runDelay(() -> {
-                }, 1);
 
+            while (true) {
+
+                for (int i = 0; i < 10; i++) {
+
+                    ThinkAsyncExecutor.execute(()->{
+                        for (int j = 0; j < 10; j++) {
+                            final int x = j ;
+                            ThinkThreadExecutor.runDelay(() -> {
+                                log.debug( x+"--");
+                            }, 1);
+                        }
+                    });
+                }
 
 
                 Thread.sleep(1000);

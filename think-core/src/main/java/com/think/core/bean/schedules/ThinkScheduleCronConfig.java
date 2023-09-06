@@ -200,8 +200,14 @@ public class ThinkScheduleCronConfig implements Serializable {
      * @param maxTriggerCount
      * @return 返回生效状态
      */
-    public boolean enable(int maxTriggerCount ) throws ThinkNotSupportException{
-        if(isSafe() && this.enable == false) {
+    public boolean enable(final int maxTriggerCount ) throws ThinkNotSupportException{
+        final boolean b = second > 0;
+        if(b == false){
+            log.error("触发秒【second】配置出现不允许的值：" + second + "，允许区间[0-59]");
+            return false;
+        }
+
+        if( this.enable == false) {
             this.init();
             this.setMaxTriggerCount(maxTriggerCount);
             this.enable = true;
@@ -283,10 +289,6 @@ public class ThinkScheduleCronConfig implements Serializable {
         }
         return null;
 
-    }
-
-    private boolean isSafe() {
-        return second > 0;
     }
 
     /**
