@@ -82,6 +82,9 @@ public class ThinkWebSecuritySigner {
      */
     public static final boolean checkSign( ThinkToken token ,Map<String,String> requestParams ,long time ,String uri ,String signStr){
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("开始检查签名.....");
+            }
             if(uri.contains("//")){
                 uri = uri.replaceAll("//","/");
             }
@@ -107,6 +110,8 @@ public class ThinkWebSecuritySigner {
             }
             return signReal.equals(signStr);
         }catch (Exception e){
+
+            log.error(" 签名检查异常:" ,e );
             return false;
         }
     }

@@ -8,4 +8,7 @@ public class FrameForceMatchFlag {
     }
 
 
+
+    public static void main(String[] args) {
+    }
 }

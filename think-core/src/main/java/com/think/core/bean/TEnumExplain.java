@@ -5,6 +5,7 @@ import com.think.core.enums.IEnumInterpreter;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +101,14 @@ public class TEnumExplain implements Serializable {
 //    }
 
     public List<Map<String, String>> getExplain(){
-        return cache.get(this.typeName).getList();
+        if (cache!=null && cache.containsKey(this.typeName)) {
+            final List<Map<String, String>> list = cache.get(this.typeName).getList();
+            if (list!=null) {
+                return list;
+            }
+            return new ArrayList<>();
+        }
+        return new ArrayList<>();
 
     }
 

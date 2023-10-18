@@ -59,7 +59,7 @@ public class ThinkThreadExecutor {
     /**
      * 核心线程数量，不会被回收
      */
-    private static final int corePoolSize = 6;
+    private static final int corePoolSize = 12;
     /**
      * 最大线程数量，超过核心数量当空闲时候会被回收
      */
@@ -68,8 +68,8 @@ public class ThinkThreadExecutor {
      * 拒绝策略采用 thinkRunsPolicy ，尝试 加queue 三次，如果 失败，让生产线程 自己跑去 ！
      */
     private static final Executor executor = new ThreadPoolExecutor(
-            corePoolSize,
-            maximumPoolSize,
+            12,
+            64,
             30,
             TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(queueCapacity),
@@ -208,6 +208,8 @@ public class ThinkThreadExecutor {
         ThinkScheduleCronConfig config = ThinkScheduleBuilder.buildDelayConfig(second, TimeUnit.SECONDS);
         startScheduledTask(task,config);
     }
+
+
 
 
 
@@ -361,11 +363,5 @@ public class ThinkThreadExecutor {
             return queue.offer(r);
         }
     }
-
-
-
-
-
-
 
 }

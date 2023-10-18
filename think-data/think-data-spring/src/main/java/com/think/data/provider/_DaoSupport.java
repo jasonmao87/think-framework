@@ -21,6 +21,7 @@ import java.util.List;
 
 @Slf4j
 public class _DaoSupport{
+
     private static final List<String> tableInitSQLList = new ArrayList<>();
 
     protected static <T extends _Entity> void callInsert(T t){

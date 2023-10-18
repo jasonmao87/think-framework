@@ -66,6 +66,10 @@ public class ThinkTableModel implements Serializable {
     @Remark("是否按年分表")
     private boolean yearSplitAble =false;
 
+
+    @Remark("是否启用业务数据隔离划分")
+    private boolean businessModeSplitAble = false;
+
 //    @Remark("启用版本管理")
 //    private boolean versionAble = false;
 
@@ -156,6 +160,9 @@ public class ThinkTableModel implements Serializable {
         this.yearSplitAble = yearSplitAble;
     }
 
+    protected void setBusinessModeSplitAble(boolean businessModeSplitAble) {
+        this.businessModeSplitAble = businessModeSplitAble;
+    }
 
     public boolean containsSortKey(String key){
         if(fastMatchKeys != null){
@@ -193,16 +200,11 @@ public class ThinkTableModel implements Serializable {
     public String getTableName() {
         if (ThinkThreadExecutor.isDataRegionChange()) {
             String currentRegion =ThinkThreadExecutor.getChangedDataRagionAndRemove();
-
             if (log.isDebugEnabled()) {
-
                 log.debug("需要调整新的数据分区，原因应该异步任务的线程数据分区更新通知--- 调整为 ：：：{}" , currentRegion);
             }
             Manager.unsafeChangeDataSrv(currentRegion);
         }
-
-
-
 
         return tableName;
     }
@@ -347,9 +349,17 @@ public class ThinkTableModel implements Serializable {
     }
 
     public boolean isPartitionAble() {
+        if(1>0){
+        // 强制 不使用分区!!!
+            return false;
+        }
         return partitionAble;
     }
 
+
+    public boolean isBusinessModeSplitAble() {
+        return businessModeSplitAble;
+    }
 
     public long getLastSplitCheckTime() {
         return lastSplitCheckTime;

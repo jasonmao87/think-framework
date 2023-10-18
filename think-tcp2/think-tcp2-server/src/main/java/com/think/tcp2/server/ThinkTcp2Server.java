@@ -78,7 +78,7 @@ public class ThinkTcp2Server {
             protected void initChannel(SocketChannel ch) throws Exception {
                 ThinkDefaultServerHandler defaultServerHandler = new ThinkDefaultServerHandler();
                 ThinkHeartbeatHandler heartBeatHandler = new ThinkHeartbeatHandler();
-                TcpPayloadHandler payloadHandler = new TcpPayloadHandler();
+                ServerTcpPayloadHandler payloadHandler = new ServerTcpPayloadHandler();
 
                 ThinkAuthRequestHandler authRequestHandler = new ThinkAuthRequestHandler();
                 ChannelPipeline pipeline = ch.pipeline();

@@ -8,6 +8,7 @@ import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,6 +46,12 @@ public class TcpPayload implements Serializable {
     private String clientId ;
 
     private String session;
+
+    /**
+     * 传递时候得扩展传递信息
+     */
+    private String extra;
+
 
     public TcpPayload(Serializable data) {
         this.initTime = ThinkMilliSecond.currentTimeMillis();
@@ -126,14 +133,27 @@ public class TcpPayload implements Serializable {
         this.session = session;
     }
 
+
+
+
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
     @Override
     public String toString() {
         return "TcpPayload{" +
-                "data=" + data +
+                "data=" + Arrays.toString(data) +
+                ", dataType='" + dataType + '\'' +
                 ", initTime=" + initTime +
                 ", tryCount=" + tryCount +
                 ", clientId='" + clientId + '\'' +
                 ", session='" + session + '\'' +
+                ", extendedData='" + extra + '\'' +
                 '}';
     }
 }

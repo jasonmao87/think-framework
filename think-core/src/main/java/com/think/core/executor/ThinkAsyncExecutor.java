@@ -155,8 +155,6 @@ public class ThinkAsyncExecutor {
                 }
             }
         };
-//        final Thread thread = new Thread(runnable);
-////        ThinkThreadExecutor.getExecutor().execute(runnable);
 
         return CompletableFuture.runAsync(runnable,ThinkThreadExecutor.getExecutor());
 
@@ -210,6 +208,23 @@ public class ThinkAsyncExecutor {
         
 
 
+    }
+
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 100; i++) {
+            final String  s = i + "";
+            execute(()->{
+                print(s);
+                for (int j = 0; j < 100; j++) {
+                    String x = "+"+j + "";
+                    execute(()->{
+                        print(  x );
+                    });
+                }
+                Thread.sleep(1000);
+            });
+        }
     }
 
 

@@ -6,6 +6,7 @@ import com.think.common.data.IThinkQueryFilter;
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.core.annotations.Remark;
 import com.think.core.bean.SimplePrimaryEntity;
+import com.think.core.enums.TableBusinessModeSplitStateEnum;
 import com.think.core.security.token.ThinkSecurityToken;
 import com.think.core.security.token.ThinkSecurityTokenTransferManager;
 import com.think.data.filter.DefaultThinkDataFilter;
@@ -66,6 +67,14 @@ public class Manager {
     public static final void disAbleThinkLinkedIdSupport(){
         thinkLinkedIdSupportAble =false;
     }
+
+
+    @Remark("启用业务模式划分默认值")
+    public static void businessModeSplitDefaultConfig(boolean defaultState ){
+        TableBusinessModeSplitStateEnum.defaultStateSet(defaultState?TableBusinessModeSplitStateEnum.ENABLE:TableBusinessModeSplitStateEnum.DISABLE);
+    }
+
+
 
     public static boolean isThinkLinkedIdSupportAble() {
         return thinkLinkedIdSupportAble;

@@ -39,7 +39,25 @@ public class ClassUtil {
 
             }
             */
+            if(v == null){
+                return;
+                /*
+                if (field.getType() == long.class) {
+                    v =0L;
+                }else if(field.getType() == int.class) {
+                    v = 0;
+                }else if(field.getType() == short.class) {
+                    v = Short.valueOf("0").shortValue();
+                }else if (field.getType() == double.class) {
+                    v = 0.0D;
+                }else if (field.getType() == float.class) {
+                    v = 0.0F;
+                }else if(field.getType() == boolean.class) {
+                    v = false;
+                }
+                */
 
+            }
             if(v instanceof BigDecimal){
                 String typeName = field.getType().getCanonicalName().toLowerCase();
                 if(typeName.contains("double")){

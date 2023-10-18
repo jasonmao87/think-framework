@@ -193,7 +193,6 @@ public class Tcp2Client {
                 log.warn("当前TCP CLIENT 通信运维受限，通信的内容可能不被服务器处理和消费");
             }
 
-//        Iterator<TcpPayloadEventListener> executeIterator = PayloadListenerManager.getExecuteIterator();
             final List<TcpPayloadEventListener> listeners = PayloadListenerManager.getListeners();
             for (TcpPayloadEventListener eventListener : listeners) {
                 try {
@@ -209,14 +208,20 @@ public class Tcp2Client {
                 throw new InterruptedException("暂未与服务端建立连接");
             }
             ChannelFuture channelFuture = this.channel.writeAndFlush(payload);
-
-            for (TcpPayloadEventListener tcpPayloadEventListener : listeners) {
-                try {
-                    tcpPayloadEventListener.afterSend(payload);
-                } catch (Exception e) {
-                    log.error("执行TcpPayloadListener[afterSend]出现的异常（该异常发送在消息发送后，不会影响正常程序）", e);
+            channelFuture.addListener(future -> {
+                if (future.isSuccess()) {
+                    for (TcpPayloadEventListener tcpPayloadEventListener : listeners) {
+                        try {
+                            tcpPayloadEventListener.afterSend(payload);
+                        } catch (Exception e) {
+                            log.error("执行TcpPayloadListener[afterSend]出现的异常（该异常发送在消息发送后，不会影响正常程序）", e);
+                        }
+                    }
+                } else {
                 }
-            }
+            });
+
+
             return true;
         }catch (Exception e){
             e.printStackTrace();
@@ -254,7 +259,9 @@ public class Tcp2Client {
     }
 
     protected void setId(String id) {
-        log.info("当前客户端Id = {}" ,id  );
+        if (log.isDebugEnabled()) {
+            log.debug("当前客户端Id = {}" ,id  );
+        }
         this.id = id;
     }
 

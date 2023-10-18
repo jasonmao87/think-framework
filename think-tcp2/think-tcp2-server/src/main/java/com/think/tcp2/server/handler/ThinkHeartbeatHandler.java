@@ -1,8 +1,8 @@
 package com.think.tcp2.server.handler;
 
 import com.think.tcp2.common.model.Tcp2Heartbeat;
-import com.think.tcp2.server.ClientManager;
-import com.think.tcp2.server.TcpClient;
+import com.think.tcp2.server.ServerClientManager;
+import com.think.tcp2.server.TcpServerClient;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -23,8 +23,8 @@ public class ThinkHeartbeatHandler extends SimpleChannelInboundHandler<Tcp2Heart
             log.trace("ThinkHeartbeatHandler 收到消息 {} " ,tcp2Heartbeat);
         }
         final String id = channelHandlerContext.channel().id().asShortText();
-        if (ClientManager.getInstance().isHold(id)) {
-            ClientManager.getInstance().get(id).idleState();
+        if (ServerClientManager.getInstance().isHold(id)) {
+            ServerClientManager.getInstance().get(id).idleState();
         }
     }
 
@@ -32,10 +32,10 @@ public class ThinkHeartbeatHandler extends SimpleChannelInboundHandler<Tcp2Heart
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if(evt instanceof IdleStateEvent){
-            final TcpClient clientModel = ClientManager.getInstance().get( ctx.channel());
+            final TcpServerClient clientModel = ServerClientManager.getInstance().get( ctx.channel());
             if(clientModel!=null) {
                 if (clientModel.isExpire()) {
-                    ClientManager.getInstance().unHold(ctx.channel());
+                    ServerClientManager.getInstance().unHold(ctx.channel());
                 }
             }
         }

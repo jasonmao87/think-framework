@@ -32,7 +32,25 @@ public abstract class _Entity<T extends _Entity> implements IThinkFilterAndUpdat
     @ApiModelProperty(hidden = true)
     private String partitionRegion = "";
 
-//    @ThinkColumn(nullable = false)
+
+
+
+    @Remark("用于同表,不同业务的数据切分!如A产品,B产品,使用相同表. 可有使用该字段进行数据的隔离划分")
+    @ThinkColumn(nullable = false,length = 16,defaultValue = "",editAble = false)
+    @ApiModelProperty(hidden = true, value = "业务模式划分", allowEmptyValue = true)
+    private String  businessExtra = "";
+
+    public static String businessExtraKey(){
+        return "businessExtra";
+    }
+
+    public void setBusinessExtra(String businessExtra) {
+        if(businessExtra != null){
+            this.businessExtra = businessExtra;
+        }
+    }
+
+    //    @ThinkColumn(nullable = false)
 //    @ApiModelProperty(value = "删除状态",hidden = true)
 //    private boolean deleteState  = false;
 //
@@ -235,5 +253,7 @@ public abstract class _Entity<T extends _Entity> implements IThinkFilterAndUpdat
             return  null;
         }
     }
+
+
 
 }

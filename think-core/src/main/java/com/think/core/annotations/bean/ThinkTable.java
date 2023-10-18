@@ -2,6 +2,7 @@ package com.think.core.annotations.bean;
 
 
 import com.think.core.annotations.Remark;
+import com.think.core.enums.TableBusinessModeSplitStateEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -41,6 +42,13 @@ public @interface ThinkTable {
 
     @Remark(value = "启用年度数据切分",description = "（在数据分区得基础上，也可以是普通表）额外在支持按年分表")
     boolean yearSplit() default false;
+
+    /**
+     * 业务模式划分 功能是否开启
+     * @return
+     */
+    @Remark(value = "启用业务模式划分()",description = "同表不同产品的数据划分支持，如A产品，B产品，使用相同表，可使用该字段进行数据的隔离划分")
+    TableBusinessModeSplitStateEnum businessModeSplitAble() default TableBusinessModeSplitStateEnum.DEFAULT;
 //
 //    @Remark("启用版本管理")
 //    boolean enableVersion() default false;

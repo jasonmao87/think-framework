@@ -2,8 +2,8 @@ package com.think.tcp2.server.handler;
 
 import com.think.exception.ThinkRuntimeException;
 import com.think.tcp2.common.model.TcpPayload;
-import com.think.tcp2.server.ClientManager;
-import com.think.tcp2.server.TcpClient;
+import com.think.tcp2.server.ServerClientManager;
+import com.think.tcp2.server.TcpServerClient;
 import com.think.tcp2.server.handler.provider.StringMessagePrintConsumer;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +32,8 @@ public class ThinkPayloadProcessor {
         if (freeAuthTypeSet.contains(dataType)) {
             return true;
         }
-        final TcpClient tcpClient = ClientManager.getInstance().get(channel);
-        return !tcpClient.isDeny();
+        final TcpServerClient tcpServerClient = ServerClientManager.getInstance().get(channel);
+        return !tcpServerClient.isDeny();
 
 
     }
@@ -69,7 +69,7 @@ public class ThinkPayloadProcessor {
             }
         }
         if(consumer!=null) {
-            consumer.handle(data,channel,payloadSession);
+            consumer.handle(data,channel,payloadSession );
         }else{
             if (log.isDebugEnabled()) {
                 log.debug("未找到何时的 消息处理器 {} -->> {} " ,data.getClass().getTypeName(),data);

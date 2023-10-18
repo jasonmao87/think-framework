@@ -23,16 +23,16 @@ import java.util.function.Predicate;
  * @description : TODO
  */
 @Slf4j
-public class ClientManager {
+public class ServerClientManager {
 
-    private static ClientManager instance ;
-    private final Map<String, TcpClient> clientHolder ;
+    private static ServerClientManager instance ;
+    private final Map<String, TcpServerClient> clientHolder ;
 
 
     public final Set<String> authDenySet;
 
 
-    private ClientManager() {
+    private ServerClientManager() {
         authDenySet = new HashSet<>();
         clientHolder = new ConcurrentHashMap<>();
         ///启动自动巡检
@@ -74,17 +74,17 @@ public class ClientManager {
         return tcpClientTrigger;
     }
 
-    public static final ClientManager getInstance() {
+    public static final ServerClientManager getInstance() {
         if(instance == null){
             return doInstance();
         }
         return instance;
     }
 
-    private synchronized static ClientManager doInstance(){
+    private synchronized static ServerClientManager doInstance(){
         log.info("TCP SERVER 初始化客户端管理器");
         if(instance == null){
-            instance = new ClientManager();
+            instance = new ServerClientManager();
             log.info("TCP SERVER 构建客户端管理器完成");
         }
         return instance;
@@ -92,10 +92,10 @@ public class ClientManager {
 
 
     public void hold(Channel channel){
-        this.hold(new TcpClient(channel));
+        this.hold(new TcpServerClient(channel));
     }
 
-    private void hold(TcpClient client){
+    private void hold(TcpServerClient client){
         if (log.isDebugEnabled()) {
             log.debug("注册新的客户端---- {}" ,client.getId());
         }
@@ -151,11 +151,11 @@ public class ClientManager {
      * @param id
      * @return
      */
-    public TcpClient get(String id){
+    public TcpServerClient get(String id){
         return this.clientHolder.get(id);
     }
 
-    public TcpClient get(Channel channel){
+    public TcpServerClient get(Channel channel){
         return this.get(channel.id().asShortText());
     }
 
@@ -175,23 +175,26 @@ public class ClientManager {
         return idList;
     }
 
-    public List<TcpClient> fullClientList(){
-        List<TcpClient> list = new ArrayList<>();
-        this.clientHolder.forEach((k,v)->{
-            list.add(v);
-        });
-        if(list.size() > 1) {
-            list.sort((a, b) -> {
-                return b.getAppName().compareTo(a.getAppName());
+    public List<TcpServerClient> fullClientList(){
+        List<TcpServerClient> list = new ArrayList<>();
+        if (clientHolder!=null && !clientHolder.isEmpty()) {
+            this.clientHolder.forEach((k,v)->{
+                list.add(v);
             });
+            if(list.size() > 1) {
+                list.sort((a, b) -> {
+                    return b.getAppName().compareTo(a.getAppName());
+                });
+            }
         }
+
         return list;
 
     }
 
 
-    public List<TcpClient> list(final int start, final int limit){
-        final List<TcpClient> list = new ArrayList<>();
+    public List<TcpServerClient> list(final int start, final int limit){
+        final List<TcpServerClient> list = new ArrayList<>();
         final int finalLimit = limit >0?limit:Integer.MAX_VALUE;
         final int finalStart = start>0? start:0 ;
         AtomicInteger integer =new AtomicInteger(0);
@@ -209,7 +212,7 @@ public class ClientManager {
      * 发送广播消息
      */
     @Remark("发送广播消息，异步的 ")
-    public <T extends Serializable> void broadcastMessage(T message , Predicate<TcpClient> predicate){
+    public <T extends Serializable> void broadcastMessage(T message , Predicate<TcpServerClient> predicate){
         final CompletableFuture<Void> future = ThinkAsyncExecutor.execute(() -> {
             //异步多线程执行
             clientHolder.entrySet().parallelStream().forEach(t -> {
@@ -225,12 +228,12 @@ public class ClientManager {
     public void printClients(){
         int index =0;
         for (String key : this.clientHolder.keySet()) {
-            TcpClient tcpClient = get(key);
+            TcpServerClient tcpServerClient = get(key);
             index++;
             if(log.isInfoEnabled()) {
-                log.info("{} : [{}]{}  --最后活跃：{} 是否受限 {} ", index, tcpClient.getId(),tcpClient.getSocketAddress(), tcpClient.getLastActiveTime() , tcpClient.isDeny());
+                log.info("{} : [{}]{}  --最后活跃：{} 是否受限 {} ", index, tcpServerClient.getId(), tcpServerClient.getSocketAddress(), tcpServerClient.getLastActiveTime() , tcpServerClient.isDeny());
             }else{
-                System.out.println(index + ":" + tcpClient.getId() +" --最后活跃 ： "+ tcpClient.getLastActiveTime());
+                System.out.println(index + ":" + tcpServerClient.getId() +" --最后活跃 ： "+ tcpServerClient.getLastActiveTime());
             }
         }
     }
@@ -252,9 +255,9 @@ public class ClientManager {
      */
     public void denyClientByAuthKey(String authKey,String message){
         for (String key : this.clientHolder.keySet()) {
-            TcpClient tcpClient = get(key);
-            if(tcpClient.getAuthKey().equals(authKey)){
-                tcpClient.setDeny(true,message);
+            TcpServerClient tcpServerClient = get(key);
+            if(tcpServerClient.getAuthKey().equals(authKey)){
+                tcpServerClient.setDeny(true,message);
             }
             this.authDenySet.add(authKey);
         }
@@ -262,9 +265,9 @@ public class ClientManager {
 
     public void acknowledgeClientByAuthKey(String authKey){
         for (String key : this.clientHolder.keySet()) {
-            TcpClient tcpClient = get(key);
-            if(tcpClient.getAuthKey().equals(authKey)){
-                tcpClient.setDeny(false,"");
+            TcpServerClient tcpServerClient = get(key);
+            if(tcpServerClient.getAuthKey().equals(authKey)){
+                tcpServerClient.setDeny(false,"");
             }
             this.authDenySet.remove(authKey);
         }
@@ -278,9 +281,9 @@ public class ClientManager {
             while (true) {
                 try {
                     for (String key : this.clientHolder.keySet()) {
-                        TcpClient tcpClient = get(key);
-                        boolean deny = tcpClient.isDeny();
-                        if (this.authDenySet.contains(tcpClient.getAuthKey())) {
+                        TcpServerClient tcpServerClient = get(key);
+                        boolean deny = tcpServerClient.isDeny();
+                        if (this.authDenySet.contains(tcpServerClient.getAuthKey())) {
                             if(deny == false){
                                 deny = true;
                             }
@@ -289,7 +292,7 @@ public class ClientManager {
                                 deny =false;
                             }
                         }
-                        tcpClient.setDeny(deny, "巡检重复通知");
+                        tcpServerClient.setDeny(deny, "巡检重复通知");
                     }
                     log.info("巡检结束");
                     TimeUtil.sleep(15, TimeUnit.MINUTES);

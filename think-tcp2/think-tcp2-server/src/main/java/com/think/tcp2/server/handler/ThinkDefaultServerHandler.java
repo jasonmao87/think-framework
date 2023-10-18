@@ -1,8 +1,8 @@
 package com.think.tcp2.server.handler;
 
 
-import com.think.tcp2.server.ClientManager;
-import com.think.tcp2.server.TcpClient;
+import com.think.tcp2.server.ServerClientManager;
+import com.think.tcp2.server.TcpServerClient;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
         if (log.isTraceEnabled()) {
             log.trace("默认handler 收到消息 {} ",tcpPayload);
         }
-        final TcpClient clientModel = ClientManager.getInstance().get(channelHandlerContext.channel());
+        final TcpServerClient clientModel = ServerClientManager.getInstance().get(channelHandlerContext.channel());
         clientModel.active();
 
     }
@@ -40,8 +40,8 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        if (ClientManager.getInstance().isHold(ctx.channel())) {
-            ClientManager.getInstance().unHold(ctx.channel());
+        if (ServerClientManager.getInstance().isHold(ctx.channel())) {
+            ServerClientManager.getInstance().unHold(ctx.channel());
         }
         super.channelUnregistered(ctx);
     }
@@ -55,7 +55,7 @@ public class ThinkDefaultServerHandler extends SimpleChannelInboundHandler<Objec
             log.debug("caught Exception , exception is {} " ,cause);
         }
         if (!ctx.channel().isActive()) {
-            ClientManager.getInstance().unHold(ctx.channel());
+            ServerClientManager.getInstance().unHold(ctx.channel());
         }
         try{
             ctx.channel().close();

@@ -116,6 +116,7 @@ C:\developer\incubator\think-famework\think-core\src\main\java\com\think\common\
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\core\annotations\bean\ThinkStateColumn.java
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\core\security\ThinkLock.java
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\structure\ThinkEntry.java
+C:\developer\incubator\think-famework\think-core\src\main\java\com\think\core\enums\TableBusinessModeSplitStateEnum.java
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\core\enums\ResultDataType.java
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\structure\ThinkReadOnlyList.java
 C:\developer\incubator\think-famework\think-core\src\main\java\com\think\common\util\RandomUtil.java

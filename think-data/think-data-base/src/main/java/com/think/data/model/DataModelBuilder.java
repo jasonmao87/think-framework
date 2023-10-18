@@ -75,7 +75,7 @@ public class DataModelBuilder {
 //        String buildTableName = "";
         if(modal!=null ){
             if(modal.isPartitionAble()){
-                if(Manager.getDataSrvRuntimeInfo() ==null   ){
+                if(Manager.getDataSrvRuntimeInfo() ==null ){
                     if (log.isDebugEnabled()) {
                         log.debug("未找到必要的RUNTIME INFO， 为了正常运行返回了 {}分区" , ThinkDataRuntime.NONE_PART);
                     }
@@ -234,6 +234,7 @@ public class DataModelBuilder {
             throw new ThinkDataModelException("未找到ThinkTable注解，故无法初始化ThinkTable");
         }
         boolean partitionAble = tBean.partitionAble();
+        boolean businessModeSplitAble = tBean.businessModeSplitAble().isEnable();
         boolean autoIncPK = false;
         String tableComment = null;
         String dsId = null;
@@ -281,6 +282,7 @@ public class DataModelBuilder {
         modal.setDataSourceId(dsId);
         modal.setAutoIncPK(autoIncPK);
         modal.setYearSplitAble(yearSplit);
+        modal.setBusinessModeSplitAble(businessModeSplitAble);
         return modal;
     }
 

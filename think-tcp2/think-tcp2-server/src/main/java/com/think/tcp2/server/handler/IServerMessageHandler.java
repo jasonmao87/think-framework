@@ -13,12 +13,19 @@ import java.io.Serializable;
 public interface IServerMessageHandler<T extends Serializable> {
 
 
+//    void handle(T data, Channel channel,String sessionString,String extra);
+
 
     /**
      * 处理payload内 对象
      * @param data
      * @param channel
      */
-    void handle(T data, Channel channel,String sessionString);
+    void handle(T data, Channel channel,String sessionString) ;
+
+    default void handle(T data, Channel channel){
+        handle(data,channel,null);
+    }
+
 
 }

@@ -12,9 +12,10 @@ import io.netty.channel.Channel;
  */
 public class StringMessagePrintConsumer implements IServerMessageHandler<String> {
 
+
     @Override
-    public void handle(String data, Channel channel,String session) {
-        System.out.println( " : "+data);
+    public void handle(String data, Channel channel, String sessionString ) {
 
     }
+
 }

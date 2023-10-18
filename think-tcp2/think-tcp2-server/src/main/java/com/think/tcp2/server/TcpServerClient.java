@@ -5,6 +5,8 @@ import com.think.common.util.ThinkMilliSecond;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
 import com.think.tcp2.common.model.message.AuthResponseMessage;
+import com.think.tcp2.core.listener.PayloadListenerManager;
+import com.think.tcp2.core.listener.TcpPayloadEventListener;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,7 +24,7 @@ import java.util.Set;
  * @description : 连接客户端模型
  */
 @Slf4j
-public class TcpClient implements Serializable {
+public class TcpServerClient implements Serializable {
 
     private static final long serialVersionUID = 8972824446970992179L;
 
@@ -52,7 +55,7 @@ public class TcpClient implements Serializable {
         return socketAddress!=null?socketAddress.getHostName():"";
     }
 
-    protected TcpClient(Channel channel) {
+    protected TcpServerClient(Channel channel) {
         this.channel = channel;
         this.initTime = ThinkMilliSecond.currentTimeMillis();
     }
@@ -103,17 +106,7 @@ public class TcpClient implements Serializable {
     public <T extends Serializable> void sendMessage(T message){
         try {
             TcpPayload payload = new TcpPayload(message);
-            payload.setClientId(this.getId());
-            this.active();
-            final ChannelFuture channelFuture = channel.writeAndFlush(payload);
-//            channelFuture.addListener(future -> {
-//                if (future.isSuccess()) {
-//                    log.info("发送成功  sendMessage ");
-//                } else {
-//                    future.cause().printStackTrace();
-//                    log.info("发送失败 sendMessage ");
-//                }
-//            });
+            this.sendPayload(payload);
         }catch (Exception   e){
             e.printStackTrace();
         }
@@ -124,19 +117,30 @@ public class TcpClient implements Serializable {
             this.active();
             TcpPayload payload = new TcpPayload(message);
             payload.setSession(session);
-            payload.setClientId(this.getId());
-            final ChannelFuture channelFuture = channel.writeAndFlush(payload);
-//            channelFuture.addListener(future -> {
-//                if (future.isSuccess()) {
-//                    log.info("发送成功 sendMessageWithSession");
-//                } else {
-//                    future.cause().printStackTrace();
-//                    log.info("发送失败 sendMessageWithSession");
-//                }
-//            });
+            this.sendPayload(payload);
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+
+    private void sendPayload(TcpPayload payload){
+        payload.setClientId(this.getId());
+        this.active();
+        final List<TcpPayloadEventListener> listeners = PayloadListenerManager.getListeners();
+        for (TcpPayloadEventListener listener : listeners) {
+            listener.beforeSend(payload);
+        }
+        final ChannelFuture channelFuture = channel.writeAndFlush(payload);
+        channelFuture.addListener(future -> {
+            if (future.isSuccess()) {
+                for (TcpPayloadEventListener listener : listeners) {
+                    try{
+                        listener.afterSend(payload);
+                    }catch (Exception e){}
+                }
+            }else{}
+        });
     }
 
 

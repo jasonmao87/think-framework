@@ -103,6 +103,7 @@ com\think\structure\ThinkEntry.class
 com\think\core\annotations\bean\ThinkStateColumn.class
 com\think\core\executor\reduce\TReducer$1.class
 com\think\core\executor\reduce\CombinerResult.class
+com\think\core\enums\TableBusinessModeSplitStateEnum.class
 com\think\core\executor\reduce\ThinkLocalMapReduceExecutor.class
 com\think\core\bean\SimpleRefEntity.class
 com\think\common\util\ThinkAssert.class

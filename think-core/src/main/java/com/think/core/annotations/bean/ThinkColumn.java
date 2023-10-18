@@ -40,7 +40,7 @@ public @interface ThinkColumn {
     @Remark(value = "快速排序支持需求（不一定生效）",description = "不保证生效，thinkFramework限制了部分支持，考虑实际场景，在不明显增加数据库压力的情况下，才可能生效。针对排序或者筛选需要，在不适合建立索引的字段理，增加快速检索支持。")
     boolean fastMatch() default false ;
 
-    @Remark("申明Date类类型不要设置默认事件")
+    @Remark("申明Date类类型不要设置默认时间")
     boolean noSetDateDefaultValue() default false;
 
     @Remark("当数据类型为string时候有效")

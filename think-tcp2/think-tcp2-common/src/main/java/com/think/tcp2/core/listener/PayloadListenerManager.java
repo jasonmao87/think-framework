@@ -18,9 +18,6 @@ public class PayloadListenerManager {
         return listeners;
     }
 
-//    public static Iterator<TcpPayloadEventListener> getExecuteIterator(){
-//        return listeners.iterator();
-//    }
 
 
     public static final void  addFirst(TcpPayloadEventListener listener){
