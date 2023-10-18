@@ -32,13 +32,6 @@ public abstract class _Entity<T extends _Entity> implements IThinkFilterAndUpdat
     @ApiModelProperty(hidden = true)
     private String partitionRegion = "";
 
-//    @ThinkColumn(nullable = false)
-//    @ApiModelProperty(value = "删除状态",hidden = true)
-//    private boolean deleteState  = false;
-//
-//    @ThinkColumn(nullable = false)
-//    @ApiModelProperty(value = "删除时间",hidden = true)da
-//    private Date deleteTime  = DateUtil.zeroDate();
 
     @ApiModelProperty(value = "删除时间（虚拟）" ,hidden = true)
     public Date getDeleteTime(){
