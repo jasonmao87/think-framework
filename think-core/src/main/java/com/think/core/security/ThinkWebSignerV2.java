@@ -1,11 +1,11 @@
 package com.think.core.security;
 
+import lombok.extern.slf4j.Slf4j;
 import com.think.common.util.security.MD5Util;
 import com.think.common.util.security.SHAUtil;
 import com.think.core.enums.WebSignType;
 import com.think.core.security.sm.SM3Utils;
 import com.think.core.security.token.ThinkSecurityToken;
-import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.pqc.legacy.math.linearalgebra.ByteUtils;
 
 import java.util.ArrayList;
