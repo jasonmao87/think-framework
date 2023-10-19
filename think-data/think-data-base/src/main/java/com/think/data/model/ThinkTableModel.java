@@ -4,6 +4,7 @@ package com.think.data.model;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.TFlowBuilder;
+import com.think.core.enums.TableBusinessModeSplitStateEnum;
 import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.exception.ThinkDataModelException;
@@ -68,7 +69,7 @@ public class ThinkTableModel implements Serializable {
 
 
     @Remark("是否启用业务数据隔离划分")
-    private boolean businessModeSplitAble = false;
+    private TableBusinessModeSplitStateEnum businessModeSplitAble =null;
 
 //    @Remark("启用版本管理")
 //    private boolean versionAble = false;
@@ -160,7 +161,7 @@ public class ThinkTableModel implements Serializable {
         this.yearSplitAble = yearSplitAble;
     }
 
-    protected void setBusinessModeSplitAble(boolean businessModeSplitAble) {
+    protected void setBusinessModeSplitAble(TableBusinessModeSplitStateEnum businessModeSplitAble) {
         this.businessModeSplitAble = businessModeSplitAble;
     }
 
@@ -358,7 +359,7 @@ public class ThinkTableModel implements Serializable {
 
 
     public boolean isBusinessModeSplitAble() {
-        return businessModeSplitAble;
+        return businessModeSplitAble.isEnable();
     }
 
     public long getLastSplitCheckTime() {

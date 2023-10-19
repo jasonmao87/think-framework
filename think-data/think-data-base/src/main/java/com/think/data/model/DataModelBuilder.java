@@ -7,6 +7,7 @@ import com.think.core.annotations.bean.*;
 import com.think.core.bean.TFlowState;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.enums.TableBusinessModeSplitStateEnum;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
 import com.think.data.exception.ThinkDataModelException;
@@ -234,7 +235,7 @@ public class DataModelBuilder {
             throw new ThinkDataModelException("未找到ThinkTable注解，故无法初始化ThinkTable");
         }
         boolean partitionAble = tBean.partitionAble();
-        boolean businessModeSplitAble = tBean.businessModeSplitAble().isEnable();
+        final TableBusinessModeSplitStateEnum tableBusinessModeSplitStateEnum = tBean.businessModeSplitAble();
         boolean autoIncPK = false;
         String tableComment = null;
         String dsId = null;
@@ -282,7 +283,7 @@ public class DataModelBuilder {
         modal.setDataSourceId(dsId);
         modal.setAutoIncPK(autoIncPK);
         modal.setYearSplitAble(yearSplit);
-        modal.setBusinessModeSplitAble(businessModeSplitAble);
+        modal.setBusinessModeSplitAble(tableBusinessModeSplitStateEnum);
         return modal;
     }
 

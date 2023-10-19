@@ -27,9 +27,10 @@ public enum TableBusinessModeSplitStateEnum {
 
     public boolean isEnable(){
         if(this == DEFAULT){
-            TVerification.valueOf(DEFAULT_VALUE).throwIfNull("为设置业务区分隔离模式默认值");
+            TVerification.valueOf(DEFAULT_VALUE).throwIfNull("尚未设置业务区分隔离模式默认值");
+            TVerification.valueOf(DEFAULT_VALUE == DEFAULT).throwIfTrue("业务区分隔离模式默认值设置错误,只允许设置为ENABLE或者DISABLE");
+            return DEFAULT_VALUE == ENABLE;
         }
-        TVerification.valueOf(DEFAULT_VALUE == DEFAULT).throwIfTrue("业务区分隔离模式默认值设置错误,只允许设置为ENABLE或者DISABLE");
         return this == ENABLE;
     }
 
