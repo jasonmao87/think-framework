@@ -1,3 +1,4 @@
+com\think\core\enums\DbType.class
 com\think\core\security\ThinkLock.class
 com\think\common\util\security\Desensitization2Util.class
 com\think\core\bean\TFlowBuilder.class
