@@ -47,7 +47,7 @@ public class ThinkWebSignerV2 {
         return sourceStr.toString();
     }
 
-    private static String doSign(WebSignType webSignType,String source){
+    protected static String doHash(WebSignType webSignType, String source){
         switch (webSignType){
             case SM3: return SM3Utils.sm3(source);
             case SHA1: return SHAUtil.sha1(source);
@@ -59,22 +59,25 @@ public class ThinkWebSignerV2 {
         return SM3Utils.sm3(source);
     }
 
+
+
+
     public static final String sign(WebSignType webSignType, ThinkToken token, Map<String,String> requestParams , long time , String uri ){
         String secretKey = ThinkSecurityManager.buildSignPrimaryKey(token);
         String source = buildSourceString(requestParams, time, uri, secretKey);
-        return doSign(webSignType,source);
+        return doHash(webSignType,source);
     }
 
 
     public static final String sign(WebSignType webSignType,ThinkSecurityToken token, Map<String,String> requestParams , long time , String uri){
         String secretKey = ThinkSecurityManager.buildSignPrimaryKey(token);
         String source = buildSourceString(requestParams, time, uri, secretKey);
-        return doSign(webSignType,source);
+        return doHash(webSignType,source);
     }
 
 
     /**
-     * 检验 签名是否正确
+     * 检验 原文和签名摘要是否匹配
      * @param signType
      * @param source
      * @param signHexString
@@ -82,9 +85,24 @@ public class ThinkWebSignerV2 {
      */
     public static boolean verify(WebSignType signType ,String source ,String signHexString){
         byte[] signHash = ByteUtils.fromHexString(signHexString);
-        byte[] sourceHash = ByteUtils.fromHexString(doSign(signType,source));
+        byte[] sourceHash = ByteUtils.fromHexString(doHash(signType,source));
         return ByteUtils.equals(signHash,sourceHash);
     }
 
+    /**
+     * 检查web签名是否正确
+     * @param signType
+     * @param token
+     * @param queryParams
+     * @param uri
+     * @param time
+     * @param sign
+     * @return
+     */
+    public static boolean verifyWebSign(WebSignType signType ,ThinkSecurityToken token ,Map<String,String> queryParams,String uri,long time ,String sign){
+        String secretKey = ThinkSecurityManager.buildSignPrimaryKey(token);
+        String source = buildSourceString(queryParams, time, uri, secretKey);
+        return verify(signType,source,sign);
+    }
 
 }

@@ -3,6 +3,7 @@ package com.think.tcp2.client;
 import com.think.common.util.StringUtil;
 import com.think.common.util.security.MD5Util;
 import com.think.core.annotations.Remark;
+import com.think.core.security.sm.SM3Utils;
 import com.think.tcp2.IThinkTcpPayloadHandler;
 import com.think.tcp2.common.ThinkTcpConfig;
 import com.think.tcp2.common.model.TcpPayload;
@@ -20,6 +21,7 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.NetUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jcajce.provider.digest.SM3;
 
 import java.io.Serializable;
 import java.util.List;
@@ -91,7 +93,8 @@ public class Tcp2Client {
 
 
     private Tcp2Client() {
-        this.authKey =  MD5Util.encryptMd5(StringUtil.uuid() +"-millis-"+  System.currentTimeMillis() + "nano-"+ System.nanoTime());
+//        this.authKey =   MD5Util.encryptMd5(StringUtil.uuid() +"-millis-"+  System.currentTimeMillis() + "nano-"+ System.nanoTime());
+        this.authKey = SM3Utils.sm3(StringUtil.uuid() +"-millis-"+  System.currentTimeMillis() + "nano-"+ System.nanoTime());
     }
     public static final Tcp2Client getInstance(){
         if(instance == null){

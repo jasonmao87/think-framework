@@ -69,6 +69,7 @@ com\think\common\util\ThinkCollectionUtil.class
 com\think\structure\ThinkSimpleHolder.class
 com\think\common\data\ThinkMongoFilterOp$1.class
 com\think\common\data\mysql\permission\ThinkSqlFilterPermissionFilter.class
+com\think\core\security\ThinkWebSignerV2$1.class
 com\think\core\executor\reducer\TaskReduceResult.class
 com\think\core\executor\thread\ThinkStopAbleTasker.class
 com\think\core\security\token\filter\IThinkSecurityAsyncTokenFilter.class
@@ -87,6 +88,7 @@ com\think\common\util\RandomUtil.class
 com\think\core\security\token\ThinkSecurityToken.class
 com\think\common\result\ResultInfo.class
 com\think\common\util\security\StrCompressionUtil.class
+com\think\core\security\sm\SM2Utils.class
 com\think\core\data\cache\ExpireAbleCache$ExpiredRemoveSubscriber.class
 com\think\core\bean\BlobEntity.class
 com\think\core\data\DynamicArray.class
@@ -161,6 +163,7 @@ com\think\structure\ThinkRandomSet.class
 com\think\common\util\TimeUtil.class
 com\think\common\util\security\Base64Util.class
 com\think\core\executor\ThinkThreadExecutorMonitor.class
+com\think\core\security\ThinkWebSignerV2.class
 com\think\moudles\auth\UserAccountModel.class
 com\think\core\bean\util\ClassUtil.class
 com\think\common\util\rt\ThinkMachineUtil.class
@@ -168,8 +171,10 @@ com\think\core\executor\reducer\ITaskCallBack.class
 com\think\core\bean\TFlowBuilder$AbleChecker.class
 com\think\core\security\ThinkTokenExtendEntry.class
 com\think\core\enums\ThinkEnum.class
+com\think\core\enums\WebSignType.class
 com\think\structure\ThinkExplainList.class
 com\think\core\supports\ClasspathPackageScaner.class
+com\think\core\security\sm\SM3Utils.class
 com\think\core\bean\ThinkEnumsExplainHolder.class
 com\think\core\bean\util\ObjectUtil.class
 com\think\core\data\ThinkVersionManager.class

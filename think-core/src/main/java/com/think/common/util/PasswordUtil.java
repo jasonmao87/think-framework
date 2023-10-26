@@ -2,6 +2,7 @@ package com.think.common.util;
 
 import com.think.common.util.security.MD5Util;
 import com.think.common.util.security.SHAUtil;
+import com.think.core.security.sm.SM3Utils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -10,11 +11,12 @@ public class PasswordUtil {
     public static final int encodeTypeMD5 = 0 ;
     public static final int encodeTypeSHA1 = 1 ;
     public static final int encodeTypeSHA256 = 2 ;
+    public static final int encodeTypeSM3 =3 ;
 
-    private static int encodeType = encodeTypeSHA256;
+    private static int encodeType = encodeTypeSM3;
 
     public static final void encodeType(int type){
-        if(type >=0 && type<3) {
+        if(type >=0 && type<4) {
             encodeType = type;
             if(log.isDebugEnabled()){
                 log.debug("设置PASSWORD UTIL编码方式为 {}"  , typeName(type)  );
@@ -35,8 +37,14 @@ public class PasswordUtil {
      * @return
      */
     public static final String encodePassword(String userId ,String sourcePassword ,String randomStr){
+       return encodePasswordByType(userId,sourcePassword,randomStr,encodeType);
+    }
+
+
+
+    public static final String encodePasswordByType(String userId ,String sourcePassword ,String randomStr , int type){
         String sourceString = userId+randomStr+sourcePassword;
-        switch (encodeType){
+        switch (type){
             case encodeTypeMD5 :{
                 return MD5Util.encryptMd5(sourceString);
             }
@@ -46,11 +54,15 @@ public class PasswordUtil {
             case encodeTypeSHA256:{
                 return SHAUtil.sha256(sourceString);
             }
+            case encodeTypeSM3:{
+                return SM3Utils.sm3(sourceString);
+            }
         }
         if(log.isWarnEnabled()){
             log.warn("未找到正确的编码方式，默认返回明文");
         }
         return sourcePassword;
+
     }
 
 

@@ -2,8 +2,11 @@ package com.think.core.security;
 
 import com.think.common.util.security.AESUtil;
 import com.think.common.util.security.SHAUtil;
+import com.think.core.enums.WebSignType;
 import com.think.core.security.token.ThinkSecurityToken;
 import com.think.exception.ThinkException;
+
+import static com.think.core.security.ThinkWebSignerV2.doHash;
 
 /**
  * 单例
@@ -52,14 +55,16 @@ public class ThinkSecurityManager {
         String key = getInstance().getKey();
         String securityString = token.securityString();
         securityString = securityString+"&"+key;
-        return SHAUtil.sha256(securityString);
+        return doHash(WebSignType.SM3,securityString);
+//        return SHAUtil.sha256(securityString);
     }
 
 
     public static String buildSignPrimaryKey(ThinkSecurityToken token){
         String key = getInstance().getKey();
         String securityString = token.getTokenJsonString();
-        return SHAUtil.sha256(securityString);
+//        return SHAUtil.sha256(securityString);
+        return doHash(WebSignType.SM3,securityString);
     }
 
     /**
