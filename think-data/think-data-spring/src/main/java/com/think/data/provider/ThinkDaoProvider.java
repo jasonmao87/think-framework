@@ -272,12 +272,6 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
             sqlFilter.eq("id",ids[0]);
         }
         return this.delete(sqlFilter);
-//        ThinkUpdaterMapper<T> updaterMapper = ThinkUpdaterMapper.build(targetClass)
-//                .setFilter(sqlFilter)
-//                .updateToKeyValue("id","-id")
-//                .updateValue("deleteState" ,true)
-//                .updateValue("deleteTime", DateUtil.now());
-//        return this.update(updaterMapper);
     }
 
     @Override
@@ -288,7 +282,6 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
                // 删除 策略 调整 为 id 变为： 0-id ！避免使用deleteState
                .updateToKeyValue("id","-id");
 //              移除 删除相关字段
-//               .updateValue("deleteState" ,true)
 //               .updateValue("deleteTime", DateUtil.now());
         return this.update(updaterMapper);
     }

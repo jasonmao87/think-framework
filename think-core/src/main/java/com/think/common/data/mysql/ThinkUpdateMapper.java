@@ -1,12 +1,8 @@
 package com.think.common.data.mysql;
 
 import com.think.common.util.DateUtil;
-import com.think.common.util.StringUtil;
-import com.think.common.util.TVerification;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
-import com.think.core.annotations.bean.ThinkStateColumn;
-import com.think.core.bean.TFlowBuilder;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.exception.ThinkDataVerificationException;
@@ -171,37 +167,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
     }
 
 
-    @Deprecated
-    public ThinkUpdateMapper<T> updateTFlowState(TFlowStateUpdate update){
 
-        if(StringUtil.isNotEmpty(update.getTimeKey())) {
-            String timeKey = update.getTimeKey();
-            //时间key 有可能为 NULL 因为有些动作不需要时间！
-            TVerification.valueOf(this.checkKey(timeKey, false)).throwIfFalse("目标对象不包含指定流程状态属性:" + timeKey);
-            this.updateValue(timeKey, update.getTime());
-        }
-
-        String stateKey = update.getStateValueKey();
-        TVerification.valueOf(this.checkKey(stateKey, false)).throwIfFalse("目标对象不包含指定流程状态属性:" +stateKey);
-        this.updateValue(stateKey,update.getStateValue());
-        if(StringUtil.isNotEmpty(update.getMessage())){
-            String messageKey = update.getMessageKey();
-            TVerification.valueOf(this.checkKey(messageKey, false)).throwIfFalse("目标对象不包含指定流程状态属性:" +messageKey);
-            this.updateValue(messageKey,update.getMessage());
-        }
-        boolean allowTryCountInc = update.tryCountIncAble();
-        if(allowTryCountInc){
-            String tryCountKey = update.getTryCountKey();
-            TVerification.valueOf(this.checkKey(tryCountKey, false)).throwIfFalse("目标对象不包含指定流程状态属性:" +tryCountKey);
-            this.updateInc(tryCountKey,1);
-        }
-        if(update.getRequiredStateValue().length > 0){
-            this.getFilter().in(update.getStateValueKey(),update.getRequiredStateValue());
-        }
-        //拼接 条件 ，限制 不安全的 的修改
-
-        return this;
-    }
 
     /**
      * 设置需要被修改数据的Id
@@ -315,16 +281,7 @@ public class ThinkUpdateMapper<T extends _Entity> {
             k = k.replaceFirst("-","");
         }
 
-        if(k.contains(ThinkStateColumn.splitFlag)) {
-            String[] split = k.split(ThinkStateColumn.splitFlag);
-            k = split[0];
-            if (!TFlowBuilder.safeKeySuffix(split[1])) {
-                if (log.isDebugEnabled()) {
-                    log.debug("非法的流程状态后缀 {} ->{} " ,k ,split[1]);
-                }
-                return false;
-            }
-        }
+
         Field field =ClassUtil.getField(targetClass,k);
         if(field == null){
             if(log.isDebugEnabled()) {

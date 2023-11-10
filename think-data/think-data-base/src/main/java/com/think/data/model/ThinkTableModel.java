@@ -2,8 +2,7 @@
 package com.think.data.model;
 
 import com.think.core.annotations.Remark;
-import com.think.core.annotations.bean.ThinkStateColumn;
-import com.think.core.bean.TFlowBuilder;
+import com.think.core.enums.DbType;
 import com.think.core.enums.TableBusinessModeSplitStateEnum;
 import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
@@ -21,30 +20,10 @@ public class ThinkTableModel implements Serializable {
 
     private long lastSplitCheckTime = 0L;
 
-//    public static final String[] flowStateSuffixes =new String[]{
-//            flowStateSuffix_Result,
-//            flowStateSuffix_StartTime,
-//            flowStateSuffix_CancelTime,
-//            flowStateSuffix_CompleteTime,
-//            flowStateSuffix_ResultMessage
-//    };
-
-    public static final boolean isInStateSuffix(String suffix){
-        switch (suffix){
-            case ThinkStateColumn.flowStateSuffix_StateValue: return true;
-            case ThinkStateColumn.flowStateSuffix_CancelTime : return true;
-            case ThinkStateColumn.flowStateSuffix_StartTime : return true;
-            case ThinkStateColumn.flowStateSuffix_CompleteTime : return true;
-            case ThinkStateColumn.flowStateSuffix_ResultMessage : return true;
-
-        }
-        return false;
-    }
+    @Remark("数据库类型")
+    private DbType dbType ;
 
 
-    public final String getDbType() {
-        return "mysql";
-    }
 
     @Remark("映射类")
     private Class beanClass ;
@@ -66,7 +45,6 @@ public class ThinkTableModel implements Serializable {
 
     @Remark("是否按年分表")
     private boolean yearSplitAble =false;
-
 
     @Remark("是否启用业务数据隔离划分")
     private TableBusinessModeSplitStateEnum businessModeSplitAble =null;
@@ -287,41 +265,20 @@ public class ThinkTableModel implements Serializable {
      */
     public ThinkColumnModel getKey(String key){
 
-        String realKey = null;
+        String realKey ;
+        if(key.startsWith("fs_")){
+            realKey = key.replaceFirst("fs_","");
+        } else if(key.startsWith("fss_")){
+            realKey = key.replaceFirst("fss_","");
+        }else {
+            realKey = key;
+        }
+
         if(columnModels == null){
             throw new ThinkDataModelException("尚未初始化列模型");
         }
-
-        boolean stateColumn = false;
-        if(key.contains(ThinkStateColumn.splitFlag)) {
-            String[] ksplit = key.split(ThinkStateColumn.splitFlag);
-            if (!TFlowBuilder.safeKeySuffix(ThinkStateColumn.splitFlag  +ksplit[1])) {
-                return null;
-            }
-            stateColumn = true;
-            realKey = ksplit[0];
-        }else{
-            if(key.startsWith("fs_")){
-                realKey = key.replaceFirst("fs_","");
-            } else if(key.startsWith("fss_")){
-                realKey = key.replaceFirst("fss_","");
-            }else {
-                realKey = key;
-            }
-        }
-
         for(ThinkColumnModel modal : columnModels){
-           //L.info("check K |{}| --- for each in |{}|" ,key,modal.getKey());
-
             if(modal.getKey().equalsIgnoreCase(realKey)){
-                if(stateColumn){
-                    if(modal.isStateModel()){
-                        return modal;
-                    }else {
-                        log.warn("状态键 {} 存在，但是后缀不正确 :{}" ,realKey,key );
-                        return null;
-                    }
-                }
                 return modal;
             }
         }
@@ -368,5 +325,13 @@ public class ThinkTableModel implements Serializable {
 
     public void setLastSplitCheckTime(long lastSplitCheckTime) {
         this.lastSplitCheckTime = lastSplitCheckTime;
+    }
+
+    public void setDbType(DbType dbType) {
+        this.dbType = dbType;
+    }
+
+    public DbType getDbType() {
+        return dbType;
     }
 }

@@ -3,10 +3,7 @@ package com.think.core.bean.util;
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.core.annotations.bean.ThinkAlias;
-import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.BaseVo;
-import com.think.core.bean.TFlowBuilder;
-import com.think.core.bean.TFlowState;
 import com.think.core.bean._Entity;
 import com.think.core.enums.TEnum;
 import com.think.structure.ThinkExplainList;
@@ -57,44 +54,18 @@ public class ObjectUtil  {
 
 
     public static final <T> void mapSetValueToBean(Map<String, Object> map,T t ,Field field,String key){
-//        Field field = ClassUtil.getField(t.getClass(),key);
-        if( (t instanceof _Entity || t instanceof BaseVo ) && field.getType() == TFlowState.class){
-//            log.info("状态类的逻辑  TFlowState 。。。");
-            //处理 状态类的逻辑 。。。。
-            String stateKeyName  =null;
-            String comment = "";
-            ThinkStateColumn stateColumn =field.getAnnotation(ThinkStateColumn.class);
-            if (stateColumn !=null) {
-                comment = stateColumn.comment();
-            }
-            stateKeyName = field.getName();
-            Integer value = (Integer) map.getOrDefault(stateKeyName +ThinkStateColumn.flowStateSuffix_StateValue,0);
-            Date startTime = (Date) map.getOrDefault(stateKeyName+ThinkStateColumn.flowStateSuffix_StartTime,DateUtil.zeroDate());
-            Date cancelTime  = (Date) map.getOrDefault(stateKeyName+ThinkStateColumn.flowStateSuffix_CancelTime,DateUtil.zeroDate());
-            Date completeTime = (Date) map.getOrDefault(stateKeyName+ThinkStateColumn.flowStateSuffix_CompleteTime,DateUtil.zeroDate());
-            String resultMessage = (String) map.getOrDefault(stateKeyName +ThinkStateColumn.flowStateSuffix_ResultMessage,"");
-            Integer tryCount = (Integer) map.getOrDefault(stateKeyName + ThinkStateColumn.flowStateSuffix_TryCount,"0");
-            TFlowState state = TFlowBuilder.build(stateKeyName,comment,value,startTime,completeTime,cancelTime,tryCount,resultMessage);
-            field.setAccessible(true);
-            ClassUtil.setValue(field,t,state);
-//            log.info("设置值 {}" ,state);
-        }else{
-
-
-//            Field field = ClassUtil.getField(t.getClass(), key);
-            if(field.getType().getSuperclass()!=null && field.getType().getSuperclass().equals(Enum.class)){
-                if(map.get(key)!=null) {
-                    Object x = enumValue(field.getType(), map.get(key).toString());
-                    field.setAccessible(true);
-                    ClassUtil.setValue(field, t, x);
-                }
-            }else{
+        if(field.getType().getSuperclass()!=null && field.getType().getSuperclass().equals(Enum.class)){
+            if(map.get(key)!=null) {
+                Object x = enumValue(field.getType(), map.get(key).toString());
                 field.setAccessible(true);
-                ClassUtil.setValue(field,t,map.get(key));
+                ClassUtil.setValue(field, t, x);
             }
-
-
+        }else{
+            field.setAccessible(true);
+            ClassUtil.setValue(field,t,map.get(key));
         }
+
+
     }
 
 
@@ -130,9 +101,7 @@ public class ObjectUtil  {
 
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 String key = entry.getKey();
-                if(entry.getKey().contains(ThinkStateColumn.splitFlag)){
-                    key = key.split(ThinkStateColumn.splitFlag)[0];
-                }
+
                 if(ignores.contains(key) || StringUtil.isEmpty(key)  ){
                     continue;
                 }else{

@@ -1,7 +1,6 @@
 com\think\core\enums\DbType.class
 com\think\core\security\ThinkLock.class
 com\think\common\util\security\Desensitization2Util.class
-com\think\core\bean\TFlowBuilder.class
 com\think\core\data\cache\ExpireAbleCache.class
 com\think\common\result\state\ThinkResultState$1.class
 com\think\core\executor\reduce\TReducer.class
@@ -63,7 +62,6 @@ com\think\common\result\ThinkResult.class
 com\think\common\util\security\SHAUtil.class
 com\think\common\util\PeakBean.class
 com\think\core\bean\TbBinaryEntity.class
-com\think\core\bean\TFlowState.class
 com\think\core\threadLocal\ThreadLocalBean.class
 com\think\core\executor\TTT.class
 com\think\common\util\ThinkCollectionUtil.class
@@ -103,7 +101,6 @@ com\think\core\executor\ThinkBackgroundTask.class
 com\think\structure\table\ThinkGridColumnModel.class
 com\think\common\util\NumberCompareUtil.class
 com\think\structure\ThinkEntry.class
-com\think\core\annotations\bean\ThinkStateColumn.class
 com\think\core\executor\reduce\TReducer$1.class
 com\think\core\executor\reduce\CombinerResult.class
 com\think\core\enums\TableBusinessModeSplitStateEnum.class
@@ -169,7 +166,6 @@ com\think\moudles\auth\UserAccountModel.class
 com\think\core\bean\util\ClassUtil.class
 com\think\common\util\rt\ThinkMachineUtil.class
 com\think\core\executor\reducer\ITaskCallBack.class
-com\think\core\bean\TFlowBuilder$AbleChecker.class
 com\think\core\security\ThinkTokenExtendEntry.class
 com\think\core\enums\ThinkEnum.class
 com\think\core\enums\WebSignType.class
@@ -195,6 +191,7 @@ com\think\core\data\cache\ThinkCacheManager.class
 com\think\common\util\office\ThinkDocUtil.class
 com\think\core\executor\token\TaskTokenCache.class
 com\think\core\data\cache\ThinkCacheManager$singletonHolder.class
+com\think\core\enums\DbType$1.class
 com\think\structure\TimeoutEntry.class
 com\think\core\executor\stream\StreamTasker.class
 com\think\core\data\cache\ThinkCacheStorage.class
@@ -208,7 +205,6 @@ com\think\common\util\FastJsonUtil.class
 com\think\core\security\ThinkKey.class
 com\think\common\util\LocalDateTimeUtil$DateStrFixer.class
 com\think\structure\ThinkFastList$1.class
-com\think\common\data\mysql\TFlowStateUpdate.class
 com\think\common\util\CodeBuilder.class
 com\think\common\util\PasswordCheckInfo.class
 com\think\core\enums\TStateEnum.class

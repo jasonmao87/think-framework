@@ -5,9 +5,7 @@ import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.common.util.security.DesensitizationUtil;
-import com.think.core.annotations.bean.ThinkStateColumn;
 import com.think.core.bean.SimplePrimaryEntity;
-import com.think.core.bean.TFlowState;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
 import com.think.data.Manager;
@@ -37,48 +35,6 @@ public class ThinkUpdateQueryBuilder {
      * @param sqlBuilder
      * @param values
      */
-    protected static final int appendStateKeys( TFlowState state ,ThinkColumnModel columnModel, StringBuilder sqlBuilder , List<Object> values  ){
-//        if(state == null)
-
-        int i=0;
-        sqlBuilder.append(columnModel.getKey()).append(ThinkStateColumn.flowStateSuffix_CompleteTime);
-        if (values!=null) {
-            values.add(state.getCompleteTime());
-        }
-        i ++ ;
-        sqlBuilder.append(",");
-        sqlBuilder.append(columnModel.getKey()).append(ThinkStateColumn.flowStateSuffix_StartTime);
-        if (values!=null) {
-            values.add(state.getStartTime());
-        }
-        i ++ ;
-        sqlBuilder.append(",");
-        sqlBuilder.append(columnModel.getKey()).append(ThinkStateColumn.flowStateSuffix_CancelTime);
-        if (values!=null) {
-            values.add(state.getCancelTime());
-        }
-        i ++ ;
-        sqlBuilder.append(",");
-        sqlBuilder.append(columnModel.getKey()).append(ThinkStateColumn.flowStateSuffix_ResultMessage);
-        if (values!=null) {
-            values.add(state.getResultMessage());
-        }
-        i ++ ;
-        sqlBuilder.append(",");
-        sqlBuilder.append(columnModel.getKey()).append(ThinkStateColumn.flowStateSuffix_TryCount);
-        if (values!=null) {
-            values.add(state.getTryCount());
-        }
-        i ++ ;
-        sqlBuilder.append(",");
-        sqlBuilder.append(columnModel.getKey()).append(ThinkStateColumn.flowStateSuffix_StateValue);
-        if (values!=null) {
-            values.add(state.getStateValue());
-        }
-        i ++ ;
-        return i;
-
-    }
 
 
     /**
@@ -103,19 +59,7 @@ public class ThinkUpdateQueryBuilder {
                     continue;
                 }
             }
-            /**
-             * 如果是流程状态 控制字段，那么 调用 专用的拼接方法 ！然后跳过这个参数的循环
-             */
-            if( cm.isStateModel()){
-                if(v ==null || !(v instanceof TFlowState) ){
-                    v = TFlowState.newInstance();
-                }
-                if(i>0){
-                    sql.append(",");
-                }
-                i += appendStateKeys((TFlowState) v,cm,sql,values);
-                continue;
-            }
+
             if(v == null){
                 if(cm.isNullable()){
 
@@ -220,27 +164,14 @@ public class ThinkUpdateQueryBuilder {
                     continue;
                 }
             }
-            if( cm.isStateModel()){
-                if(v ==null || !(v instanceof TFlowState) ){
-                    v = TFlowState.newInstance();
-                }
-                if(i>0){
-                    sql.append(",");
-                }
-                //这边加1 ，只是这个 1列，会在 多值时候裂变未 多个 列
-                stateKeyCount = appendStateKeys((TFlowState) v,cm,sql,null);
-                clmNames.add(cm.getKey() + ThinkStateColumn.splitFlag +"mainKeys");
-                i++;
-                continue;
-            }else{
-                if(i >0){
-                    sql.append(", ");
-                }
-                sql.append(cm.getKey());
-                clmNames.add(cm.getKey());
-                i++;
 
+            if(i >0){
+                sql.append(", ");
             }
+            sql.append(cm.getKey());
+            clmNames.add(cm.getKey());
+            i++;
+
 
 
 
@@ -273,54 +204,33 @@ public class ThinkUpdateQueryBuilder {
                 }
 
                 String key =clmNames.get(x);
-                if(key.contains(ThinkStateColumn.splitFlag)){
-                    for(int stateIndex =0 ;stateIndex<stateKeyCount ; stateIndex ++){
-                        if(stateIndex>0){
-                            sql.append(",");
-                        }
-                        sql.append("?");
-                    }
-                    /*start*/
-                    String realKey = key.split(ThinkStateColumn.splitFlag)[0];
-                    Object v = ClassUtil.getProperty(tmp,realKey);
-                    TFlowState state = (TFlowState) v;
-                    if(state ==null){
-                        state =TFlowState.newInstance();
-                    }
-                    values.add(state.getCompleteTime());
-                    values.add(state.getStartTime());
-                    values.add(state.getCancelTime());
-                    values.add(state.getResultMessage());
-                    values.add(state.getTryCount());
-                    values.add(state.getStateValue());
-                    /*end */
-                }else{
-                    sql.append("? ");
-                    Object v = ClassUtil.getProperty(tmp,key);
-                    if(v == null){
-                        if(clms[x].getType() == String.class){
-                            v = clms[x].getDefaultValue();
-                        }
-                    }
 
-                    if(v !=null) {
-                        /**
-                         * 值校验
-                         */
-                        if(ThinkDataValidator.isEnable()){
-                            //值 校验
-                            ThinkDataValidator.verification(t.getClass(),clmNames.get(x),v);
-                        }
-                        /**
-                         * 脱敏处理
-                         */
-                        if (clms[x].isSensitive() && v instanceof String) {
-                            v = DesensitizationUtil.encode((String) v);
-                        }
-                     }
-                    values.add(v);
-
+                sql.append("? ");
+                Object v = ClassUtil.getProperty(tmp,key);
+                if(v == null){
+                    if(clms[x].getType() == String.class){
+                        v = clms[x].getDefaultValue();
+                    }
                 }
+
+                if(v !=null) {
+                    /**
+                     * 值校验
+                     */
+                    if(ThinkDataValidator.isEnable()){
+                        //值 校验
+                        ThinkDataValidator.verification(t.getClass(),clmNames.get(x),v);
+                    }
+                    /**
+                     * 脱敏处理
+                     */
+                    if (clms[x].isSensitive() && v instanceof String) {
+                        v = DesensitizationUtil.encode((String) v);
+                    }
+                 }
+                values.add(v);
+
+
 
 
             }// 内部正常循环结束

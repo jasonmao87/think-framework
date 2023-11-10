@@ -1,6 +1,5 @@
 package com.think.data.bean.api;
 
-import com.think.common.data.mysql.TFlowStateUpdate;
 import com.think.common.data.mysql.ThinkSqlFilter;
 import com.think.common.data.mysql.ThinkUpdateMapper;
 import com.think.common.result.ThinkResult;
@@ -245,40 +244,6 @@ public class ThinkBeanApiImpl<T extends SimplePrimaryEntity> implements ThinkBea
     }
 
 
-    @Override
-    public ThinkResult<Integer> tFlowResultChangeToStart(long id, String mainKey) {
-        TFlowStateUpdate update = TFlowStateUpdate.buildStart(mainKey);
-        return this.tFlowResultChange(id,update);
-
-    }
-
-    @Override
-    public ThinkResult<Integer> tFlowResultChangeToCancel(long id, String mainKey) {
-        TFlowStateUpdate update = TFlowStateUpdate.buildCancel(mainKey);
-        return this.tFlowResultChange(id,update);
-
-    }
-
-    @Override
-    public ThinkResult<Integer> tFlowResultChangeToComplete(long id, String mainKey, boolean result, String message) {
-        TFlowStateUpdate update = TFlowStateUpdate.buildComplete(mainKey,result,message);
-        return this.tFlowResultChange(id,update);
-    }
-
-    @Override
-    public ThinkResult<Integer> tFlowResultChangeToClearState(long id, String mainKey) {
-        TFlowStateUpdate update = TFlowStateUpdate.buildClear(mainKey);
-
-        return this.tFlowResultChange(id,update);
-
-    }
-
-    public ThinkResult<Integer> tFlowResultChange(long id ,TFlowStateUpdate update){
-        ThinkUpdateMapper<T> updateMapper = ThinkUpdateMapper.build(targetClass());
-        updateMapper.setTargetDataId(id)
-                .updateTFlowState(update);
-        return this.update(updateMapper);
-    }
 
 
     @Override

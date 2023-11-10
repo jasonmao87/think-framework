@@ -604,13 +604,18 @@ public class StringUtil {
     }
 
 
-
-
-
-
-    public static void main(String[] args) {
-
-
+    public static String wrappedBy(String source ,String prefix ,String suffix){
+        return (isNotEmpty(prefix)?prefix:"")
+                + (isNotEmpty(source)?source:"")
+                + (isNotEmpty(suffix)?suffix:"");
     }
+
+    public static String wrappedBy(String source ,String symbol){
+        return wrappedBy(source,symbol,symbol);
+    }
+
+
+
+
 
 }

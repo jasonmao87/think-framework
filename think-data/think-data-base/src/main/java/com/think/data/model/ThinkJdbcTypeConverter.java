@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,8 @@ public class ThinkJdbcTypeConverter {
         return true;
     }
 
+
+
     public static String defaultValueString(ThinkSqlType sqlType ,String defaultValue){
 //        if(defaultValue!=null){
 //            return defaultValue;
@@ -53,7 +56,7 @@ public class ThinkJdbcTypeConverter {
         String t = null;
         switch (sqlType){
             case TEXT:{
-                return null;
+                return null;//sqlStringDefaultValue(defaultValue);
             }
             case NONE:{
                 return null;
@@ -241,7 +244,7 @@ public class ThinkJdbcTypeConverter {
         }
     }
 
-    protected static final ThinkSqlType getType(Type type){
+    public static final ThinkSqlType getType(Type type){
         return typeMap.getOrDefault( type, ThinkSqlType.NONE);
     }
 

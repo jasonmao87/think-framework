@@ -4,9 +4,9 @@ import com.think.common.util.StringUtil;
 import com.think.common.util.TVerification;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.*;
-import com.think.core.bean.TFlowState;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.enums.DbType;
 import com.think.core.enums.TableBusinessModeSplitStateEnum;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
@@ -101,7 +101,6 @@ public class DataModelBuilder {
         if(thinkModalHolder.containsKey(tClass)){
             return thinkModalHolder.get(tClass);
         }
-
         ThinkTableModel tableModal = preInit(tClass);
         List<Field> fields  = ClassUtil.getFieldList(tClass);
         //初始化 列模型
@@ -110,7 +109,9 @@ public class DataModelBuilder {
 
             ThinkColumnModel modal = buildColumn(f);
             if(modal!= null){
+                modal.setDbType(tableModal.getDbType());
                 columnModalList.add(modal);
+                log.info("add column to model {}" ,modal.getKey());
             }
 
         }
@@ -143,17 +144,16 @@ public class DataModelBuilder {
 
     private  final ThinkColumnModel buildColumn(Field field){
         if(field.getAnnotation(ThinkIgnore.class) != null){
+            log.debug("忽略的字段{}",field.getName());
             return null;
         }
 
-
-
         if(field.getName().equalsIgnoreCase("thinkLinkedId")){
             if(Manager.isThinkLinkedIdSupportAble() == false){
+                log.debug("未启用功能的字段{}",field.getName());
                 return null;
             }
         }
-
 
         String name = field.getName();
         if(name.equalsIgnoreCase("serialVersionUID") || name.equals("log") ){
@@ -161,14 +161,8 @@ public class DataModelBuilder {
         }
         boolean isId = name.equalsIgnoreCase("id");
         ThinkColumn tColumn = field.getAnnotation(ThinkColumn.class);
-        ThinkColumnModel modal = new ThinkColumnModel();
-        if(field.getType() == TFlowState.class){
-            ThinkStateColumn stateColumn = field.getAnnotation(ThinkStateColumn.class);
-            TVerification.valueOf(stateColumn).throwIfNull(field.getName() +"为流程状态字段，必须配合ThinkStateColumn注解使用");
-            modal.setComment(stateColumn.comment());
-            //标记为状态流程字段，会映射出一大堆字段出来 ！
-            modal.setStateModel(true);
-        }
+        ThinkColumnModel modal = new ThinkColumnModel(tColumn);
+//
         modal.setKey(name);
         modal.setType(field.getType());
         if(field.getType().getSimpleName().equalsIgnoreCase("String")){
@@ -218,9 +212,7 @@ public class DataModelBuilder {
             conoverType = Enum.class;
         }
         String jdbcTypeString = ThinkJdbcTypeConverter.toJdbcTypeString(conoverType,tColumn);
-        if(StringUtil.isEmpty(jdbcTypeString) && (conoverType!=TFlowState.class)){;
-            throw new ThinkDataModelException(name + "对应的属性（"+field.getType().getName()+"）暂时无法映射成相应的数据库列属性！" );
-        }
+
         modal.setSqlTypeString(jdbcTypeString);
         return modal;
     }
@@ -238,6 +230,7 @@ public class DataModelBuilder {
         final TableBusinessModeSplitStateEnum tableBusinessModeSplitStateEnum = tBean.businessModeSplitAble();
         boolean autoIncPK = false;
         String tableComment = null;
+        DbType dbType = tBean.dbType();
         String dsId = null;
         boolean yearSplit = false;
         if(tBean == null){
@@ -284,6 +277,9 @@ public class DataModelBuilder {
         modal.setAutoIncPK(autoIncPK);
         modal.setYearSplitAble(yearSplit);
         modal.setBusinessModeSplitAble(tableBusinessModeSplitStateEnum);
+        modal.setDbType(dbType);
+        log.info("preinit model {}" ,modal.getDbType());
+
         return modal;
     }
 
@@ -300,15 +296,20 @@ public class DataModelBuilder {
 //                    if(log.isDebugEnabled()) {
 //                        log.debug(" {}注入索引模型 {} ",k, indexModal);
 //                    }
-                    ThinkColumnModel columnModel = thinkTableModal.getKey(k) ;
-                    if(columnModel.isUsingText()){
-                        throw new ThinkDataModelException("禁止针对text类型的键["+k+"]建立索引。");
+                    for (ThinkColumnModel columnModel : thinkTableModal.getColumnModels()) {
+                        log.info(" {}注入索引模型 {} ",columnModel.getKey(), indexModal);
                     }
+
+                    ThinkColumnModel columnModel = thinkTableModal.getKey(k) ;
+
                     if(columnModel == null){
                         StringBuilder exInfo = new StringBuilder("非法的索引列")
                                 .append("[").append(thinkTableModal.getTableName()).append(".").append(k)
                                 .append("],映射表对象中并不包含此列。");
                         throw new ThinkDataModelException(exInfo.toString());
+                    }
+                    if(columnModel.isUsingText()){
+                        throw new ThinkDataModelException("禁止针对text类型的键["+k+"]建立索引。");
                     }
                     thinkTableModal.getKey(k).setIndexModal(indexModal);
                 }

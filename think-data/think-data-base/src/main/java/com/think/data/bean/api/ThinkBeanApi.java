@@ -130,20 +130,20 @@ public interface ThinkBeanApi<T extends SimplePrimaryEntity>  {
     long countByStringSqlFilter(String filter, ThinkBeanFilterAction action);
 
 
-    @Remark("目标对象的流程状态变更为开始 ")
-    ThinkResult<Integer> tFlowResultChangeToStart(long id ,String mainKey);
-
-    @Remark("目标对象的流程状态变更为取消 ")
-    ThinkResult<Integer> tFlowResultChangeToCancel(long id ,String mainKey);
-
-
-
-    @Remark(value = "目标对象的流程状态变更为结束",description = "result 代表结果，true代表通过")
-    ThinkResult<Integer> tFlowResultChangeToComplete(long id ,String mainKey,boolean result ,String message);
-
-
-    @Remark(value = "目标对象的流程状态重置" )
-    ThinkResult<Integer> tFlowResultChangeToClearState(long id , String mainKey );
+//    @Remark("目标对象的流程状态变更为开始 ")
+//    ThinkResult<Integer> tFlowResultChangeToStart(long id ,String mainKey);
+//
+//    @Remark("目标对象的流程状态变更为取消 ")
+//    ThinkResult<Integer> tFlowResultChangeToCancel(long id ,String mainKey);
+//
+//
+//
+//    @Remark(value = "目标对象的流程状态变更为结束",description = "result 代表结果，true代表通过")
+//    ThinkResult<Integer> tFlowResultChangeToComplete(long id ,String mainKey,boolean result ,String message);
+//
+//
+//    @Remark(value = "目标对象的流程状态重置" )
+//    ThinkResult<Integer> tFlowResultChangeToClearState(long id , String mainKey );
 
 
     ThinkSqlFilter<T> emptySqlFilter(int limit);

@@ -1,6 +1,8 @@
 package com.think.data.model;
 
 import com.think.core.annotations.Remark;
+import com.think.core.annotations.bean.ThinkColumn;
+import com.think.core.enums.DbType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -8,6 +10,14 @@ import java.lang.reflect.Type;
 
 @Slf4j
 public class ThinkColumnModel implements Serializable {
+
+    private static final long serialVersionUID = 3074119477476068669L;
+
+
+
+    private ThinkColumn columnAnnotation;
+
+    private DbType dbType;
 
     @Remark("字段")
     private String key ;
@@ -17,9 +27,9 @@ public class ThinkColumnModel implements Serializable {
 
     @Remark("类型 ")
     private Type type;
-
-    @Remark("是TFlowState模型")
-    private boolean stateModel = false;
+//
+//    @Remark("是TFlowState模型")
+//    private boolean stateModel = false;
 
 //    @Remark("需要针对参数值进行校验")
 //    private boolean verificationRequired  ;
@@ -68,7 +78,8 @@ public class ThinkColumnModel implements Serializable {
     private boolean enumState ;
 
 
-    protected ThinkColumnModel() {
+    protected ThinkColumnModel(ThinkColumn column) {
+        this.columnAnnotation = column;
     }
 
     public boolean isHasIndex() {
@@ -147,6 +158,14 @@ public class ThinkColumnModel implements Serializable {
         this.hasIndex = true;
     }
 
+    public void setDbType(DbType dbType) {
+        this.dbType = dbType;
+    }
+
+    public DbType getDbType() {
+        return dbType;
+    }
+
     public void setNoSetDateDefaultValue(boolean noSetDateDefaultValue) {
         this.noSetDateDefaultValue = noSetDateDefaultValue;
     }
@@ -165,9 +184,9 @@ public class ThinkColumnModel implements Serializable {
         this.editAble = editAble;
     }
 
-    protected void setStateModel(boolean stateModel) {
-        this.stateModel = stateModel;
-    }
+//    protected void setStateModel(boolean stateModel) {
+//        this.stateModel = stateModel;
+//    }
 
     public void setFastMatchAble(boolean fastMatchAble) {
         this.fastMatchAble = fastMatchAble;
@@ -197,6 +216,10 @@ public class ThinkColumnModel implements Serializable {
         return key;
     }
 
+    public String getSqlFixKey(){
+        return dbType.fixKey(key);
+    }
+
     public String getFastMatchKeyWhileExits(){
         if(isFastMatchAble()){
             return "fs_" + key;
@@ -212,6 +235,8 @@ public class ThinkColumnModel implements Serializable {
     }
 
     public String getSqlTypeString( ) {
+
+
         /**
         {"autoIncPK":false,"beanClass":"com.think.test.TbHello","
             columnModals":[
@@ -244,6 +269,10 @@ public class ThinkColumnModel implements Serializable {
         return length;
     }
 
+    public ThinkColumn getColumnAnnotation() {
+        return columnAnnotation;
+    }
+
     public boolean isPk() {
         return pk;
     }
@@ -268,9 +297,6 @@ public class ThinkColumnModel implements Serializable {
      * @return
      */
     public boolean isFastMatchAble() {
-        if(this.isStateModel()){
-            return false;
-        }
         if(this.fastMatchAble) {
             if (this.isHasIndex()) {
                 return false;
@@ -307,7 +333,7 @@ public class ThinkColumnModel implements Serializable {
         return valueString;
     }
 
-    public String getDefaultValueForAlterAndCreate(){
+    public String getDefaultValueForDDL(){
         String defValue = getDefaultValue();
         if (ThinkJdbcTypeConverter.isUsingStringInSqlDefaultValue(ThinkJdbcTypeConverter.getType(type))) {
             if(defValue!=null) {
@@ -332,7 +358,7 @@ public class ThinkColumnModel implements Serializable {
         return key.equalsIgnoreCase("thinkLinkedId");
     }
 
-    public boolean isStateModel() {
-        return stateModel;
-    }
+//    public boolean isStateModel() {
+//        return stateModel;
+//    }
 }

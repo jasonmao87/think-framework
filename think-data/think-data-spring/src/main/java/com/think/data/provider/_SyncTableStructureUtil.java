@@ -123,7 +123,7 @@ public class _SyncTableStructureUtil {
                 sql.append(" COMMENT '").append(columnModel.getComment()).append("' ");
             }
             if(columnModel.isNullable() == false){
-                sql.append(" DEFAULT ").append( columnModel.getDefaultValueForAlterAndCreate()).append(" ");
+                sql.append(" DEFAULT ").append( columnModel.getDefaultValueForDDL()).append(" ");
             }else{
             }
         }
