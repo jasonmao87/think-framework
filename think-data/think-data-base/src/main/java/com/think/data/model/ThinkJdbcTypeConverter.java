@@ -3,6 +3,8 @@ package com.think.data.model;
 import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.core.annotations.bean.ThinkColumn;
+import com.think.core.bean.util.ClassUtil;
+import com.think.core.bean.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Type;
@@ -245,6 +247,9 @@ public class ThinkJdbcTypeConverter {
     }
 
     public static final ThinkSqlType getType(Type type){
+        if (type instanceof  Class && ((Class) type).isEnum()) {
+            return ThinkSqlType.ENUM;
+        }
         return typeMap.getOrDefault( type, ThinkSqlType.NONE);
     }
 

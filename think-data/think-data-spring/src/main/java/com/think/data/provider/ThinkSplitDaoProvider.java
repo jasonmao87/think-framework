@@ -83,24 +83,6 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
     public List<String> showSplitTables() {
         final List<String> tables = this._showSplitTables(jdbcTemplate, targetClass);
         return tables;
-        /*
-        if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
-            String showTablesSql = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
-            List<String> list = jdbcTemplate.queryForList(showTablesSql, String.class);
-            for (String t : list) {
-                if (Manager.isTableInitialized(t) == false) {
-                    Manager.recordTableInit(t);
-                }
-            }
-            if(!showTablesSql.contains("ThinkDataRuntime.NONE_PART")) {
-                lastCheckDb = ThinkMilliSecond.currentTimeMillis();
-            }
-            return list;
-        }else{
-            return Manager.findInitializedTableNameList(_DaoSupport.baseTableName(  targetClass));
-        }
-
-         */
     }
 
 
@@ -260,6 +242,9 @@ public abstract class ThinkSplitDaoProvider<T extends SimplePrimaryEntity> exten
 
     @Override
     public long simpleCount(ThinkSqlFilter<T> sqlFilter, int splitYear) {
+        if(sqlFilter.mayBeEmptyResult()){
+            return 0L;
+        }
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.countQuery(targetClass ) ;
         Map<String,Object> map = this.executeOne(executeQuery,finalTableName(splitYear));

@@ -22,6 +22,8 @@ import java.util.List;
 public class DDLBuilderForDM implements IDDLBuilder {
     private DbType dbType = DbType.DM;
 
+    final IThinkSqlTypeHelper typeHelper = DataTypeProxy.getProxy(dbType).sqlTypeHelper();
+
     @Override
     public List<String> createTableDDL(ThinkTableModel tableModal, int splitYear) {
         List<String> fastMatchKeys = new ArrayList<>();
@@ -41,14 +43,12 @@ public class DDLBuilderForDM implements IDDLBuilder {
             sql.append("AUTO_INCREMENT ");
         }
         //开始明细列
-        final IThinkSqlTypeHelper typeHelper = DataTypeProxy.getProxy(dbType).sqlTypeHelper();
         for(ThinkColumnModel cm : tableModal.getColumnModels()){
             if(cm.getKey().equalsIgnoreCase("id")){
                 continue;
             }
 
             final String s = typeHelper.columnBuildSQL(cm);
-            System.out.println( " >>>>>>>>>>>" + s );
 
             sql.append(" ,").append(s );
 //                    .append(dbType.fixKey(cm.getKey()))
@@ -134,6 +134,13 @@ public class DDLBuilderForDM implements IDDLBuilder {
         }
 
         return ddls;
+    }
+
+
+    @Override
+    public String addColumn(ThinkTableModel tableModal, ThinkColumnModel columnModel, String tableName) {
+        String sql = typeHelper.columnBuildSQL(columnModel);
+        return "ALTER TABLE " + tableModal.getDbType().fixKey(tableName) + " ADD COLUMN (" + sql +")";
     }
 
     public static void main(String[] args) {

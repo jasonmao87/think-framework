@@ -111,7 +111,9 @@ public class DataModelBuilder {
             if(modal!= null){
                 modal.setDbType(tableModal.getDbType());
                 columnModalList.add(modal);
-                log.info("add column to model {}" ,modal.getKey());
+                if (log.isTraceEnabled()) {
+                    log.trace("add column to model {}" ,modal.getKey());
+                }
             }
 
         }
@@ -144,13 +146,17 @@ public class DataModelBuilder {
 
     private  final ThinkColumnModel buildColumn(Field field){
         if(field.getAnnotation(ThinkIgnore.class) != null){
-            log.debug("忽略的字段{}",field.getName());
+            if (log.isTraceEnabled()) {
+                log.trace("忽略的字段{}",field.getName());
+            }
             return null;
         }
 
         if(field.getName().equalsIgnoreCase("thinkLinkedId")){
-            if(Manager.isThinkLinkedIdSupportAble() == false){
-                log.debug("未启用功能的字段{}",field.getName());
+            if( Manager.isThinkLinkedIdSupportAble() == false){
+                if (log.isDebugEnabled()) {
+                    log.debug("未启用功能的字段{}",field.getName());
+                }
                 return null;
             }
         }
@@ -173,7 +179,6 @@ public class DataModelBuilder {
         try {
             if (field.getType().getSuperclass()!=null &&  field.getType().getSuperclass().equals(Enum.class)) {
                 modal.setEnumState(true);
-
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -278,7 +283,10 @@ public class DataModelBuilder {
         modal.setYearSplitAble(yearSplit);
         modal.setBusinessModeSplitAble(tableBusinessModeSplitStateEnum);
         modal.setDbType(dbType);
-        log.info("preinit model {}" ,modal.getDbType());
+        if (log.isTraceEnabled()) {
+            log.trace("pre init model {}" ,modal.getDbType());
+
+        }
 
         return modal;
     }
@@ -296,9 +304,12 @@ public class DataModelBuilder {
 //                    if(log.isDebugEnabled()) {
 //                        log.debug(" {}注入索引模型 {} ",k, indexModal);
 //                    }
-                    for (ThinkColumnModel columnModel : thinkTableModal.getColumnModels()) {
-                        log.info(" {}注入索引模型 {} ",columnModel.getKey(), indexModal);
+                    if (log.isTraceEnabled()) {
+                        for (ThinkColumnModel columnModel : thinkTableModal.getColumnModels()) {
+                            log.trace(" {}注入索引模型 {} ",columnModel.getKey(), indexModal);
+                        }
                     }
+
 
                     ThinkColumnModel columnModel = thinkTableModal.getKey(k) ;
 

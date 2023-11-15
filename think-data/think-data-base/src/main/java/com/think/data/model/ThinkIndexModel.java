@@ -1,5 +1,6 @@
 package com.think.data.model;
 
+import com.think.common.util.IdUtil;
 import com.think.common.util.StringUtil;
 import com.think.core.annotations.Remark;
 
@@ -26,12 +27,13 @@ public class ThinkIndexModel implements Serializable {
                 sb.append(k).append("_");
             }
             sb.append(uk ? "UNIQUE_INDEX" : "INDEX");
-            this.indexName = sb.toString();
-            if(indexName.length() >48){
-                this.indexName = (uk ? "UNIQUE_INDEX" : "INDEX") + StringUtil.randomStr(16);
-            }
+
+            sb.append("_").append(IdUtil.nextShortId());
+//            if(indexName.length() >48){
+//                //this.indexName = (uk ? "UNIQUE_INDEX" : "INDEX") + StringUtil.randomStr(16);
+//            }
         }else{
-            this.indexName = "";
+            this.indexName = IdUtil.nextId() + (uk ? "UNIQUE_INDEX" : "INDEX");
         }
     }
 

@@ -8,11 +8,13 @@ import com.think.common.util.ThinkCollectionUtil;
 import com.think.common.util.ThinkMilliSecond;
 import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean._Entity;
+import com.think.core.enums.DbType;
 import com.think.core.executor.ThinkAsyncExecutor;
 import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
 import com.think.data.extra.StructAlterSqlLogger;
+import com.think.data.model.ThinkColumnModel;
 import com.think.data.model.ThinkTableModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -31,6 +33,7 @@ public abstract class _JdbcExecutor {
     public abstract <T extends _Entity> Class getTargetClass();
     public abstract JdbcTemplate getJdbcTemplate();
 
+
     private static String reportSqlTemplate = null;
 
     public Optional<ThinkDataRuntime> rt(){
@@ -45,14 +48,13 @@ public abstract class _JdbcExecutor {
             lastCheckDb = model.getLastSplitCheckTime();
         }
         if(ThinkMilliSecond.currentTimeMillis() - lastCheckDb   > (1000*60*5)) {
-            String showTablesSql = "SHOW TABLES LIKE '" + _DaoSupport.baseTableName( targetClass) + "%'";
-            List<String> list = jdbcTemplate.queryForList(showTablesSql, String.class);
+            List<String> list = TableChecker.showSplitTables(jdbcTemplate, _DaoSupport.baseTableName( targetClass), model.getDbType());
             for (String t : list) {
                 this.executeTableInit(targetClass,t);
             }
 
-            if(!showTablesSql.contains(ThinkDataRuntime.NONE_PART)) {
-            }
+//            if(!showTablesSql.contains(ThinkDataRuntime.NONE_PART)) {
+//            }
             if(model != null){
                 model.setLastSplitCheckTime(ThinkMilliSecond.currentTimeMillis());
             }
@@ -71,55 +73,68 @@ public abstract class _JdbcExecutor {
 
     public <T extends _Entity> void _executeTableInit(Class<T> targetClass ,String tableName){
 //        ThinkThreadExecutor
+        final DbType dbType = Manager.getModelBuilder().get(targetClass).getDbType();
         this.checkTransactionAndLogPrint();
         if (Manager.isTableInitialized(tableName) == false) {
             try {
-                String showTableExitsSql = "show tables like '" +tableName +"'";
-                Map<String, Object> showTableExitsMap = new HashMap<>();
-                try {
-                    showTableExitsMap =getJdbcTemplate().queryForMap(showTableExitsSql);
-                }catch (Exception r){
-                    showTableExitsMap = new HashMap<>();
-                }
-                if (log.isTraceEnabled()) {
-                    log.trace("检查表{}是否存在  --> {}::{}", tableName,showTableExitsSql ,showTableExitsMap);
-                }
-                if(showTableExitsMap.isEmpty()){
+                final ThinkTableModel tableModel = Manager.getModelBuilder().get(getTargetClass());
+                final boolean exitsTable = TableChecker.exitsTable(getJdbcTemplate(), tableName, dbType);
+                if(!exitsTable){
                     if(log.isTraceEnabled()){
                         log.trace("确定表{}不存在..",tableName);
                     }
-                    String sql;
+                    List<String> sqls;
 //
-                    if (Manager.getModelBuilder().get(getTargetClass()).isYearSplitAble()) {
+                    if (tableModel.isYearSplitAble()) {
                         if (log.isTraceEnabled()) {
                             log.trace("即将创建表【时间拆分】 {}", tableName);
                         }
                         int splitYear = Integer.parseInt(tableName.split("_split_")[1]);
-                        sql = ThinkDataDDLBuilder.createSpiltSQL(Manager.getModelBuilder().get(getTargetClass()), splitYear);
+                        sqls = ThinkDataDDLBuilder.createSpiltSQL(tableModel, splitYear);
                     } else {
                         if (log.isTraceEnabled()) {
                             log.trace("即将创建普通表 {} ", tableName);
                         }
-                        sql = ThinkDataDDLBuilder.createSQL(Manager.getModelBuilder().get(getTargetClass()));
+                        sqls = ThinkDataDDLBuilder.createSQL(tableModel);
                     }
                     long start = ThinkMilliSecond.currentTimeMillis();
-                    getJdbcTemplate().update(sql);
-                    long duration = ThinkMilliSecond.currentTimeMillis() - start;
-                    Manager.recordTableInit(tableName);
-                    if (log.isDebugEnabled()) {
-                        log.debug("FINISH CREATE TABLE -> {}", tableName);
+                    for (String sql : sqls) {
+                        long duration = ThinkMilliSecond.currentTimeMillis() - start;
+                        Manager.recordTableInit(tableName);
+                        if (log.isDebugEnabled()) {
+                            log.debug("FINISH CREATE TABLE -> {}", tableName);
+                        }
+                        if (rt().isPresent()) {
+                            rt().get().fireDDL(sql, duration);
+                        }
+                        if (log.isTraceEnabled()) {
+                            log.trace("表结构构建完成....");
+                        }
+                        getJdbcTemplate().update(sql);
                     }
-                    if (rt().isPresent()) {
-                        rt().get().fireDDL(sql, duration);
-                    }
-                    if (log.isTraceEnabled()) {
-                        log.trace("表结构构建完成....");
-                    }
+
                 }else{
                     //同步 ----表结构
                     try{
-                        log.info("检查 {}表结构 并自动 新增 新字段 ",tableName );
-                        _SyncTableStructureUtil.syncUtil.doExecuteSync(targetClass,tableName,getJdbcTemplate());
+                        if(Manager.isAutoAddColumnForDb() ) {
+                            log.info("检查 {}表结构 并自动 新增 新字段 ", tableName);
+                            final List<String> list = TableChecker.showColumns(getJdbcTemplate(), tableName, dbType);
+                            for (ThinkColumnModel columnModel : tableModel.getColumnModels()) {
+                                final String key = columnModel.getKey();
+                                if (!list.contains(key)) {
+                                    final String addColumnSql = ThinkDataDDLBuilder.addColumn(tableModel, columnModel, tableName);
+                                    try {
+                                        log.info("增加新字段：{}", addColumnSql);
+                                        getJdbcTemplate().update(addColumnSql);
+                                    } catch (DataAccessException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                            }
+                        }
+
+
+                        //做 达梦的支持
                     }catch (Exception e){
                         e.printStackTrace();
                     }

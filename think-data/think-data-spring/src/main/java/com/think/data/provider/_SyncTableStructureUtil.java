@@ -21,6 +21,7 @@ import java.util.Map;
  * @description : 同步表结构工具
  */
 @Slf4j
+@Deprecated
 public class _SyncTableStructureUtil {
     private StructAlterSqlLogger structAlterSqlLogger = null;
 

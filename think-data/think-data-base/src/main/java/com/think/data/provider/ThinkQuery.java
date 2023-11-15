@@ -8,6 +8,7 @@ import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean.BaseVo;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.enums.DbType;
 import com.think.core.executor.ThinkThreadExecutor;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
@@ -23,6 +24,8 @@ import java.util.*;
 public class ThinkQuery {
 
     private String queryStr;
+
+    private DbType dbType;
 
     private boolean maybyEmpty = false;
 
@@ -41,7 +44,8 @@ public class ThinkQuery {
 
     private ThinkSqlFilter filter ;
 
-    private ThinkQuery() {
+    private ThinkQuery(DbType dbType) {
+        this.dbType = dbType;
         /*这里可能不是唯一入口*/
         if (ThinkThreadExecutor.isDataRegionChange()) {
             String currentRegion =ThinkThreadExecutor.getChangedDataRagionAndRemove();
@@ -198,7 +202,7 @@ public class ThinkQuery {
     }
 
     public static ThinkQuery build(ThinkSqlFilter filter){
-        ThinkQuery query = new ThinkQuery();
+        ThinkQuery query = new ThinkQuery(filter.getDbType());
         IThinkQueryFilter thinkQueryFilter = Manager.getThinkQueryFilter();
         if(thinkQueryFilter !=null){
             thinkQueryFilter.translateSqlFilter(filter);
@@ -273,7 +277,7 @@ public class ThinkQuery {
                         paramValues.add(reDoStringAsFastMatchForQuery((String) v,true));
                     }
                 }else{
-                    sb.append(filterBean.getQueryPart());
+                    sb.append(filterBean.getQueryPart(this.dbType));
                     paramValues.add(v);
                 }
 
@@ -300,7 +304,7 @@ public class ThinkQuery {
                 String sourceKey = map.get("k");
                 String fastMatchKey = map.get("fk");
                 ThinkFilterBean keyCondition = filter.getKeyCondition(sourceKey);
-                String sqlPart =""+ keyCondition.getQueryPart();
+                String sqlPart =""+ keyCondition.getQueryPart(this.dbType);
                 sqlPart = sqlPart.replaceFirst(sourceKey,fastMatchKey);
                 if(index > 0 || startWithAnd){
                     sb.append("AND (");
@@ -353,7 +357,6 @@ public class ThinkQuery {
     private void appendFilterParamList(List<ThinkFilterBean> list,StringBuilder sb ,boolean startWithAnd ){
         int appendIndex  =0 ;
         for(ThinkFilterBean bean : list){
-
             //是否需要拼接
             boolean doAppendAble = true;
             if(bean.isFastMatchAble() ){
@@ -369,7 +372,7 @@ public class ThinkQuery {
                     sb.append("AND ");
                 }
                 appendIndex ++ ;
-                sb.append(bean.getQueryPart()).append(" ");
+                sb.append(bean.getQueryPart(this.dbType)).append(" ");
                 int valueLen = bean.getLen();
                 Serializable[] values = bean.getValues();
 
@@ -404,7 +407,7 @@ public class ThinkQuery {
     }
     public <T extends _Entity> ThinkExecuteQuery countQuery(Class<T> cls){
         StringBuilder sb = new StringBuilder("SELECT COUNT(*) as COUNT_RESULT FROM ")
-                .append( tableName(cls)).append(" ")
+                .append(dbType.fixKey(tableName(cls)) ).append(" ")
                 .append(queryStr);
         Serializable[] values = paramValues.toArray(new Serializable[paramValues.size()]);
         return new ThinkExecuteQuery(sb.toString(),values,this.filter.getResultFilterList(),isMaybyEmpty(),cls);
@@ -428,19 +431,19 @@ public class ThinkQuery {
      }
 
      public <T extends _Entity> ThinkExecuteQuery selectForKeys(Class<T> cls, String... keys){
-
+        final DbType dbType = Manager.getModelBuilder().get(cls).getDbType();
         String keyStr ;
         if(keys == null){
             keyStr = "*";
         }else if(keys.length == 1){
-            keyStr = keys[0];
+            keyStr = dbType.fixKey(keys[0]);
         }else{
             StringBuilder ksb = new StringBuilder("");
             for (int i = 0; i <keys.length ; i++) {
                 if(i >0){
                     ksb.append(",");
                 }
-                ksb.append(keys[i]);
+                ksb.append(dbType.fixKey(keys[i]));
             }
             keyStr = ksb.toString();
         }
@@ -457,10 +460,10 @@ public class ThinkQuery {
 
          StringBuilder sb = new StringBuilder("SELECT  ")
                 .append(keyStr).append(" ")
-                .append("FROM ").append( tableName(cls)).append(" ")
+                .append("FROM ").append( dbType.fixKey(tableName(cls) ) ).append(" ")
                 .append(queryStr).append(" ")
                 .append("ORDER BY ")
-                .append(sortKey ).append(" ")
+                .append(dbType.fixKey(sortKey) ).append(" ")
                 .append( filter.isDesc()?"DESC":"ASC")
                 .append(" ");
         List<Serializable> valueTempList = new ArrayList<>();
@@ -483,7 +486,7 @@ public class ThinkQuery {
 
         StringBuilder sb = new StringBuilder("SELECT  ")
                 .append(" COUNT(*) as COUNT_RESULT ")
-                .append("FROM ").append( tableName( null )).append(" ")
+                .append("FROM ").append( dbType.fixKey(tableName( null ))).append(" ")
                 .append(queryStr).append(" ");
         List<Serializable> valueTempList = new ArrayList<>();
         valueTempList.addAll(this.paramValues);

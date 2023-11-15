@@ -7,8 +7,10 @@ import com.think.common.util.DateUtil;
 import com.think.common.util.StringUtil;
 import com.think.core.annotations.Remark;
 import com.think.core.annotations.bean.ThinkIgnore;
+import com.think.core.annotations.bean.ThinkTable;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.enums.DbType;
 import com.think.core.enums.TEnableRequired;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +22,8 @@ import java.util.*;
 public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
     private static final long serialVersionUID = 3347480035180588760L;
+
+    private final DbType dbType;
 
     private static IFilterChecker filterChecker = null;
 
@@ -97,6 +101,19 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
 
     private ThinkSqlFilter(Class<T> tClass) {
         this.tClass = tClass;
+        ThinkTable thinkTable = tClass.getAnnotation(ThinkTable.class);
+        if(thinkTable == null) {
+            final DbType type = thinkTable.dbType().realType();
+            if (type == DbType.DEFAULT) {
+                dbType = DbType.defaultDbTypeValue();
+            }else{
+                dbType = type;
+            }
+        }else{
+            log.warn("未确定到ThinkFilter匹配的数据库模型对象。使用默认数据库类型{}" ,DbType.defaultDbTypeValue());
+            dbType = DbType.defaultDbTypeValue();
+//            throw new IllegalArgumentException("ThinkFilter目标筛选对象非数据库映射对象");
+        }
     }
 
     public static <T extends _Entity> ThinkSqlFilter<T> build(Class<T> tClass){
@@ -401,19 +418,6 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
     public ThinkSqlFilter<T> keyOr(String k1, Serializable v1,String k2, Serializable v2){
         this.keyOrAppend(k1,v1);
         this.keyOrAppend(k2,v2);
-        /*
-        if(!this.keyOrMap.isEmpty() ){
-            throw new ThinkRuntimeException("ThinkSqlFilter 中只允许调用一次keyOr方法");
-        }
-//
-        if (check(k1) && check(k2)) {
-            this.keyOrMap.put(k1,v1);
-            this.keyOrMap.put(k2,v2);
-        }else{
-        }
-        */
-
-
         return this;
     }
 
@@ -890,4 +894,7 @@ public class ThinkSqlFilter<T extends _Entity> implements Serializable {
         return map;
     }
 
+    public DbType getDbType() {
+        return dbType;
+    }
 }

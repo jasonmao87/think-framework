@@ -8,6 +8,7 @@ import com.think.common.util.security.DesensitizationUtil;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.enums.DbType;
 import com.think.data.Manager;
 import com.think.data.exception.ThinkDataRuntimeException;
 import com.think.data.model.ThinkColumnModel;
@@ -45,9 +46,12 @@ public class ThinkUpdateQueryBuilder {
     protected static final <T extends _Entity> ThinkExecuteQuery insertOneSQL(T t) {
         ThinkTableModel modal =
                 Manager.getModelBuilder().get(t.getClass());
+        final DbType dbType = modal.getDbType();
         ThinkColumnModel[] clms = modal.getColumnModels();
         StringBuilder sql = new StringBuilder("insert into ");
-        sql.append(tableName(modal.getBeanClass())).append("( ");
+        String tableName = tableName(modal.getBeanClass());
+        tableName = dbType.fixKey(tableName);
+        sql.append(tableName).append("( ");
         List<Object> values = new ArrayList<>( );
         int i = 0 ;
         for(ThinkColumnModel cm : clms){
@@ -76,7 +80,7 @@ public class ThinkUpdateQueryBuilder {
                     sql.append(", ");
                 }
 
-                sql.append(cm.getKey());
+                sql.append(dbType.fixKey(cm.getKey()));
 
                 /**
                  * 值 校验
@@ -99,12 +103,14 @@ public class ThinkUpdateQueryBuilder {
                 i++;
 
                 if(cm.isFastMatchAble()){
-                    sql.append(", ").append(cm.getFastMatchKeyWhileExits());
+                    final String firstKey = cm.getFastMatchKeyWhileExits();
+                    sql.append(", ").append(dbType.fixKey(firstKey));
                     String sv =  computeFastMatchKeyValue((String)v);
                     values.add(sv);
                     i++ ;
                     // second key
-                    sql.append(", ").append(cm.getSecondaryFastMatchKeyWhileExits());
+                    final String secondKey = cm.getSecondaryFastMatchKeyWhileExits();
+                    sql.append(", ").append(dbType.fixKey(secondKey));
                     String fv =  computeSecondaryFastMatchKeyValue((String)v);
                     values.add(fv);
                     i++ ;
@@ -149,7 +155,9 @@ public class ThinkUpdateQueryBuilder {
         int stateKeyCount = 0;
         T t = list.get(0);
         ThinkTableModel modal = Manager.getModelBuilder().get(t.getClass());
+        final DbType dbType = modal.getDbType();
         String tableName =tableName(modal.getBeanClass());
+        tableName = dbType.fixKey(tableName);
         ThinkColumnModel[] clms = modal.getColumnModels();
         StringBuilder sql = new StringBuilder("insert into ");
         sql.append(tableName).append("( ");
@@ -158,8 +166,9 @@ public class ThinkUpdateQueryBuilder {
         int outIndex = 0 ;
         List<String> clmNames = new ArrayList<>();
         for(ThinkColumnModel cm : clms){
-            Object v = ClassUtil.getProperty(t,cm.getKey());
-            if(cm.getKey().equalsIgnoreCase("id")){
+            final String key = cm.getKey();
+            Object v = ClassUtil.getProperty(t, key);
+            if(key.equalsIgnoreCase("id")){
                 if(v == null) {
                     continue;
                 }
@@ -168,8 +177,8 @@ public class ThinkUpdateQueryBuilder {
             if(i >0){
                 sql.append(", ");
             }
-            sql.append(cm.getKey());
-            clmNames.add(cm.getKey());
+            sql.append(dbType.fixKey(key));
+            clmNames.add(key);
             i++;
 
 
@@ -181,11 +190,12 @@ public class ThinkUpdateQueryBuilder {
 //        // 快速匹配支持  >>>>>>>>>>>>>
         for(String k : modal.getSortKeyArray()){
             ThinkColumnModel columnModel = modal.getKey(k);
-            String sortKeyName = columnModel.getFastMatchKeyWhileExits();  //modal.getSortKeyName(k);
-            sql.append(" ," ).append(sortKeyName) ;
+            String firstKey = columnModel.getFastMatchKeyWhileExits();  //modal.getSortKeyName(k);
+
+            sql.append(" ," ).append(dbType.fixKey(firstKey)) ;
             i++ ;
             String secondKeyName = columnModel.getSecondaryFastMatchKeyWhileExits();
-            sql.append(" ,").append(secondKeyName);
+            sql.append(" ,").append(dbType.fixKey(secondKeyName));
             i ++;
         }
 //        // 快速排序支持  <<<<<<<<<<<<<<<<<<<<
@@ -260,8 +270,11 @@ public class ThinkUpdateQueryBuilder {
     protected static <T extends _Entity> ThinkExecuteQuery updateSql(T t){
         List<Serializable> valuesList = new ArrayList<>();
         ThinkTableModel modal = Manager.getModelBuilder().get(t.getClass());
+        final DbType dbType = modal.getDbType();
+        String tableName = tableName(modal.getBeanClass());
+        tableName = dbType.fixKey(tableName);
         StringBuilder sql = new StringBuilder("UPDATE ")
-                .append(tableName(modal.getBeanClass())).append(" SET");
+                .append(tableName).append(" SET");
         int index = 0 ;
         for(ThinkColumnModel columnModal : modal.getColumnModels()){
             if(columnModal.getKey().equalsIgnoreCase("id")){
@@ -276,9 +289,10 @@ public class ThinkUpdateQueryBuilder {
                     /**
                      * 值校验
                      */
+                    final String key = columnModal.getKey();
                     if(ThinkDataValidator.isEnable()){
                         //值 校验
-                        ThinkDataValidator.verification(t.getClass(),columnModal.getKey(),v);
+                        ThinkDataValidator.verification(t.getClass(), key,v);
                     }
 
 
@@ -286,7 +300,7 @@ public class ThinkUpdateQueryBuilder {
                     if(index > 0){
                         sql.append(",");
                     }
-                    sql.append(" ").append(columnModal.getKey()).append(" = ?");
+                    sql.append(" ").append(dbType.fixKey(key)).append(" = ?");
                     /**
                      * 脱敏处理 并 添加值 到list
                      */
@@ -305,11 +319,11 @@ public class ThinkUpdateQueryBuilder {
                     //如果支持排序支持 开始
                     if(columnModal.isFastMatchAble()){
                         String fastMatchKeyName= columnModal.getFastMatchKeyWhileExits();
-                        sql.append(",").append( fastMatchKeyName).append(" = ? ");
+                        sql.append(",").append( dbType.fixKey(fastMatchKeyName)).append(" = ? ");
                         valuesList.add(computeFastMatchKeyValue((String) v));
                         // second key
-                        String secoondKey = columnModal.getSecondaryFastMatchKeyWhileExits();
-                        sql.append(",").append( secoondKey).append(" = ? ");
+                        String secondKey = columnModal.getSecondaryFastMatchKeyWhileExits();
+                        sql.append(",").append( dbType.fixKey(secondKey)).append(" = ? ");
                         valuesList.add(computeSecondaryFastMatchKeyValue((String) v));
 
 
@@ -320,15 +334,19 @@ public class ThinkUpdateQueryBuilder {
                 }
             }
         }
-        sql.append(" WHERE id = ?");
+        sql.append(" WHERE ").append(dbType.fixKey("id")).append(" = ?");
         valuesList.add(t.getId());
         return new ThinkExecuteQuery(sql.toString(),valuesList.toArray(new Serializable[valuesList.size()]),null,false,t.getClass());
     }
 
 
     protected static  <T extends _Entity> ThinkExecuteQuery updateSql(ThinkUpdateMapper<T> updaterMapper ){
+        final ThinkTableModel tableModel = Manager.getModelBuilder().get(updaterMapper.sqlFilter().gettClass());
+        final DbType dbType = tableModel.getDbType();
+        String tableName = tableName(updaterMapper.sqlFilter().gettClass());
+        tableName = dbType.fixKey(tableName);
         StringBuilder sql = new StringBuilder("UPDATE ")
-                .append(tableName(updaterMapper.sqlFilter().gettClass())).append(" SET ");
+                .append(tableName).append(" SET ");
         List<Object> values = new ArrayList<>();
 
         ThinkTableModel tableModal = Manager.getModelBuilder().get(updaterMapper.getTargetClass());
@@ -348,7 +366,7 @@ public class ThinkUpdateQueryBuilder {
             if(setIndex >0){
                 sql.append(", ");
             }
-            sql.append( k).append(" = ").append(k).append("+? ");
+            sql.append( dbType.fixKey(k)).append(" = ").append(k).append("+? ");
             setIndex ++ ;
             values.add(incMap.get(k));
         }
@@ -371,7 +389,7 @@ public class ThinkUpdateQueryBuilder {
             if(setIndex >0){
                 sql.append(", ");
             }
-            sql.append( k).append(" = ").append(" ? ");
+            sql.append(dbType.fixKey(k)).append(" = ").append(" ? ");
 
             /**
              * 脱敏处理
@@ -390,12 +408,12 @@ public class ThinkUpdateQueryBuilder {
             //如果支持排序支持 开始
             if(columnModal.isFastMatchAble()){
                 String fastMatchKeyName= columnModal.getFastMatchKeyWhileExits();
-                sql.append(",").append(fastMatchKeyName).append(" = ? ");
+                sql.append(",").append(dbType.fixKey(fastMatchKeyName)).append(" = ? ");
                 values.add(computeFastMatchKeyValue((String) v));
 
                 // second key
                 String secoondKey = columnModal.getSecondaryFastMatchKeyWhileExits();
-                sql.append(",").append( secoondKey).append(" = ? ");
+                sql.append(",").append( dbType.fixKey(secoondKey)).append(" = ? ");
                 values.add(computeSecondaryFastMatchKeyValue((String) v));
             }
             //如果支持排序支持  结束
@@ -409,7 +427,7 @@ public class ThinkUpdateQueryBuilder {
             if(setIndex >0){
                 sql.append(", ");
             }
-            sql.append( k).append(" = ").append(setKeyMapper.get(k)).append(" ");
+            sql.append(dbType.fixKey(k)).append(" = ").append(setKeyMapper.get(k)).append(" ");
             setIndex ++ ;
         }
 
@@ -424,7 +442,7 @@ public class ThinkUpdateQueryBuilder {
             }
             final Map<String, Double> stringDoubleMap = divMapper.get(k);
             for (Map.Entry<String, Double> entry : stringDoubleMap.entrySet()) {
-                sql.append(k).append("=").append(entry.getKey()).append(" / ").append(entry.getValue()).append(" ");
+                sql.append(dbType.fixKey(k)).append("=").append(entry.getKey()).append(" / ").append(entry.getValue()).append(" ");
                 break;
             }
         }
@@ -438,7 +456,7 @@ public class ThinkUpdateQueryBuilder {
             }
             final Map<String, Double> stringDoubleMap = multiplyMapper.get(k);
             for (Map.Entry<String, Double> entry : stringDoubleMap.entrySet()) {
-                sql.append(k).append("=").append(entry.getKey()).append(" * ").append(entry.getValue()).append(" ");
+                sql.append(dbType.fixKey(k)).append("=").append(entry.getKey()).append(" * ").append(entry.getValue()).append(" ");
                 break;
             }
         }
@@ -453,7 +471,7 @@ public class ThinkUpdateQueryBuilder {
             }
             final Map<String, String> stringDoubleMap = keyDivKeyMapper.get(k);
             for (Map.Entry<String, String> entry : stringDoubleMap.entrySet()) {
-                sql.append(k).append("=").append(entry.getKey()).append(" / ").append(entry.getValue()).append(" ");
+                sql.append(dbType.fixKey(k)).append("=").append(entry.getKey()).append(" / ").append(entry.getValue()).append(" ");
                 break;
             }
 
@@ -469,7 +487,7 @@ public class ThinkUpdateQueryBuilder {
             }
             final Map<String, String> stringDoubleMap = keyDivKeyMapper.get(k);
             for (Map.Entry<String, String> entry : stringDoubleMap.entrySet()) {
-                sql.append(k).append("=").append(entry.getKey()).append(" * ").append(entry.getValue()).append(" ");
+                sql.append(dbType.fixKey(k)).append("=").append(entry.getKey()).append(" * ").append(entry.getValue()).append(" ");
                 break;
             }
 
@@ -486,7 +504,8 @@ public class ThinkUpdateQueryBuilder {
         }
         if( updaterMapper.getUpdateLimit() >0){
 
-            sql.append(" ORDER BY ").append(updaterMapper.sqlFilter().getSortKey()).append( updaterMapper.sqlFilter().isDesc()?" DESC" :" ASC");
+            final String sortKey = updaterMapper.sqlFilter().getSortKey();
+            sql.append(" ORDER BY ").append(dbType.fixKey(sortKey)).append( updaterMapper.sqlFilter().isDesc()?" DESC" :" ASC");
             sql.append( " LIMIT ?") ;//.append( updaterMapper.getUpdateLimit());
             values.add(updaterMapper.getUpdateLimit());
 
@@ -498,8 +517,10 @@ public class ThinkUpdateQueryBuilder {
 
 
     protected static <T extends SimplePrimaryEntity> ThinkExecuteQuery physicalDeleteSql(ThinkSqlFilter<T> sqlFilter){
+        String tableName = tableName(sqlFilter.gettClass());
+        tableName = sqlFilter.getDbType().fixKey(tableName);
         StringBuilder sql = new StringBuilder("DELETE FROM ")
-                .append(tableName(sqlFilter.gettClass())).append(" ");
+                .append(tableName).append(" ");
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         sql.append(query.filterQuery());
         return new ThinkExecuteQuery(sql.toString(),query.filterParamValueArray(),null, query.isMaybyEmpty(),sqlFilter.gettClass());

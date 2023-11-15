@@ -15,6 +15,7 @@ com\think\data\multis\ddl\DDLBuilderForDM.class
 com\think\data\exception\ThinkDataRuntimeException.class
 com\think\data\verification\ThinkSimpleDataValidator.class
 com\think\data\support\dic\DictionaryGenerator.class
+com\think\data\multis\ddl\TbAdminMysql.class
 com\think\data\bean\api\ThinkBeanApiFactory.class
 com\think\data\model\ThinkJdbcTypeConverter.class
 com\think\data\dao\ThinkSelector.class
@@ -40,12 +41,15 @@ com\think\data\model\SX.class
 com\think\data\support\web\ThinkDataWebInterceptor.class
 com\think\data\bean\api\ThinkSplitBeanApi.class
 com\think\data\bean\api\ThinkBeanApi.class
+com\think\data\multis\ddl\TbAdmin.class
+com\think\data\multis\ddl\sqlType\SqlTypeMysql.class
 com\think\data\dao\TCache.class
 com\think\data\bean\api\ThinkBeanFilterAction.class
 com\think\data\dao\ThinkDaoFactory.class
 com\think\data\model\ThinkSqlType.class
 com\think\data\model\TbStructAlterSqlLog.class
 com\think\data\dao\ThinkSplitRefDao.class
+com\think\data\provider\DEL_ThinkDataDDLBuilder.class
 com\think\data\verification\ThinkDataValidator.class
 com\think\data\filter\ThinkVersionRecorder.class
 com\think\data\model\ThinkJdbcTypeConverter$1.class
@@ -53,5 +57,6 @@ com\think\data\model\ThinkIndexModel.class
 com\think\data\bean\api\ThinkBinaryApi.class
 com\think\data\bean\api\ThinkSplitRefBeanApi.class
 com\think\data\multis\IDDLBuilder.class
+com\think\data\multis\ddl\sqlType\SqlTypeMysql$1.class
 com\think\data\model\ThinkColumnModel.class
 com\think\data\ThinkDataRuntime.class

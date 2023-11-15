@@ -20,6 +20,9 @@ public class DataTypeProxy {
         if (dbType == null){
             throw new IllegalArgumentException("数据库类型不能为NULL");
         }
+        if(dbType == DbType.DEFAULT){
+            return getProxy(DbType.defaultDbTypeValue());
+        }
         if (holder.containsKey(dbType)){
             return holder.get(dbType);
         }

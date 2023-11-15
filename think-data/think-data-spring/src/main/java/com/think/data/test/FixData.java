@@ -30,25 +30,25 @@ public class FixData {
 
 
     private static Connection connection;
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        connection = DriverManager.getConnection("jdbc:mysql://xxxxxxxxxxxxxxxxx8.136.243.133:3306/" +
-                "thinkdid-cloud-hospital?generateSimpleParameterMetadata=true&usingSSL=false&serverTimezone=Asia/Shanghai",
-                "root", "Think@mysql_2021");
-        final Statement statement = connection.createStatement();
-
-        fixSystemAccount();
+//    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+//        Class.forName("com.mysql.cj.jdbc.Driver");
+//        connection = DriverManager.getConnection("jdbc:mysql://xxxxxxxxxxxxxxxxx8.136.243.133:3306/" +
+//                "thinkdid-cloud-hospital?generateSimpleParameterMetadata=true&usingSSL=false&serverTimezone=Asia/Shanghai",
+//                "root", "Think@mysql_2021");
+//        final Statement statement = connection.createStatement();
 //
-        tbHospitalUserFix();
-//        final ResultSet resultSet = statement.executeQuery("select id ,mobilePhone , name  from `thinkdid-cloud-hospital`.tb_hospital_user_A0  where  version >=0");
-//        while (resultSet.next()) {
-//            System.out.println(resultSet.getLong("id"));
-//            System.out.println(fixSString( resultSet.getString("mobilePhone")));
-//            System.out.println(resultSet.getString("name"));
-//        }
+//        fixSystemAccount();
+////
+//        tbHospitalUserFix();
+////        final ResultSet resultSet = statement.executeQuery("select id ,mobilePhone , name  from `thinkdid-cloud-hospital`.tb_hospital_user_A0  where  version >=0");
+////        while (resultSet.next()) {
+////            System.out.println(resultSet.getLong("id"));
+////            System.out.println(fixSString( resultSet.getString("mobilePhone")));
+////            System.out.println(resultSet.getString("name"));
+////        }
+////
 //
-
-    }
+//    }
 
 
 

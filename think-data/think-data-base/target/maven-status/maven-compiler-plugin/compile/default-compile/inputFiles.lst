@@ -22,10 +22,12 @@ C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\c
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\bean\api\ThinkSplitBeanApi.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\config\DataSourceConfig.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\model\ThinkSqlType.java
+C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\provider\DEL_ThinkDataDDLBuilder.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\provider\ThinkUpdateQueryBuilder.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\multis\ddl\sqlType\SqlTypeDM.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\provider\ThinkDataDDLBuilder.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\multis\proxy\DataTypeProxy.java
+C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\multis\ddl\sqlType\SqlTypeMysql.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\dao\TCache.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\support\web\ThinkDataWebInterceptor.java
 C:\developer\incubator\think-famework\think-data\think-data-base\src\main\java\com\think\data\multis\ddl\DDLBuilderForMysql.java

@@ -3,6 +3,7 @@ package com.think.core.enums;
 import com.think.common.result.ThinkMiddleState;
 import com.think.common.util.StringUtil;
 import com.think.common.util.TVerification;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TODO 长期维护
@@ -11,6 +12,7 @@ import com.think.common.util.TVerification;
  *      VERSION : DA_MENG ,
  */
 //数据库枚举
+@Slf4j
 public enum DbType {
     DEFAULT,
     DM,
@@ -18,6 +20,12 @@ public enum DbType {
 
 
 
+    public DbType realType(){
+        if(this == DEFAULT){
+            return defaultDbTypeValue();
+        }
+        return this;
+    }
 
     private static DbType defaultValueSet = null;
 
@@ -45,6 +53,9 @@ public enum DbType {
 
 
     public String fixKey(String key){
+        if(key.equals("*")){
+            return key;
+        }
         switch (this){
             case DM:{
                 //通过双引号包裹
@@ -59,11 +70,51 @@ public enum DbType {
 
             }
             default:{
-                System.out.println(" >>>>>>>>>>>>>>>>> " + key);
                 return key;
             }
         }
+    }
 
+
+    public String showSplitTables(String tablePrefix){
+        tablePrefix += "%";
+        switch (this){
+            case DM:{
+                return "SELECT TABLE_NAME FROM USER_TABLES WHERE TABLE_NAME LIKE " + StringUtil.wrappedBy(tablePrefix,"'");
+            }
+            case DEFAULT:{
+                if(defaultValueSet!=null){
+                    return defaultValueSet.showSplitTables(tablePrefix);
+                }else {
+                    throw new IllegalArgumentException("未设置默认数据库类型");
+                }
+
+            }
+            default:{
+                return "show tables like " + StringUtil.wrappedBy(tablePrefix,"'");
+            }
+        }
 
     }
+
+    public String showTableIfExist(String tableName){
+        switch (this){
+            case DM:{
+                return "SELECT COUNT(*) AS RESULT_COUNT FROM USER_TABLES WHERE TABLE_NAME = " + StringUtil.wrappedBy(tableName,"'");
+            }
+            case DEFAULT:{
+                if(defaultValueSet!=null){
+                    return defaultValueSet.showTableIfExist(tableName);
+                }else {
+                    throw new IllegalArgumentException("未设置默认数据库类型");
+                }
+
+            }
+            default:{
+                return "show tables like " + StringUtil.wrappedBy(tableName,"'");
+            }
+        }
+    }
+
+
 }

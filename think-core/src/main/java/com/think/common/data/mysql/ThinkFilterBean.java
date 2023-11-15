@@ -6,14 +6,18 @@ import com.think.common.data.ThinkFilterOp;
 import com.think.common.util.DateUtil;
 import com.think.common.util.IdUtil;
 import com.think.core.annotations.Remark;
+import com.think.core.enums.DbType;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 
+
 /**
  * 参数条件对象类
  */
+@Slf4j
 public class ThinkFilterBean implements Serializable {
     private static final long serialVersionUID = -2620742982741342850L;
 
@@ -259,6 +263,218 @@ public class ThinkFilterBean implements Serializable {
         return build(key).initOp(ThinkFilterOp.LIKE,new String[]{v});
     }
 
+    public String getQueryPartAsDbType(DbType dbType){
+        dbType = dbType.realType();
+//        if(this.finish){
+//            return null;
+//        }
+        values = distinctValues(values);
+        StringBuilder sb = new StringBuilder( " ")
+                .append(dbType.fixKey(key))
+                .append(" ");
+        this.finish = true;
+        this.values = values;
+        this.op = op;
+        switch (op){
+            case EQ: {
+                this.len =1 ;
+                sb.append("= ? ");
+                if(this.len != values.length){
+                    this.safe = false;
+                }
+                break;
+            }
+            case EQ_KEY:{
+                this.paramIsKey =true;
+                this.len=0;
+                if(values.length ==1 ){
+                    sb.append("= ").append(dbType.fixKey((String) values[0])).append(" ");
+                }else{
+                    this.safe =false;
+                }
+                break;
+            }
+            case NOT_EQ:{
+                this.len =1;
+                sb.append("<> ? ");
+                if(this.len != values.length){
+                    this.safe = false;
+                }
+                break;
+            }
+            case NOT_EQ_KEY:{
+                this.paramIsKey = true;
+                this.len=0;
+                if(this.values.length == 1) {
+                    sb.append("<> ").append(dbType.fixKey((String) values[0])).append(" ");
+                }else{
+                    this.safe = false;
+                }
+                break;
+            }
+            case LE:{
+                this.len = 1;
+                if(this.len == this.values.length  ){
+                    sb.append("< ? ");
+                }else{
+                    this.safe =false;
+                }
+                break;
+            }
+            case LEE:{
+                this.len =1;
+                if(this.len == values.length) {
+                    sb.append("<= ? ");
+                }else{
+                    this.safe =false;
+                }
+                break;
+            }
+            case LE_KEY:{
+                this.paramIsKey = true;
+                this.len = 0 ;
+                if(this.values.length == 1){
+                    sb.append(" <").append(values[0]).append(" ");
+                }else{
+                    this.safe = false;
+                }
+                break;
+            }
+            case LEE_KEY:{
+                this.paramIsKey = true;
+                this.len = 0 ;
+                if(this.values.length == 1){
+                    sb.append(" <= ").append(values[0]).append(" ");
+                }else{
+                    this.safe = false;
+                }
+                break;
+            }
+            case LG:{
+                this.len = 1 ;
+                if(this.len == this.values.length  ){
+                    sb.append(" > ? ");
+                }else{
+                    this.safe =false;
+                }
+                break;
+            }
+            case LGE:{
+                this.len = 1;
+                if(this.len == this.values.length  ){
+                    sb.append(" >= ? ");
+                }else{
+                    this.safe =false;
+                }
+                break;
+            }
+            case LG_KEY:{
+                this.len =0;
+                this.paramIsKey =true;
+                if(this.values.length == 1){
+                    sb.append(" > ").append(dbType.fixKey((String) values[0])).append(" ");
+                }else{
+                    this.safe = false;
+                }
+                break;
+            }
+            case LGE_KEY:{
+                this.len =0;
+                this.paramIsKey =true;
+                if(this.values.length == 1){
+                    sb.append(" >=").append(dbType.fixKey((String) values[0])).append(" ");
+                }else{
+                    this.safe = false;
+                }
+                break;
+            }
+            case BETWEEN_AND:{
+                this.len =2;
+                if(this.values.length == this.len){
+                    sb.append( " between ? and ? ");
+                }else {
+                    this.safe = false;
+                }
+                break;
+            }
+            case IN:{
+                this.len = values.length;
+                if(this.len == values.length){
+                    int i= 0 ;
+                    sb.append( "in (");
+                    while (i < this.len){
+                        if(i >0){
+                            sb.append(",");
+                        }
+                        sb.append(" ? ");
+                        i ++;
+
+                    }
+                    sb.append(") ");
+
+                }
+                break;
+            }
+            case NOT_IN:{
+                this.len = values.length;
+                if(this.len == values.length){
+                    int i= 0 ;
+                    sb.append( "not in (");
+                    while (i < this.len){
+                        if(i >0){
+                            sb.append(",");
+                        }
+                        sb.append(" ? ");
+                        i ++;
+
+                    }
+                    sb.append(") ");
+
+                }
+                break;
+
+            }
+            case OR:{
+                //or 逻辑自动转成IN
+                this.len = values.length;
+                if(this.len == values.length){
+                    int i= 0 ;
+                    sb.append( "in (");
+                    while (i < this.len){
+                        if(i >0){
+                            sb.append(",");
+                        }
+                        sb.append(" ? ");
+                        i ++;
+                    }
+                    sb.append(") ");
+                }
+                break;
+            }
+            case IS_NULL:{
+                this.len = 0;
+                sb.append(" IS NULL");
+                break;
+            }
+            case IS_NOT_NULL:{
+                this.len = 0;
+                sb.append(" IS NOT NULL");
+                break;
+            }
+            case LIKE:{
+                this.len = 1;
+                if(this.len == values.length){
+                    sb.append(" LIKE ? ");
+                }else{
+                    this.safe = false;
+                }
+                break;
+            }
+        }
+        return sb.toString();
+
+    }
+
     protected ThinkFilterBean  initOp(ThinkFilterOp op ,Serializable[] values){
         if(this.finish){
             return null;
@@ -497,8 +713,17 @@ public class ThinkFilterBean implements Serializable {
         return values;
     }
 
-    public String getQueryPart() {
-        return queryPart;
+    public String getQueryPart(DbType dbType) {
+        String result ;
+        if (dbType.realType() == DbType.MYSQL) {
+            result = queryPart;
+        }else {
+            result = getQueryPartAsDbType(dbType);
+        }
+        if (log.isTraceEnabled()) {
+            log.trace("提取SQL查询片段 : {}" ,result);
+        }
+        return result;
     }
 
     public boolean isFinish() {

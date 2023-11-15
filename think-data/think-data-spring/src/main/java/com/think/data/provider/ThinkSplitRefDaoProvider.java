@@ -117,6 +117,9 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public long count(ThinkSqlFilter<T> sqlFilter, long rootPrimaryId) {
+        if(sqlFilter.mayBeEmptyResult()){
+            return 0L;
+        }
         int splitYear = _DaoSupport.computeSpiltYearById(rootPrimaryId);
         sqlFilter.eq("rootPrimaryId" ,rootPrimaryId);
         ThinkQuery query = ThinkQuery.build(sqlFilter);
@@ -134,6 +137,9 @@ public abstract class ThinkSplitRefDaoProvider<T extends SimpleRefEntity> extend
 
     @Override
     public List<T> list(ThinkSqlFilter<T> sqlFilter, long rootPrimaryId) {
+        if (sqlFilter.mayBeEmptyResult()) {
+            return new ArrayList<>();
+        }
         List<Map<String, Object>> list = this.mapList(sqlFilter,rootPrimaryId);
         List<T> result = new ArrayList<T>();
         for(Map<String,Object> map : list){

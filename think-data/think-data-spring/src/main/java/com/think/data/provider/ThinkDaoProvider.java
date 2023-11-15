@@ -423,6 +423,9 @@ public abstract class ThinkDaoProvider<T extends SimplePrimaryEntity>  extends _
 
     @Override
     public long count(ThinkSqlFilter sqlFilter) {
+        if(sqlFilter.mayBeEmptyResult()){
+            return 0L;
+        }
         ThinkQuery query = ThinkQuery.build(sqlFilter);
         ThinkExecuteQuery executeQuery = query.countQuery(targetClass);
         Map<String,Object> map = executeOne(executeQuery,finalTableName());

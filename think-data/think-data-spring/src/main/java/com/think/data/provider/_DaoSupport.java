@@ -8,6 +8,7 @@ import com.think.core.bean.BaseVo;
 import com.think.core.bean.SimplePrimaryEntity;
 import com.think.core.bean._Entity;
 import com.think.core.bean.util.ClassUtil;
+import com.think.core.enums.DbType;
 import com.think.data.Manager;
 import com.think.data.ThinkDataRuntime;
 import com.think.data.filter.ThinkDataFilter;
@@ -154,6 +155,7 @@ public class _DaoSupport{
         }
         return new Long[]{};
     }
+
 
 
 }

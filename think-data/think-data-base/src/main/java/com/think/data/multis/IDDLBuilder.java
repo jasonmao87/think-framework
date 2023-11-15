@@ -1,5 +1,6 @@
 package com.think.data.multis;
 
+import com.think.data.model.ThinkColumnModel;
 import com.think.data.model.ThinkTableModel;
 
 import java.util.List;
@@ -12,4 +13,5 @@ public interface IDDLBuilder {
     List<String> createTableDDL(ThinkTableModel tableModal , int splitYear);
 
 
+    String addColumn(ThinkTableModel tableModal , ThinkColumnModel columnModel ,String tableName );
 }

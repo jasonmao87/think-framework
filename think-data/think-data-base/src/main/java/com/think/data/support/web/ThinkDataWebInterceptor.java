@@ -13,8 +13,6 @@ public abstract class ThinkDataWebInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-
         Manager.beginDataSrv();
         return false;
     }
