@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.think</groupId>
+    <groupId>io.github.jasonmao87</groupId>
     <artifactId>think-framework</artifactId>
     <packaging>pom</packaging>
     <version>1.0.5.1-SNAPSHOT</version>
@@ -13,16 +13,12 @@
         <module>think-mongo-spring</module>
         <module>think-web</module>
         <module>think-data</module>
-        <module>think-tcp</module>
-        <module>think-simple-redis</module>
         <module>think-tcp2</module>
-        <module>think-service-bus</module>
     </modules>
 
     <properties>
 <!--        <spring-boot.version>2.5.8</spring-boot.version>-->
         <spring-boot.version>2.3.2.RELEASE</spring-boot.version>
-
         <junit-version>4.12</junit-version>
         <druid-version>1.1.12</druid-version>
         <mysql-driver-version>6.0.6</mysql-driver-version>
@@ -46,133 +42,153 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     </properties>
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            <id>nexus-snapshots</id>-->
+<!--            <name>nexus-snapshots</name>-->
+<!--            <url>https://nexus.x-service.cn/repository/maven-snapshots/</url>-->
+<!--        </snapshotRepository>-->
+<!--        -->
+
+<!--    </distributionManagement>-->
+
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            <id>ossrh</id>-->
+<!--            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>-->
+<!--        </snapshotRepository>-->
+<!--    </distributionManagement>-->
+
     <distributionManagement>
         <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <name>nexus-snapshots</name>
-            <url>https://nexus.x-service.cn/repository/maven-snapshots/</url>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
-
-    </distributionManagement>
-    <repositories>
         <repository>
-            <id>think-nexus</id>
-            <name>think-nexus</name>
-            <url>https://nexus.x-service.cn/repository/maven-public/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-    </repositories>
+    </distributionManagement>
+
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>think-nexus</id>-->
+<!--            <name>think-nexus</name>-->
+<!--            <url>https://nexus.x-service.cn/repository/maven-public/</url>-->
+<!--            <snapshots>-->
+<!--                <enabled>true</enabled>-->
+<!--            </snapshots>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 
     <dependencyManagement>
         <dependencies>
             <!-- think framework -dependencies -->
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-core</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-data-base</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-data-spring</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-data</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-simple-redis</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-tcp-client</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-tcp-server</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-tcp2-common</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-tcp2-client</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-tcp2-server</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-mongo-spring</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-service-bus</artifactId>
                 <version>1.0.3-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-service-bus-base</artifactId>
                 <version>1.0.3-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-service-bus-client</artifactId>
                 <version>1.0.3-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-service-bus-master</artifactId>
                 <version>1.0.3-SNAPSHOT</version>
             </dependency>
 
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-web-base</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-web-auth-support</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>com.think</groupId>
+                <groupId>io.github.jasonmao87</groupId>
                 <artifactId>think-web-service</artifactId>
                 <version>1.0.5.1-SNAPSHOT</version>
             </dependency>
